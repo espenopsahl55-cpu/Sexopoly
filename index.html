@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>Sex O Pol (18+) – Espen Opsahl</title>
+
+<style>
+body {
+  background:#000;
+  color:#fff;
+  font-family:Arial, sans-serif;
+  text-align:center;
+}
+#board {
+  position:relative;
+  max-width:900px;
+  margin:auto;
+}
+#board img {
+  width:100%;
+}
+.token {
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  position:absolute;
+}
+.p1 { background:pink; }
+.p2 { background:lightblue; }
+
+#controls button {
+  padding:10px 20px;
+  font-size:16px;
+  margin:10px;
+}
+#log {
+  max-width:900px;
+  margin:auto;
+  background:#111;
+  border:1px solid gold;
+  padding:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Sex O Pol (18+)</h1>
+<p>made by Espen Opsahl</p>
+
+<div id="board">
+  <!-- LEGG BRETT-BILDET HER -->
+  <img src="board.png" alt="Sex O Pol">
+  <div id="p1" class="token p1"></div>
+  <div id="p2" class="token p2"></div>
+</div>
+
+<div id="controls">
+  <button onclick="roll()">🎲 Kast terninger</button>
+</div>
+
+<div id="log"></div>
+
+<script>
+// ==== DATA ====
+const board = [...];        // (bruk rutelista over)
+const lustCards = [...];
+const dareCards = [...];
+
+// ==== SPILLERE ====
+let players = [
+  { pos:0, points:0, passes:0, jail:false, jailTries:0, skip:false },
+  { pos:0, points:0, passes:0, jail:false, jailTries:0, skip:false }
+];
+let current = 0;
+
+// ==== FUNKSJONER ====
+function roll(){
+  let p = players[current];
+  if(p.skip){ log("Gratis parkering – tur hoppet over"); p.skip=false; next(); return; }
+
+  let d1 = rand(6), d2 = rand(6);
+  log(`Spiller ${current+1} kastet ${d1} + ${d2}`);
+
+  if(p.jail){
+    if(d1===6 || d2===6){
+      p.jail=false; p.jailTries=0; log("Ut av fengsel!");
+    } else {
+      p.jailTries++; log("Ikke sekser – drikk 2 slurker");
+      next(); return;
+    }
+  }
+
+  move(d1+d2);
+  if(d1===d2){ log("Like terninger – kast igjen!"); return; }
+  next();
+}
+
+function move(steps){
+  let p = players[current];
+  p.pos += steps;
+  if(p.pos >= board.length){
+    p.pos %= board.length;
+    p.passes++;
+    log(`Passerte Start (${p.passes}/6)`);
+    if(p.passes >= 6) alert(`🎉 Spiller ${current+1} vinner!`);
+  }
+  resolve(board[p.pos]);
+}
+
+function resolve(tile){
+  if(tile.type==="lust") log("⭐ "+draw(lustCards));
+  if(tile.type==="dare") log("🔥 "+draw(dareCards));
+  if(tile.type==="choice") log("Velg selv kort");
+  if(tile.type==="points") log(`Få ${tile.amount} poeng`);
+  if(tile.type==="drink") log(`Ta ${tile.amount} slurker`);
+  if(tile.type==="give_points") log("Gi poeng til partner");
+  if(tile.type==="parking") players[current].skip=true;
+  if(tile.type==="go_jail"){ players[current].jail=true; players[current].pos=5; }
+  if(tile.type==="back"){ players[current].pos -= tile.amount; }
+}
+
+function draw(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function rand(n){ return Math.floor(Math.random()*n)+1; }
+function log(t){ document.getElementById("log").innerHTML="<p>"+t+"</p>"+log.innerHTML; }
+function next(){ current = (current+1)%2; }
+</script>
+</body>
+</html>
