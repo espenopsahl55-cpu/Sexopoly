@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>Sex O Pol (18+)</title>
+<style>
+body{
+  background:#000;
+  color:#fff;
+  font-family:Arial, sans-serif;
+  text-align:center;
+  margin:0;
+}
+h1{ margin:10px 0 0; }
+
+#ui{
+  position:sticky;
+  top:0;
+  background:#000;
+  z-index:20;
+  padding:10px;
+  border-bottom:1px solid gold;
+}
+
+#dice{
+  font-size:32px;
+  margin:10px;
+}
+
+#board{
+  position:relative;
+  max-width:900px;
+  margin:10px auto;
+}
+#board img{
+  width:100%;
+}
+
+.token{
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  position:absolute;
+  transform:translate(-50%,-50%);
+  transition:0.5s ease;
+  z-index:5;
+}
+.p1{ background:pink; }
+.p2{ background:lightblue; }
+
+#log{
+  max-width:900px;
+  margin:10px auto;
+  background:#111;
+  border:1px solid gold;
+  padding:10px;
+  min-height:80px;
+}
+
+#card{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+}
+#cardContent{
+  background:#111;
+  border:2px solid gold;
+  padding:20px;
+  max-width:400px;
+  font-size:22px;
+}
+#cardContent button{
+  margin-top:15px;
+  padding:10px 20px;
+  font-size:16px;
+}
+
+input.player-name{
+  margin:5px;
+  padding:5px 10px;
+  font-size:16px;
+}
+</style>
+</head>
+<body>
+
+<div id="ui">
+  <h1>Sex O Pol (18+)</h1>
+  <div>
+    <input class="player-name" id="name1" placeholder="Spiller 1">
+    <input class="player-name" id="name2" placeholder="Spiller 2">
+  </div>
+  <div id="dice">🎲 <span id="d1">-</span> + <span id="d2">-</span></div>
+  <button onclick="roll()">🎲 Kast terninger</button>
+</div>
+
+<div id="board">
+  <img src="board.png">
+  <div id="p1" class="token p1"></div>
+  <div id="p2" class="token p2"></div>
+</div>
+
+<div id="log"></div>
+
+<div id="card">
+  <div id="cardContent">
+    <div id="cardText"></div>
+    <button onclick="closeCard()">OK</button>
+  </div>
+</div>
+
+<script>
+// ===== DOM-henting =====
+const p1 = document.getElementById("p1");
+const p2 = document.getElementById("p2");
+const d1 = document.getElementById("d1");
+const d2 = document.getElementById("d2");
+const name1Input = document.getElementById("name1");
+const name2Input = document.getElementById("name2");
+const card = document.getElementById("card");
+const cardText = document.getElementById("cardText");
+
+// ===== BRETT-KOORDINATER (24 ruter) =====
+const tiles = [
+  {x:90,y:90,type:"lust"}, {x:200,y:90,type:"drink",amount:2}, {x:310,y:90,type:"nothing"}, {x:420,y:90,type:"dare"},
+  {x:530,y:90,type:"back",amount:2}, {x:640,y:90,type:"drink",amount:3}, {x:750,y:90,type:"lust"}, {x:860,y:90,type:"go_jail"},
+  {x:860,y:200,type:"nothing"}, {x:860,y:310,type:"drink",amount:2}, {x:860,y:420,type:"dare"}, {x:860,y:530,type:"back",amount:2},
+  {x:750,y:530,type:"nothing"}, {x:640,y:530,type:"drink",amount:1}, {x:530,y:530,type:"dare"}, {x:420,y:530,type:"nothing"},
+  {x:310,y:530,type:"drink",amount:2}, {x:200,y:530,type:"nothing"}, {x:90,y:530,type:"dare"}, {x:0,y:530,type:"lust"},
+  {x:0,y:420,type:"dare"}, {x:0,y:310,type:"nothing"}, {x:0,y:200,type:"drink",amount:2}, {x:0,y:90,type:"start"}
+];
+
+// ===== KORT =====
+const lustCards = [
+  "Kyss partneren i 20 sekunder", "Massér lårene i 1 minutt", "Hvisk noe skittent",
+  "Gjett favoritt reisemål – feil: drikk 2 slurker", "Stryk hendene på et valgfritt sted på partner i 30 sek",
+  "Si favoritt sexstilling", "Få et kyss et sted du velger", "Velg hvem som tar av et plagg",
+  "Klin i 30 sek – ta av partner 1 plagg", "Fortell hvor du ønsker å ha sex",
+  "Hva var mest attraktivt ved første møte?", "Stirr i øynene 30 sek mens du koser låret",
+  "Fortell favorittegenskaper", "Kyss halsen i 30 sek", "Nevn 2 ting som tenner deg", "Sitt i fanget til partner én runde"
+];
+
+const dareCards = [
+  "Ta av ett plagg", "Drikk 3 slurker", "La partneren velge neste kort",
+  "Slikk partner et sted du ønsker", "Tease i 40 sek – partner drikker 3 slurker",
+  "Stimuler partner nedentil i 30 sek", "Gi en lap dance i 40 sek",
+  "Hvis naken: valgfri stilling i 3 min – ellers 5 slurker",
+  "Bind for øynene – partner overrasker i 1 min", "Ta av 3 plagg og ta 2 slurker"
+];
+
+function draw(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+// ===== SPILLERE =====
+let players = [
+  {pos:0, el:p1, name:"Spiller 1"},
+  {pos:0, el:p2, name:"Spiller 2"}
+];
+let current = 0;
+let locked = false;
+
+// ===== FUNKSJONER =====
+function roll(){
+  if(locked) return;
+  locked = true;
+
+  // Oppdater navn fra input
+  players[0].name = name1Input.value || "Spiller 1";
+  players[1].name = name2Input.value || "Spiller 2";
+
+  let d1val = rand(6), d2val = rand(6);
+  d1.textContent = d1val;
+  d2.textContent = d2val;
+  log(`${players[current].name} kastet ${d1val + d2val}`);
+  move(d1val + d2val);
+}
+
+function move(steps){
+  let p = players[current];
+  let i = 0;
+  let stepAnim = setInterval(()=>{
+    p.pos = (p.pos + 1) % tiles.length;
+    place(p);
+    i++;
+    if(i >= steps){
+      clearInterval(stepAnim);
+      resolve(tiles[p.pos]);
+    }
+  }, 300);
+}
+
+function place
