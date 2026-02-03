@@ -93,10 +93,9 @@ input.player-name{
   <div>
     <input class="player-name" id="name1" placeholder="Spiller 1">
     <input class="player-name" id="name2" placeholder="Spiller 2">
-    <button id="setNamesBtn">OK</button>
   </div>
   <div id="dice">🎲 <span id="d1">-</span> + <span id="d2">-</span></div>
-  <button id="rollBtn">🎲 Kast terninger</button>
+  <button onclick="roll()">🎲 Kast terninger</button>
 </div>
 
 <div id="board">
@@ -124,8 +123,6 @@ const name1Input = document.getElementById("name1");
 const name2Input = document.getElementById("name2");
 const card = document.getElementById("card");
 const cardText = document.getElementById("cardText");
-const rollBtn = document.getElementById("rollBtn");
-const setNamesBtn = document.getElementById("setNamesBtn");
 
 // ===== BRETT-KOORDINATER (24 ruter) =====
 const tiles = [
@@ -166,23 +163,33 @@ let current = 0;
 let locked = false;
 
 // ===== FUNKSJONER =====
-
-// Oppdater navn-knapp
-setNamesBtn.onclick = () => {
-  players[0].name = name1Input.value || "Spiller 1";
-  players[1].name = name2Input.value || "Spiller 2";
-  log(`Spillere satt: ${players[0].name} og ${players[1].name}`);
-};
-
-// Terningkast
-rollBtn.onclick = roll;
-
 function roll(){
   if(locked) return;
   locked = true;
+
+  // Oppdater navn fra input
+  players[0].name = name1Input.value || "Spiller 1";
+  players[1].name = name2Input.value || "Spiller 2";
 
   let d1val = rand(6), d2val = rand(6);
   d1.textContent = d1val;
   d2.textContent = d2val;
   log(`${players[current].name} kastet ${d1val + d2val}`);
-  move(d1val + d2v
+  move(d1val + d2val);
+}
+
+function move(steps){
+  let p = players[current];
+  let i = 0;
+  let stepAnim = setInterval(()=>{
+    p.pos = (p.pos + 1) % tiles.length;
+    place(p);
+    i++;
+    if(i >= steps){
+      clearInterval(stepAnim);
+      resolve(tiles[p.pos]);
+    }
+  }, 300);
+}
+
+function place
