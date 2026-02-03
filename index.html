@@ -5,125 +5,223 @@
 <title>Sex O Pol (18+) – Espen Opsahl</title>
 
 <style>
-body {
+body{
   background:#000;
   color:#fff;
   font-family:Arial, sans-serif;
   text-align:center;
+  margin:0;
 }
-#board {
-  position:relative;
-  max-width:900px;
-  margin:auto;
-}
-#board img {
-  width:100%;
-}
-.token {
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  position:absolute;
-}
-.p1 { background:pink; }
-.p2 { background:lightblue; }
+h1{ margin:10px 0 0; }
 
-#controls button {
-  padding:10px 20px;
-  font-size:16px;
+#ui{
+  position:sticky;
+  top:0;
+  background:#000;
+  z-index:20;
+  padding:10px;
+  border-bottom:1px solid gold;
+}
+
+#dice{
+  font-size:32px;
   margin:10px;
 }
-#log {
+
+#board{
+  position:relative;
   max-width:900px;
-  margin:auto;
+  margin:10px auto;
+}
+#board img{
+  width:100%;
+}
+
+.token{
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  position:absolute;
+  transform:translate(-50%,-50%);
+  transition:0.5s ease;
+  z-index:5;
+}
+.p1{ background:pink; }
+.p2{ background:lightblue; }
+
+#log{
+  max-width:900px;
+  margin:10px auto;
   background:#111;
   border:1px solid gold;
   padding:10px;
+  min-height:80px;
+}
+
+#card{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+}
+#cardContent{
+  background:#111;
+  border:2px solid gold;
+  padding:20px;
+  max-width:400px;
+  font-size:22px;
+}
+#cardContent button{
+  margin-top:15px;
+  padding:10px 20px;
+  font-size:16px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Sex O Pol (18+)</h1>
-<p>made by Espen Opsahl</p>
+<div id="ui">
+  <h1>Sex O Pol (18+)</h1>
+  <div id="dice">🎲 <span id="d1">-</span> + <span id="d2">-</span></div>
+  <button onclick="roll()">🎲 Kast terninger</button>
+</div>
 
 <div id="board">
-  <!-- LEGG BRETT-BILDET HER -->
-  <img src="board.png" alt="Sex O Pol">
+  <img src="board.png">
   <div id="p1" class="token p1"></div>
   <div id="p2" class="token p2"></div>
 </div>
 
-<div id="controls">
-  <button onclick="roll()">🎲 Kast terninger</button>
-</div>
-
 <div id="log"></div>
 
+<div id="card">
+  <div id="cardContent">
+    <div id="cardText"></div>
+    <button onclick="closeCard()">OK</button>
+  </div>
+</div>
+
 <script>
-// ==== DATA ====
-const board = [...];        // (bruk rutelista over)
-const lustCards = [...];
-const dareCards = [...];
-
-// ==== SPILLERE ====
-let players = [
-  { pos:0, points:0, passes:0, jail:false, jailTries:0, skip:false },
-  { pos:0, points:0, passes:0, jail:false, jailTries:0, skip:false }
+// ===== BRETT-KOORDINATER (tilpass til bildet ditt) =====
+const tiles = [
+  {x:90,y:90,type:"start"},
+  {x:200,y:90,type:"lust"},
+  {x:310,y:90,type:"drink",amount:2},
+  {x:420,y:90,type:"dare"},
+  {x:530,y:90,type:"parking"},
+  {x:530,y:200,type:"lust"},
+  {x:530,y:310,type:"drink",amount:3},
+  {x:530,y:420,type:"dare"},
+  {x:420,y:420,type:"back",amount:2},
+  {x:310,y:420,type:"lust"},
+  {x:200,y:420,type:"drink",amount:2},
+  {x:90,y:420,type:"dare"},
+  {x:90,y:310,type:"go_jail"},
+  {x:90,y:200,type:"lust"}
 ];
-let current = 0;
 
-// ==== FUNKSJONER ====
+// ===== KORT =====
+const lustCards=[
+  "Kyss partneren i 20 sekunder",
+  "Massér lårene i 1 minutt",
+  "Hvisk noe skittent"
+];
+const dareCards=[
+  "Ta av ett plagg",
+  "Drikk 3 slurker",
+  "La partneren velge neste kort"
+];
+
+// ===== SPILLERE =====
+let players=[
+  {pos:0,el:p1},
+  {pos:0,el:p2}
+];
+let current=0;
+let locked=false;
+
+// ===== FUNKSJONER =====
 function roll(){
-  let p = players[current];
-  if(p.skip){ log("Gratis parkering – tur hoppet over"); p.skip=false; next(); return; }
+  if(locked) return;
+  locked=true;
 
-  let d1 = rand(6), d2 = rand(6);
-  log(`Spiller ${current+1} kastet ${d1} + ${d2}`);
+  let d1el=d1,d2el=d2;
+  let anim=setInterval(()=>{
+    d1el.textContent=rand(6);
+    d2el.textContent=rand(6);
+  },100);
 
-  if(p.jail){
-    if(d1===6 || d2===6){
-      p.jail=false; p.jailTries=0; log("Ut av fengsel!");
-    } else {
-      p.jailTries++; log("Ikke sekser – drikk 2 slurker");
-      next(); return;
-    }
-  }
-
-  move(d1+d2);
-  if(d1===d2){ log("Like terninger – kast igjen!"); return; }
-  next();
+  setTimeout(()=>{
+    clearInterval(anim);
+    let d1v=rand(6), d2v=rand(6);
+    d1el.textContent=d1v;
+    d2el.textContent=d2v;
+    log(`Spiller ${current+1} kastet ${d1v+d2v}`);
+    move(d1v+d2v);
+  },800);
 }
 
 function move(steps){
-  let p = players[current];
-  p.pos += steps;
-  if(p.pos >= board.length){
-    p.pos %= board.length;
-    p.passes++;
-    log(`Passerte Start (${p.passes}/6)`);
-    if(p.passes >= 6) alert(`🎉 Spiller ${current+1} vinner!`);
-  }
-  resolve(board[p.pos]);
+  let p=players[current];
+  let i=0;
+  let stepAnim=setInterval(()=>{
+    p.pos=(p.pos+1)%tiles.length;
+    place(p);
+    i++;
+    if(i>=steps){
+      clearInterval(stepAnim);
+      resolve(tiles[p.pos]);
+    }
+  },400);
+}
+
+function place(p){
+  let t=tiles[p.pos];
+  p.el.style.left=t.x+"px";
+  p.el.style.top=t.y+"px";
 }
 
 function resolve(tile){
-  if(tile.type==="lust") log("⭐ "+draw(lustCards));
-  if(tile.type==="dare") log("🔥 "+draw(dareCards));
-  if(tile.type==="choice") log("Velg selv kort");
-  if(tile.type==="points") log(`Få ${tile.amount} poeng`);
-  if(tile.type==="drink") log(`Ta ${tile.amount} slurker`);
-  if(tile.type==="give_points") log("Gi poeng til partner");
-  if(tile.type==="parking") players[current].skip=true;
-  if(tile.type==="go_jail"){ players[current].jail=true; players[current].pos=5; }
-  if(tile.type==="back"){ players[current].pos -= tile.amount; }
+  if(tile.type==="lust") showCard("⭐ Lust",draw(lustCards));
+  else if(tile.type==="dare") showCard("🔥 Dare",draw(dareCards));
+  else if(tile.type==="drink") showCard("🍺 Drikk",`Ta ${tile.amount} slurker`);
+  else if(tile.type==="go_jail") showCard("🚓 Fengsel","Gå rett i fengsel!");
+  else if(tile.type==="back"){
+    showCard("⬅ Tilbake",`Gå ${tile.amount} ruter tilbake`);
+    players[current].pos-=tile.amount;
+    place(players[current]);
+  }
+  else endTurn();
 }
 
-function draw(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function showCard(title,text){
+  cardText.innerHTML=`<h2>${title}</h2><p>${text}</p>`;
+  card.style.display="flex";
+}
+
+function closeCard(){
+  card.style.display="none";
+  endTurn();
+}
+
+function endTurn(){
+  current=(current+1)%2;
+  locked=false;
+}
+
+function draw(a){ return a[Math.floor(Math.random()*a.length)]; }
 function rand(n){ return Math.floor(Math.random()*n)+1; }
-function log(t){ document.getElementById("log").innerHTML="<p>"+t+"</p>"+log.innerHTML; }
-function next(){ current = (current+1)%2; }
+function log(t){
+  let l=document.getElementById("log");
+  l.innerHTML="<p>"+t+"</p>"+l.innerHTML;
+}
+
+// startpos
+players.forEach(place);
 </script>
 </body>
-</html>
+</html> 
