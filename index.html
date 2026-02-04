@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Sex O Pol (18+)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{
   background:#000;
@@ -22,9 +23,35 @@ h1{ margin:10px 0 0; }
   border-bottom:1px solid gold;
 }
 
+#topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.score{
+  border:1px solid gold;
+  padding:8px 14px;
+  font-size:18px;
+  min-width:120px;
+}
+
 #dice{
-  font-size:32px;
+  font-size:36px;
   margin:10px;
+}
+
+button{
+  font-size:22px;
+  padding:16px 30px;
+  border-radius:12px;
+  border:none;
+  background:gold;
+  color:#000;
+  cursor:pointer;
+}
+button:active{
+  transform:scale(0.95);
 }
 
 #board{
@@ -89,7 +116,18 @@ input.player-name{
 <body>
 
 <div id="ui">
+  <div id="topbar">
+    <div class="score" id="score1">Spiller 1: 0 ⭐</div>
+    <div class="score" id="score2">Spiller 2: 0 ⭐</div>
+  </div>
+
   <h1>Sex O Pol (18+)</h1>
+
+  <!-- ⭐ NYTT: TUR-INDIKATOR -->
+  <div id="turnIndicator" style="margin:6px;font-size:18px;">
+    ➡️ Din tur: Spiller 1
+  </div>
+
   <div>
     <input class="player-name" id="name1" placeholder="Spiller 1">
     <input class="player-name" id="name2" placeholder="Spiller 2">
@@ -114,7 +152,7 @@ input.player-name{
 </div>
 
 <script>
-// ===== DOM-henting =====
+// ===== DOM =====
 const p1 = document.getElementById("p1");
 const p2 = document.getElementById("p2");
 const d1 = document.getElementById("d1");
@@ -123,66 +161,141 @@ const name1Input = document.getElementById("name1");
 const name2Input = document.getElementById("name2");
 const card = document.getElementById("card");
 const cardText = document.getElementById("cardText");
+const score1 = document.getElementById("score1");
+const score2 = document.getElementById("score2");
+const turnIndicator = document.getElementById("turnIndicator"); // ⭐ NYTT
 
-// ===== BRETT-KOORDINATER (24 ruter) =====
+// ===== BRETT =====
+const JAIL_POS = 20;
+
 const tiles = [
-  {x:90,y:90,type:"lust"}, {x:200,y:90,type:"drink",amount:2}, {x:310,y:90,type:"nothing"}, {x:420,y:90,type:"dare"},
+  {x:90,y:90,type:"lust"}, {x:200,y:90,type:"drink",amount:2}, {x:310,y:90,type:"nothing"}, {x:420,y:90,type:"2points"},
   {x:530,y:90,type:"back",amount:2}, {x:640,y:90,type:"drink",amount:3}, {x:750,y:90,type:"lust"}, {x:860,y:90,type:"go_jail"},
   {x:860,y:200,type:"nothing"}, {x:860,y:310,type:"drink",amount:2}, {x:860,y:420,type:"dare"}, {x:860,y:530,type:"back",amount:2},
-  {x:750,y:530,type:"nothing"}, {x:640,y:530,type:"drink",amount:1}, {x:530,y:530,type:"dare"}, {x:420,y:530,type:"nothing"},
-  {x:310,y:530,type:"drink",amount:2}, {x:200,y:530,type:"nothing"}, {x:90,y:530,type:"dare"}, {x:0,y:530,type:"lust"},
-  {x:0,y:420,type:"dare"}, {x:0,y:310,type:"nothing"}, {x:0,y:200,type:"drink",amount:2}, {x:0,y:90,type:"start"}
+  {x:750,y:530,type:"nothing"}, {x:640,y:530,type:"drink",amount:1}, {x:530,y:530,type:"dare"}, {x:420,y:530,type:"2points"},
+  {x:310,y:530,type:"drink",amount:2}, {x:200,y:530,type:"nothing"}, {x:90,y:530,type:"dare"},
+  {x:0,y:530,type:"jail"},
+  {x:0,y:420,type:"2points"}, {x:0,y:310,type:"nothing"}, {x:0,y:200,type:"drink",amount:2}, {x:0,y:90,type:"start"}
 ];
 
 // ===== KORT =====
 const lustCards = [
-  "Kyss partneren i 20 sekunder", "Massér lårene i 1 minutt", "Hvisk noe skittent",
-  "Gjett favoritt reisemål – feil: drikk 2 slurker", "Stryk hendene på et valgfritt sted på partner i 30 sek",
-  "Si favoritt sexstilling", "Få et kyss et sted du velger", "Velg hvem som tar av et plagg",
-  "Klin i 30 sek – ta av partner 1 plagg", "Fortell hvor du ønsker å ha sex",
-  "Hva var mest attraktivt ved første møte?", "Stirr i øynene 30 sek mens du koser låret",
-  "Fortell favorittegenskaper", "Kyss halsen i 30 sek", "Nevn 2 ting som tenner deg", "Sitt i fanget til partner én runde"
+  "Kyss partneren i 20 sekunder","Massér lårene i 1 minutt","Hvisk noe skittent",
+  "Gjett favoritt reisemål – feil: drikk 2 slurker","Stryk hendene på et valgfritt sted på partner i 30 sek",
+  "Si favoritt sexstilling","Få et kyss et sted du velger","Velg hvem som tar av et plagg",
+  "Klin i 30 sek – ta av partner 1 plagg","Fortell hvor du ønsker å ha sex",
+  "Hva var mest attraktivt ved første møte?","Stirr i øynene 30 sek mens du koser låret",
+  "Fortell favorittegenskaper","Kyss halsen i 30 sek","Nevn 2 ting som tenner deg","Sitt i fanget til partner én runde"
 ];
 
 const dareCards = [
-  "Ta av ett plagg", "Drikk 3 slurker", "La partneren velge neste kort",
-  "Slikk partner et sted du ønsker", "Tease i 40 sek – partner drikker 3 slurker",
-  "Stimuler partner nedentil i 30 sek", "Gi en lap dance i 40 sek",
+  "Ta av ett plagg","Drikk 3 slurker","La partneren velge neste kort",
+  "Slikk partner et sted du ønsker","Tease i 40 sek – partner drikker 3 slurker",
+  "Stimuler partner nedentil i 30 sek","Gi en lap dance i 40 sek",
   "Hvis naken: valgfri stilling i 3 min – ellers 5 slurker",
-  "Bind for øynene – partner overrasker i 1 min", "Ta av 3 plagg og ta 2 slurker"
+  "Bind for øynene – partner overrasker i 1 min","Ta av 3 plagg og ta 2 slurker"
 ];
 
-function draw(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
+function draw(arr){ return arr[Math.
 // ===== SPILLERE =====
 let players = [
-  {pos:0, el:p1, name:"Spiller 1"},
-  {pos:0, el:p2, name:"Spiller 2"}
+  {pos:0, el:p1, name:"Spiller 1", jailed:false, jailAttempts:0, points:0, laps:0}, // ⭐ NYTT
+  {pos:0, el:p2, name:"Spiller 2", jailed:false, jailAttempts:0, points:0, laps:0}  // ⭐ NYTT
 ];
 let current = 0;
 let locked = false;
+let winner = null; // ⭐ NYTT
 
-// ===== FUNKSJONER =====
+// ===== UI =====
+function updateScores(){
+  score1.textContent = `${players[0].name}: ${players[0].points} ⭐`;
+  score2.textContent = `${players[1].name}: ${players[1].points} ⭐`;
+}
+
+// ⭐ NYTT: OPPDATER TURVISNING
+function updateTurnIndicator(){
+  if(winner){
+    turnIndicator.textContent = `🏆 Vinner: ${winner.name}`;
+  } else {
+    turnIndicator.textContent = `➡️ Din tur: ${players[current].name}`;
+  }
+}
+
+// ===== TERNING =====
+function animateDice(cb){
+  let rolls = 10;
+  let interval = setInterval(()=>{
+    d1.textContent = rand(6);
+    d2.textContent = rand(6);
+    rolls--;
+    if(rolls <= 0){
+      clearInterval(interval);
+      cb();
+    }
+  }, 80);
+}
+
+// ===== SPILL =====
 function roll(){
-  if(locked) return;
+  if(locked || winner) return;
   locked = true;
 
-  // Oppdater navn fra input
   players[0].name = name1Input.value || "Spiller 1";
   players[1].name = name2Input.value || "Spiller 2";
+  updateScores();
+  updateTurnIndicator(); // ⭐ NYTT
 
-  let d1val = rand(6), d2val = rand(6);
-  d1.textContent = d1val;
-  d2.textContent = d2val;
-  log(`${players[current].name} kastet ${d1val + d2val}`);
-  move(d1val + d2val);
+  animateDice(()=>{
+    let d1val = rand(6), d2val = rand(6);
+    d1.textContent = d1val;
+    d2.textContent = d2val;
+
+    let p = players[current];
+
+    if(p.jailed){
+      if(d1val === 6 || d2val === 6){
+        p.jailed = false;
+        p.jailAttempts = 0;
+        move(d1val + d2val);
+      } else {
+        p.jailAttempts++;
+        if(p.jailAttempts === 1) showCard("🚓 Fengsel","Ingen 6 – ta 2 slurker");
+        else if(p.jailAttempts === 2) showCard("🚓 Fengsel","Ingen 6 – ta 4 slurker");
+        else{
+          p.jailed = false;
+          p.jailAttempts = 0;
+          move(d1val + d2val);
+          return;
+        }
+        endTurn();
+      }
+      return;
+    }
+
+    move(d1val + d2val);
+  });
 }
 
 function move(steps){
   let p = players[current];
   let i = 0;
+
   let stepAnim = setInterval(()=>{
+    let oldPos = p.pos;
     p.pos = (p.pos + 1) % tiles.length;
+
+    if(oldPos === tiles.length - 1 && p.pos === 0){
+      p.laps++;
+      if(p.laps === 6 && !winner){
+        winner = p;
+        showCard("🎆 Gratulerer!", `${p.name}, du har vunnet – gratulerer!🎆`);
+        locked = true;
+        clearInterval(stepAnim);
+        updateTurnIndicator(); // ⭐ NYTT
+        return;
+      }
+    }
+
     place(p);
     i++;
     if(i >= steps){
@@ -191,7 +304,8 @@ function move(steps){
     }
   }, 300);
 }
-  function place(p){
+
+function place(p){
   let t = tiles[p.pos];
   p.el.style.left = t.x + "px";
   p.el.style.top = t.y + "px";
@@ -199,23 +313,32 @@ function move(steps){
 
 function resolve(tile){
   let p = players[current];
-  if(tile.type === "lust"){
-    showCard("⭐ Lust", draw(lustCards));
-  } else if(tile.type === "dare"){
-    showCard("🔥 Dare", draw(dareCards));
-  } else if(tile.type === "drink"){
-    showCard("🍺 Drikk", `Ta ${tile.amount} slurker`);
-  } else if(tile.type === "back"){
+
+  if(tile.type === "go_jail"){
+    p.pos = JAIL_POS;
+    p.jailed = true;
+    p.jailAttempts = 0;
+    place(p);
+    showCard("🚓 Fengsel","Du sendes rett i fengsel!");
+    return;
+  }
+
+  if(tile.type === "2points"){
+    p.points += 2;
+    updateScores();
+    showCard("⭐ Poeng", "Du får 2 poeng!<br><br>3p = 2 slurker<br>4p = Massasje<br>7p = Ta av plagg");
+    return;
+  }
+
+  if(tile.type === "lust") showCard("⭐ Lust", draw(lustCards));
+  else if(tile.type === "dare") showCard("🔥 Dare", draw(dareCards));
+  else if(tile.type === "drink") showCard("🍺 Drikk", `Ta ${tile.amount} slurker`);
+  else if(tile.type === "back"){
     showCard("⬅ Tilbake", `Gå ${tile.amount} ruter tilbake`);
     p.pos -= tile.amount;
     if(p.pos < 0) p.pos += tiles.length;
     place(p);
-  } else if(tile.type === "go_jail"){
-    showCard("🚓 Fengsel","Gå rett i fengsel!");
-  } else {
-    // nothing/start
-    endTurn();
-  }
+  } else endTurn();
 }
 
 function showCard(title,text){
@@ -229,19 +352,17 @@ function closeCard(){
 }
 
 function endTurn(){
+  if(winner) return;
   current = (current + 1) % 2;
   locked = false;
+  updateTurnIndicator(); // ⭐ NYTT
 }
 
 function rand(n){ return Math.floor(Math.random()*n)+1; }
 
-function log(msg){
-  const l = document.getElementById("log");
-  l.innerHTML = `<p>${msg}</p>` + l.innerHTML;
-}
-
-// startpos
 players.forEach(place);
+updateScores();
+updateTurnIndicator(); // ⭐ NYTT
 </script>
 </body>
 </html>
