@@ -111,6 +111,11 @@ input.player-name{
   padding:5px 10px;
   font-size:16px;
 }
+
+#turnIndicator{
+  margin-top:10px;
+  font-size:20px;
+}
 </style>
 </head>
 <body>
@@ -122,18 +127,15 @@ input.player-name{
   </div>
 
   <h1>Sex O Pol (18+)</h1>
-
-  <!-- ⭐ NYTT: TUR-INDIKATOR -->
-  <div id="turnIndicator" style="margin:6px;font-size:18px;">
-    ➡️ Din tur: Spiller 1
-  </div>
-
   <div>
     <input class="player-name" id="name1" placeholder="Spiller 1">
     <input class="player-name" id="name2" placeholder="Spiller 2">
   </div>
   <div id="dice">🎲 <span id="d1">-</span> + <span id="d2">-</span></div>
   <button onclick="roll()">🎲 Kast terninger</button>
+
+  <!-- Nytt: Turn-indikator -->
+  <div id="turnIndicator">➡️ Din tur: Spiller 1</div>
 </div>
 
 <div id="board">
@@ -163,9 +165,8 @@ const card = document.getElementById("card");
 const cardText = document.getElementById("cardText");
 const score1 = document.getElementById("score1");
 const score2 = document.getElementById("score2");
-const turnIndicator = document.getElementById("turnIndicator"); // ⭐ NYTT
-
-// ===== BRETT =====
+const turnIndicator = document.getElementById("turnIndicator"); // NYTT
+  // ===== BRETT =====
 const JAIL_POS = 20;
 
 const tiles = [
@@ -196,15 +197,16 @@ const dareCards = [
   "Bind for øynene – partner overrasker i 1 min","Ta av 3 plagg og ta 2 slurker"
 ];
 
-function draw(arr){ return arr[Math.
+function draw(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
 // ===== SPILLERE =====
 let players = [
-  {pos:0, el:p1, name:"Spiller 1", jailed:false, jailAttempts:0, points:0, laps:0}, // ⭐ NYTT
-  {pos:0, el:p2, name:"Spiller 2", jailed:false, jailAttempts:0, points:0, laps:0}  // ⭐ NYTT
+  {pos:0, el:p1, name:"Spiller 1", jailed:false, jailAttempts:0, points:0, laps:0},
+  {pos:0, el:p2, name:"Spiller 2", jailed:false, jailAttempts:0, points:0, laps:0}
 ];
 let current = 0;
 let locked = false;
-let winner = null; // ⭐ NYTT
+let winner = null; // NYTT
 
 // ===== UI =====
 function updateScores(){
@@ -212,7 +214,7 @@ function updateScores(){
   score2.textContent = `${players[1].name}: ${players[1].points} ⭐`;
 }
 
-// ⭐ NYTT: OPPDATER TURVISNING
+// NYTT: Turindikator
 function updateTurnIndicator(){
   if(winner){
     turnIndicator.textContent = `🏆 Vinner: ${winner.name}`;
@@ -243,7 +245,7 @@ function roll(){
   players[0].name = name1Input.value || "Spiller 1";
   players[1].name = name2Input.value || "Spiller 2";
   updateScores();
-  updateTurnIndicator(); // ⭐ NYTT
+  updateTurnIndicator(); // NYTT
 
   animateDice(()=>{
     let d1val = rand(6), d2val = rand(6);
@@ -291,7 +293,7 @@ function move(steps){
         showCard("🎆 Gratulerer!", `${p.name}, du har vunnet – gratulerer!🎆`);
         locked = true;
         clearInterval(stepAnim);
-        updateTurnIndicator(); // ⭐ NYTT
+        updateTurnIndicator(); // NYTT
         return;
       }
     }
@@ -355,14 +357,14 @@ function endTurn(){
   if(winner) return;
   current = (current + 1) % 2;
   locked = false;
-  updateTurnIndicator(); // ⭐ NYTT
+  updateTurnIndicator(); // NYTT
 }
 
 function rand(n){ return Math.floor(Math.random()*n)+1; }
 
 players.forEach(place);
 updateScores();
-updateTurnIndicator(); // ⭐ NYTT
+updateTurnIndicator(); // NYTT
 </script>
 </body>
 </html>
