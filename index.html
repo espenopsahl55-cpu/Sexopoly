@@ -2,166 +2,135 @@
 <html lang="no">
 <head>
 <meta charset="UTF-8">
-<title>Sex O Pol (18+)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sex o Pol</title>
+
 <style>
 body{
-  background:#000;
-  color:#fff;
-  font-family:Arial, sans-serif;
-  text-align:center;
   margin:0;
-}
-h1{ margin:10px 0 0; }
-
-#ui{
-  position:sticky;
-  top:0;
   background:#000;
-  z-index:20;
-  padding:10px;
-  border-bottom:1px solid gold;
-}
-
-#topbar{
+  font-family: Arial, sans-serif;
+  color:white;
   display:flex;
-  justify-content:space-between;
-  align-items:center;
+  justify-content:center;
+  align-items:flex-start;
 }
 
-.score{
-  border:1px solid gold;
-  padding:8px 14px;
-  font-size:18px;
-  min-width:120px;
+/* ===== LAYOUT ===== */
+#gameWrapper{
+  display:flex;
+  gap:20px;
+  margin-top:10px;
 }
 
-#dice{
-  font-size:36px;
-  margin:10px;
+/* ===== BRETT ===== */
+#board{
+  position:relative;
+  width:950px;
+  height:620px;
+  background:url("board.png") center/contain no-repeat;
+}
+
+/* ===== SPILLERBRIKKER ===== */
+.player{
+  position:absolute;
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  transition:left 0.25s linear, top 0.25s linear;
+}
+#p1{background:#ff4d4d;}
+#p2{background:#4da6ff;}
+
+/* ===== SIDE UI ===== */
+#sideUI{
+  width:260px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+input, button{
+  padding:6px;
+  font-size:14px;
 }
 
 button{
-  font-size:22px;
-  padding:16px 30px;
-  border-radius:12px;
-  border:none;
-  background:gold;
-  color:#000;
   cursor:pointer;
 }
-button:active{
-  transform:scale(0.95);
+
+#dice{
+  display:flex;
+  gap:10px;
+  font-size:28px;
 }
 
-#board{
-  position:relative;
-  width:900px;
-  height:600px;
-  margin:10px auto;
-}
-#board img{
-  width:100%;
-  height:100%;
+#scores{
+  font-size:16px;
 }
 
-.token{
-  width:20px;
-  height:20px;
-  border-radius:50%;
-  position:absolute;
-  transform:translate(-50%,-50%);
-  transition:0.5s ease;
-  z-index:5;
-}
-.p1{ background:pink; }
-.p2{ background:lightblue; }
-
-#log{
-  max-width:900px;
-  margin:10px auto;
-  background:#111;
-  border:1px solid gold;
-  padding:10px;
-  min-height:80px;
+#turnIndicator{
+  font-weight:bold;
 }
 
+/* ===== KORT ===== */
 #card{
   position:fixed;
   inset:0;
   background:rgba(0,0,0,0.85);
   display:none;
-  align-items:center;
   justify-content:center;
-  z-index:50;
-}
-#cardContent{
-  background:#111;
-  border:2px solid gold;
-  padding:20px;
-  max-width:400px;
-  font-size:22px;
-}
-#cardContent button{
-  margin-top:15px;
-  padding:10px 20px;
-  font-size:16px;
+  align-items:center;
 }
 
-input.player-name{
-  margin:5px;
-  padding:5px 10px;
-  font-size:16px;
+#cardContent{
+  background:#111;
+  padding:20px;
+  max-width:420px;
+  text-align:center;
+  border-radius:10px;
 }
 </style>
 </head>
+
 <body>
 
-<div id="ui">
-  <div id="topbar">
-    <div class="score" id="score1">Spiller 1: 0 ⭐</div>
-    <div class="score" id="score2">Spiller 2: 0 ⭐</div>
+<div id="gameWrapper">
+
+  <div id="board">
+    <div id="p1" class="player"></div>
+    <div id="p2" class="player"></div>
   </div>
 
-  <h1>Sex O Pol (18+)</h1>
-  <div>
-    <input class="player-name" id="name1" placeholder="Spiller 1">
-    <input class="player-name" id="name2" placeholder="Spiller 2">
+  <div id="sideUI">
+    <input id="name1Input" placeholder="Spiller 1">
+    <input id="name2Input" placeholder="Spiller 2">
+
+    <div id="scores">
+      <div id="score1"></div>
+      <div id="score2"></div>
+    </div>
+
+    <div id="turnIndicator"></div>
+
+    <div id="dice">
+      <div id="d1">🎲</div>
+      <div id="d2">🎲</div>
+    </div>
+
+    <button onclick="roll()">Kast terning</button>
   </div>
-  <div id="dice">🎲 <span id="d1">-</span> + <span id="d2">-</span></div>
-  <button onclick="roll()">🎲 Kast terninger</button>
-  <div id="turnIndicator">➡️ Din tur: Spiller 1</div>
+
 </div>
 
-<div id="board">
-  <img src="board.png">
-  <div id="p1" class="token p1"></div>
-  <div id="p2" class="token p2"></div>
-</div>
-
-<div id="log"></div>
-
-<div id="card">
+<!-- ===== KORT ===== -->
+<div id="card" onclick="closeCard()">
   <div id="cardContent">
     <div id="cardText"></div>
-    <button onclick="closeCard()">OK</button>
+    <p><small>(Klikk for å fortsette)</small></p>
   </div>
 </div>
 
 <script>
-  // ===== DOM =====
-const p1 = document.getElementById("p1");
-const p2 = document.getElementById("p2");
-const d1 = document.getElementById("d1");
-const d2 = document.getElementById("d2");
-const name1Input = document.getElementById("name1");
-const name2Input = document.getElementById("name2");
-const card = document.getElementById("card");
-const cardText = document.getElementById("cardText");
-const score1 = document.getElementById("score1");
-const score2 = document.getElementById("score2");
-const turnIndicator = document.getElementById("turnIndicator");
-
 // ===== BRETT =====
 const JAIL_POS = 20;
 
@@ -211,28 +180,28 @@ function updateScores(){
 }
 
 function updateTurnIndicator(){
-  if(winner){
-    turnIndicator.textContent = `🏆 Vinner: ${winner.name}`;
-  } else {
-    turnIndicator.textContent = `➡️ Din tur: ${players[current].name}`;
-  }
+  turnIndicator.textContent = winner
+    ? `🏆 Vinner: ${winner.name}`
+    : `➡️ Din tur: ${players[current].name}`;
 }
+
 // ===== TERNING =====
 function animateDice(cb){
   let rolls = 10;
-  let finalD1 = 0;
-  let finalD2 = 0;
+  let last1 = 1, last2 = 1;
+
   let interval = setInterval(()=>{
-    finalD1 = rand(6);
-    finalD2 = rand(6);
-    d1.textContent = finalD1;
-    d2.textContent = finalD2;
+    last1 = rand(6);
+    last2 = rand(6);
+    d1.textContent = last1;
+    d2.textContent = last2;
     rolls--;
+
     if(rolls <= 0){
       clearInterval(interval);
-      cb(finalD1, finalD2);
+      cb(last1, last2);
     }
-  }, 80);
+  },80);
 }
 
 // ===== SPILL =====
@@ -245,7 +214,7 @@ function roll(){
   updateScores();
   updateTurnIndicator();
 
-  animateDice((d1val, d2val)=>{
+  animateDice((d1val,d2val)=>{
     let p = players[current];
 
     if(p.jailed){
@@ -255,14 +224,7 @@ function roll(){
         move(d1val + d2val);
       } else {
         p.jailAttempts++;
-        if(p.jailAttempts === 1) showCard("🚓 Fengsel","Ingen 6 – ta 2 slurker");
-        else if(p.jailAttempts === 2) showCard("🚓 Fengsel","Ingen 6 – ta 4 slurker");
-        else{
-          p.jailed = false;
-          p.jailAttempts = 0;
-          move(d1val + d2val);
-          return;
-        }
+        showCard("🚓 Fengsel",`Ingen 6 – ta ${p.jailAttempts*2} slurker`);
         endTurn();
       }
       return;
@@ -280,12 +242,11 @@ function move(steps){
     let oldPos = p.pos;
     p.pos = (p.pos + 1) % tiles.length;
 
-    if(oldPos === tiles.length - 1 && p.pos === 0){
+    if(oldPos === tiles.length-1 && p.pos === 0){
       p.laps++;
       if(p.laps === 6 && !winner){
         winner = p;
-        showCard("🎆 Gratulerer!", `${p.name}, du har vunnet – gratulerer!🎆`);
-        locked = true;
+        showCard("🎆 Gratulerer!",`${p.name} har vunnet!`);
         clearInterval(stepAnim);
         updateTurnIndicator();
         return;
@@ -298,7 +259,7 @@ function move(steps){
       clearInterval(stepAnim);
       resolve(tiles[p.pos]);
     }
-  }, 300);
+  },300);
 }
 
 function place(p){
@@ -322,23 +283,22 @@ function resolve(tile){
   if(tile.type === "2points"){
     p.points += 2;
     updateScores();
-    showCard("⭐ Poeng", "Du får 2 poeng!<br><br>3p = 2 slurker<br>4p = Massasje<br>7p = Ta av plagg");
+    showCard("⭐ Poeng","Du får 2 poeng!");
     return;
   }
 
   if(tile.type === "lust") showCard("⭐ Lust", draw(lustCards));
   else if(tile.type === "dare") showCard("🔥 Dare", draw(dareCards));
-  else if(tile.type === "drink") showCard("🍺 Drikk", `Ta ${tile.amount} slurker`);
+  else if(tile.type === "drink") showCard("🍺 Drikk",`Ta ${tile.amount} slurker`);
   else if(tile.type === "back"){
-    showCard("⬅ Tilbake", `Gå ${tile.amount} ruter tilbake`);
-    p.pos -= tile.amount;
-    if(p.pos < 0) p.pos += tiles.length;
+    showCard("⬅ Tilbake",`Gå ${tile.amount} ruter tilbake`);
+    p.pos = (p.pos - tile.amount + tiles.length) % tiles.length;
     place(p);
   } else endTurn();
 }
 
 function showCard(title,text){
-  cardText.innerHTML=`<h2>${title}</h2><p>${text}</p>`;
+  cardText.innerHTML = `<h2>${title}</h2><p>${text}</p>`;
   card.style.display="flex";
 }
 
@@ -349,16 +309,18 @@ function closeCard(){
 
 function endTurn(){
   if(winner) return;
-  current = (current + 1) % 2;
+  current = (current+1)%2;
   locked = false;
   updateTurnIndicator();
 }
 
 function rand(n){ return Math.floor(Math.random()*n)+1; }
 
+// INIT
 players.forEach(place);
 updateScores();
 updateTurnIndicator();
 </script>
+
 </body>
 </html>
