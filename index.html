@@ -56,11 +56,13 @@ button:active{
 
 #board{
   position:relative;
-  max-width:900px;
+  width:900px;
+  height:600px;
   margin:10px auto;
 }
 #board img{
   width:100%;
+  height:100%;
 }
 
 .token{
@@ -111,11 +113,6 @@ input.player-name{
   padding:5px 10px;
   font-size:16px;
 }
-
-#turnIndicator{
-  margin-top:10px;
-  font-size:20px;
-}
 </style>
 </head>
 <body>
@@ -133,8 +130,6 @@ input.player-name{
   </div>
   <div id="dice">🎲 <span id="d1">-</span> + <span id="d2">-</span></div>
   <button onclick="roll()">🎲 Kast terninger</button>
-
-  <!-- Nytt: Turn-indikator -->
   <div id="turnIndicator">➡️ Din tur: Spiller 1</div>
 </div>
 
@@ -154,7 +149,7 @@ input.player-name{
 </div>
 
 <script>
-// ===== DOM =====
+  // ===== DOM =====
 const p1 = document.getElementById("p1");
 const p2 = document.getElementById("p2");
 const d1 = document.getElementById("d1");
@@ -165,8 +160,9 @@ const card = document.getElementById("card");
 const cardText = document.getElementById("cardText");
 const score1 = document.getElementById("score1");
 const score2 = document.getElementById("score2");
-const turnIndicator = document.getElementById("turnIndicator"); // NYTT
-  // ===== BRETT =====
+const turnIndicator = document.getElementById("turnIndicator");
+
+// ===== BRETT =====
 const JAIL_POS = 20;
 
 const tiles = [
@@ -206,7 +202,7 @@ let players = [
 ];
 let current = 0;
 let locked = false;
-let winner = null; // NYTT
+let winner = null;
 
 // ===== UI =====
 function updateScores(){
@@ -214,7 +210,6 @@ function updateScores(){
   score2.textContent = `${players[1].name}: ${players[1].points} ⭐`;
 }
 
-// NYTT: Turindikator
 function updateTurnIndicator(){
   if(winner){
     turnIndicator.textContent = `🏆 Vinner: ${winner.name}`;
@@ -222,17 +217,20 @@ function updateTurnIndicator(){
     turnIndicator.textContent = `➡️ Din tur: ${players[current].name}`;
   }
 }
-
 // ===== TERNING =====
 function animateDice(cb){
   let rolls = 10;
+  let finalD1 = 0;
+  let finalD2 = 0;
   let interval = setInterval(()=>{
-    d1.textContent = rand(6);
-    d2.textContent = rand(6);
+    finalD1 = rand(6);
+    finalD2 = rand(6);
+    d1.textContent = finalD1;
+    d2.textContent = finalD2;
     rolls--;
     if(rolls <= 0){
       clearInterval(interval);
-      cb();
+      cb(finalD1, finalD2);
     }
   }, 80);
 }
@@ -245,13 +243,9 @@ function roll(){
   players[0].name = name1Input.value || "Spiller 1";
   players[1].name = name2Input.value || "Spiller 2";
   updateScores();
-  updateTurnIndicator(); // NYTT
+  updateTurnIndicator();
 
-  animateDice(()=>{
-    let d1val = rand(6), d2val = rand(6);
-    d1.textContent = d1val;
-    d2.textContent = d2val;
-
+  animateDice((d1val, d2val)=>{
     let p = players[current];
 
     if(p.jailed){
@@ -293,7 +287,7 @@ function move(steps){
         showCard("🎆 Gratulerer!", `${p.name}, du har vunnet – gratulerer!🎆`);
         locked = true;
         clearInterval(stepAnim);
-        updateTurnIndicator(); // NYTT
+        updateTurnIndicator();
         return;
       }
     }
@@ -357,14 +351,14 @@ function endTurn(){
   if(winner) return;
   current = (current + 1) % 2;
   locked = false;
-  updateTurnIndicator(); // NYTT
+  updateTurnIndicator();
 }
 
 function rand(n){ return Math.floor(Math.random()*n)+1; }
 
 players.forEach(place);
 updateScores();
-updateTurnIndicator(); // NYTT
+updateTurnIndicator();
 </script>
 </body>
 </html>
