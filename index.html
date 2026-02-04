@@ -2,24 +2,33 @@
 <html lang="no">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Sex o Pol</title>
 
 <style>
-body{
+/* ===== BASE ===== */
+html, body{
+  width:100%;
+  height:100%;
   margin:0;
+  overflow:hidden;
   background:#000;
-  font-family: Arial, sans-serif;
+  font-family:Arial, sans-serif;
   color:white;
+}
+
+body{
   display:flex;
   justify-content:center;
-  align-items:flex-start;
+  align-items:center;
 }
 
 /* ===== LAYOUT ===== */
 #gameWrapper{
   display:flex;
-  gap:20px;
-  margin-top:10px;
+  flex-direction:row; /* SIDESTILT */
+  align-items:center;
+  gap:24px;
 }
 
 /* ===== BRETT ===== */
@@ -28,6 +37,7 @@ body{
   width:950px;
   height:620px;
   background:url("board.png") center/contain no-repeat;
+  flex-shrink:0;
 }
 
 /* ===== SPILLERBRIKKER ===== */
@@ -36,40 +46,43 @@ body{
   width:26px;
   height:26px;
   border-radius:50%;
-  transition:left 0.25s linear, top 0.25s linear;
+  transition:left 0.3s ease, top 0.3s ease;
+  z-index:10;
 }
-#p1{background:#ff4d4d;}
-#p2{background:#4da6ff;}
+#p1{ background:#ff4d4d; }
+#p2{ background:#4da6ff; }
 
 /* ===== SIDE UI ===== */
 #sideUI{
-  width:260px;
+  width:300px;
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:14px;
 }
 
 input, button{
-  padding:6px;
-  font-size:14px;
+  padding:8px;
+  font-size:15px;
 }
 
 button{
   cursor:pointer;
+  font-weight:bold;
 }
 
 #dice{
   display:flex;
-  gap:10px;
-  font-size:28px;
+  gap:12px;
+  font-size:34px;
 }
 
 #scores{
-  font-size:16px;
+  font-size:17px;
 }
 
 #turnIndicator{
   font-weight:bold;
+  margin-bottom:6px;
 }
 
 /* ===== KORT ===== */
@@ -80,14 +93,27 @@ button{
   display:none;
   justify-content:center;
   align-items:center;
+  z-index:50;
 }
 
 #cardContent{
   background:#111;
-  padding:20px;
+  padding:22px;
   max-width:420px;
   text-align:center;
-  border-radius:10px;
+  border-radius:12px;
+}
+
+/* ===== TABLET TILPASNING ===== */
+@media (max-width:1400px){
+  #board{
+    width:900px;
+    height:588px;
+  }
+
+  #sideUI{
+    width:260px;
+  }
 }
 </style>
 </head>
@@ -126,7 +152,7 @@ button{
 <div id="card" onclick="closeCard()">
   <div id="cardContent">
     <div id="cardText"></div>
-    <p><small>(Klikk for å fortsette)</small></p>
+    <p><small>(Trykk for å fortsette)</small></p>
   </div>
 </div>
 
@@ -162,13 +188,16 @@ const dareCards = [
   "Bind for øynene – partner overrasker i 1 min","Ta av 3 plagg og ta 2 slurker"
 ];
 
-function draw(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function draw(arr){
+  return arr[Math.floor(Math.random()*arr.length)];
+}
 
 // ===== SPILLERE =====
 let players = [
   {pos:0, el:p1, name:"Spiller 1", jailed:false, jailAttempts:0, points:0, laps:0},
   {pos:0, el:p2, name:"Spiller 2", jailed:false, jailAttempts:0, points:0, laps:0}
 ];
+
 let current = 0;
 let locked = false;
 let winner = null;
@@ -185,23 +214,25 @@ function updateTurnIndicator(){
     : `➡️ Din tur: ${players[current].name}`;
 }
 
-// ===== TERNING =====
+// ===== TERNING (ANIMERT) =====
 function animateDice(cb){
-  let rolls = 10;
-  let last1 = 1, last2 = 1;
+  let rolls = 12;
+  let d1val = 1, d2val = 1;
 
-  let interval = setInterval(()=>{
-    last1 = rand(6);
-    last2 = rand(6);
-    d1.textContent = last1;
-    d2.textContent = last2;
+  const interval = setInterval(()=>{
+    d1val = rand(6);
+    d2val = rand(6);
+    d1.textContent = d1val;
+    d2.textContent = d2val;
     rolls--;
 
-    if(rolls <= 0){
+    if(rolls === 0){
       clearInterval(interval);
-      cb(last1, last2);
+      setTimeout(()=>{
+        cb(d1val, d2val);
+      },150);
     }
-  },80);
+  },90);
 }
 
 // ===== SPILL =====
@@ -214,7 +245,7 @@ function roll(){
   updateScores();
   updateTurnIndicator();
 
-  animateDice((d1val,d2val)=>{
+  animateDice((d1val, d2val)=>{
     let p = players[current];
 
     if(p.jailed){
@@ -238,11 +269,11 @@ function move(steps){
   let p = players[current];
   let i = 0;
 
-  let stepAnim = setInterval(()=>{
+  const stepAnim = setInterval(()=>{
     let oldPos = p.pos;
     p.pos = (p.pos + 1) % tiles.length;
 
-    if(oldPos === tiles.length-1 && p.pos === 0){
+    if(oldPos === tiles.length - 1 && p.pos === 0){
       p.laps++;
       if(p.laps === 6 && !winner){
         winner = p;
@@ -255,6 +286,7 @@ function move(steps){
 
     place(p);
     i++;
+
     if(i >= steps){
       clearInterval(stepAnim);
       resolve(tiles[p.pos]);
@@ -263,7 +295,7 @@ function move(steps){
 }
 
 function place(p){
-  let t = tiles[p.pos];
+  const t = tiles[p.pos];
   p.el.style.left = t.x + "px";
   p.el.style.top = t.y + "px";
 }
@@ -297,26 +329,28 @@ function resolve(tile){
   } else endTurn();
 }
 
-function showCard(title,text){
+function showCard(title, text){
   cardText.innerHTML = `<h2>${title}</h2><p>${text}</p>`;
-  card.style.display="flex";
+  card.style.display = "flex";
 }
 
 function closeCard(){
-  card.style.display="none";
+  card.style.display = "none";
   endTurn();
 }
 
 function endTurn(){
   if(winner) return;
-  current = (current+1)%2;
+  current = (current + 1) % players.length;
   locked = false;
   updateTurnIndicator();
 }
 
-function rand(n){ return Math.floor(Math.random()*n)+1; }
+function rand(n){
+  return Math.floor(Math.random()*n) + 1;
+}
 
-// INIT
+// ===== INIT =====
 players.forEach(place);
 updateScores();
 updateTurnIndicator();
