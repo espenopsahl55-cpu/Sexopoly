@@ -20,6 +20,7 @@
   }
   * {
     touch-action: manipulation;
+    box-sizing: border-box;
   }
 
   body {
@@ -27,72 +28,95 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    flex-direction: column;
   }
 
   /* ===== LAYOUT ===== */
   #gameWrapper {
     display: flex;
     flex-direction: row;
-    gap: 24px;
-    align-items: center;
+    gap: 16px;
+    align-items: flex-start;
+    width: 95vw;
+    max-width: 1000px;
   }
 
   /* ===== BRETT ===== */
   #board {
     position: relative;
-    width: 90vw;
-    max-width: 950px;
+    width: 70vw;
+    max-width: 700px;
     aspect-ratio: 950 / 620;
     background: url("board.png") center/contain no-repeat;
     flex-shrink: 0;
+    border: 2px solid #fff;
+    border-radius: 12px;
   }
 
   /* ===== SPILLERBRIKKER ===== */
   .player {
     position: absolute;
-    width: 26px;
-    height: 26px;
+    width: 6vw;
+    max-width: 40px;
+    height: 6vw;
+    max-height: 40px;
     border-radius: 50%;
     transform: translate(-50%, -50%);
     transition: left 0.3s ease, top 0.3s ease;
     z-index: 10;
+    border: 2px solid #fff;
   }
   #p1 { background: #ff4d4d; }
   #p2 { background: #4da6ff; }
 
   /* ===== SIDE UI ===== */
   #sideUI {
-    width: 300px;
+    width: 28vw;
+    max-width: 280px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
   }
 
   input, button {
-    padding: 8px;
-    font-size: 15px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: none;
+  }
+
+  input:focus {
+    outline: 2px solid #4da6ff;
   }
 
   button {
     cursor: pointer;
     font-weight: bold;
-    min-height: 48px;
+    min-height: 50px;
+    background: #4da6ff;
+    color: white;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #3a85cc;
   }
 
   #dice {
     display: flex;
     gap: 12px;
-    font-size: 34px;
+    font-size: 36px;
     user-select: none;
+    justify-content: center;
   }
 
   #scores {
-    font-size: 17px;
+    font-size: 18px;
   }
 
   #turnIndicator {
     font-weight: bold;
     margin-bottom: 6px;
+    text-align: center;
   }
 
   /* ===== KORT ===== */
@@ -109,21 +133,40 @@
   #cardContent {
     background: #111;
     padding: 22px;
-    max-width: 420px;
+    max-width: 90vw;
     text-align: center;
     border-radius: 12px;
     color: white;
   }
 
-  /* ===== TABLET TILPASNING ===== */
-  @media (max-width: 1400px) {
+  /* ===== MOBIL TILPASNING ===== */
+  @media (max-width: 600px) {
+    #gameWrapper {
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
     #board {
-      max-width: 90vw;
+      width: 95vw;
       aspect-ratio: 950 / 620;
     }
 
     #sideUI {
-      width: 260px;
+      width: 95vw;
+    }
+
+    .player {
+      width: 10vw;
+      height: 10vw;
+    }
+
+    #dice {
+      font-size: 28px;
+    }
+
+    input, button {
+      font-size: 16px;
     }
   }
 </style>
@@ -170,41 +213,33 @@
   // ===== KONSTANTER =====
   const JAIL_POS = 20;
 
-  // === BRETT TIL % KOORDINATER (tilpasset bildet du sendte) ===
   const tiles = [
     {x:9.5,y:14.5,type:"lust"},
     {x:21,y:14.5,type:"drink",amount:2},
     {x:32,y:14.5,type:"nothing"},
     {x:43,y:14.5,type:"2points"},
-
     {x:54,y:14.5,type:"back",amount:2},
     {x:65,y:14.5,type:"drink",amount:3},
     {x:76,y:14.5,type:"lust"},
     {x:87,y:14.5,type:"go_jail"},
-
     {x:87,y:31,type:"nothing"},
     {x:87,y:48,type:"drink",amount:2},
     {x:87,y:65,type:"dare"},
     {x:87,y:82,type:"back",amount:2},
-
     {x:76,y:82,type:"nothing"},
     {x:65,y:82,type:"drink",amount:1},
     {x:54,y:82,type:"dare"},
     {x:43,y:82,type:"2points"},
-
     {x:32,y:82,type:"drink",amount:2},
     {x:21,y:82,type:"nothing"},
     {x:9.5,y:82,type:"dare"},
-
     {x:0,y:82,type:"jail"},
-
     {x:0,y:65,type:"2points"},
     {x:0,y:48,type:"nothing"},
     {x:0,y:31,type:"drink",amount:2},
     {x:0,y:14.5,type:"start"}
   ];
 
-  // === KORT ===
   const lustCards = [
     "Kyss partneren i 20 sekunder","Massér lårene i 1 minutt","Hvisk noe skittent",
     "Gjett favoritt reisemål – feil: drikk 2 slurker","Stryk hendene på et valgfritt sted på partner i 30 sek",
@@ -222,7 +257,6 @@
     "Bind for øynene – partner overrasker i 1 min","Ta av 3 plagg og ta 2 slurker"
   ];
 
-  // ===== SPILLERE =====
   let players = [
     {pos:0, el:null, name:"Spiller 1", jailed:false, jailAttempts:0, points:0, laps:0},
     {pos:0, el:null, name:"Spiller 2", jailed:false, jailAttempts:0, points:0, laps:0}
@@ -232,7 +266,6 @@
   let locked = false;
   let winner = null;
 
-  // ===== UI ELEMENTER =====
   const p1 = document.getElementById("p1");
   const p2 = document.getElementById("p2");
   const score1 = document.getElementById("score1");
@@ -245,13 +278,9 @@
   const name1Input = document.getElementById("name1Input");
   const name2Input = document.getElementById("name2Input");
 
-  // Koble spillerobjektene til DOM-elementer
   players[0].el = p1;
   players[1].el = p2;
 
-  // ===== FUNKSJONER =====
-
-  // Plasser brikken til spiller p på riktig sted, basert på prosent-koordinater
   function place(p) {
     const t = tiles[p.pos];
     const board = document.getElementById("board");
@@ -259,25 +288,21 @@
     p.el.style.top = (board.clientHeight * t.y / 100) + "px";
   }
 
-  // Oppdater poeng-visning
   function updateScores() {
     score1.textContent = `${players[0].name}: ${players[0].points} ⭐`;
     score2.textContent = `${players[1].name}: ${players[1].points} ⭐`;
   }
 
-  // Oppdater hvem sin tur det er eller om det er vinner
   function updateTurnIndicator() {
     turnIndicator.textContent = winner
       ? `🏆 Vinner: ${winner.name}`
       : `➡️ Din tur: ${players[current].name}`;
   }
 
-  // Tilfeldig trekk fra et array
   function draw(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  // Animasjon av terningkast
   function animateDice(cb) {
     let rolls = 12;
     let d1val = 1, d2val = 1;
@@ -293,14 +318,12 @@
         clearInterval(interval);
         setTimeout(() => {
           cb(d1val, d2val);
-          // Vibrasjon på kast hvis støttes
           if (navigator.vibrate) navigator.vibrate(50);
         }, 150);
       }
     }, 90);
   }
 
-  // Kast terning
   function roll() {
     if (locked || winner) return;
     locked = true;
@@ -315,7 +338,6 @@
       const p = players[current];
 
       if (p.jailed) {
-        // Prøv å kaste en 6er for å komme ut av fengsel
         if (d1val === 6 || d2val === 6) {
           p.jailed = false;
           p.jailAttempts = 0;
@@ -332,7 +354,6 @@
     });
   }
 
-  // Flytt spiller p med steg antall steps
   function move(steps) {
     const p = players[current];
     let moved = 0;
@@ -362,7 +383,6 @@
     }, 300);
   }
 
-  // Håndter effekt av rute
   function resolve(tile) {
     const p = players[current];
 
@@ -405,19 +425,16 @@
     }
   }
 
-  // Vis kort/modal med tekst
   function showCard(title, text) {
     cardText.innerHTML = `<h2>${title}</h2><p>${text}</p>`;
     card.style.display = "flex";
   }
 
-  // Lukk kort/modal
   function closeCard() {
     card.style.display = "none";
     endTurn();
   }
 
-  // Bytt tur til neste spiller
   function endTurn() {
     if (winner) return;
     current = (current + 1) % players.length;
@@ -425,7 +442,6 @@
     updateTurnIndicator();
   }
 
-  // Tilfeldig tall 1–n
   function rand(n) {
     return Math.floor(Math.random() * n) + 1;
   }
