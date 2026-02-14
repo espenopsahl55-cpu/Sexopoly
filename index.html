@@ -6,253 +6,246 @@
 <title>Sex o Pol</title>
 
 <style>
-  /* ===== BASE ===== */
+/* ===== BASE ===== */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100dvh;
+  background: #000;
+  font-family: Arial, sans-serif;
+  color: white;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Fallback */
+@supports not (height: 100dvh) {
   html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100dvh; /* iOS dynamic viewport fix */
-    background: #000;
-    font-family: Arial, sans-serif;
-    color: white;
-    overflow: hidden;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+    height: 100vh;
   }
+}
 
-  /* Fallback hvis 100dvh ikke støttes */
-  @supports not (height: 100dvh) {
-    html, body {
-      height: 100vh;
-    }
-  }
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
 
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-  }
+* {
+  touch-action: manipulation;
+  box-sizing: border-box;
+}
 
-  * {
-    touch-action: manipulation;
-    box-sizing: border-box;
-  }
+/* ===== LAYOUT ===== */
+#gameWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100vw;
+  height: 100dvh;
+  max-width: 1200px;
+}
 
-  /* ===== LAYOUT ===== */
+/* ===== BRETT ===== */
+#board {
+  position: relative;
+  height: 92dvh;
+  aspect-ratio: 950 / 620;
+  background: url("board.png") center/contain no-repeat;
+  flex-shrink: 0;
+  border: 2px solid #fff;
+  border-radius: 12px;
+}
+
+/* ===== SPILLERBRIKKER ===== */
+.player {
+  position: absolute;
+  width: 4.5vh;
+  height: 4.5vh;
+  max-width: 42px;
+  max-height: 42px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: left 0.3s ease, top 0.3s ease;
+  z-index: 10;
+  border: 2px solid #fff;
+}
+
+#p1 { background: #ff4d4d; }
+#p2 { background: #4da6ff; }
+
+/* ===== SIDE UI ===== */
+#sideUI {
+  width: 260px;
+  max-width: 28vw;
+  height: 92dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+input, button {
+  padding: 8px;
+  font-size: clamp(14px, 2vh, 18px);
+  border-radius: 6px;
+  border: none;
+}
+
+input:focus {
+  outline: 2px solid #4da6ff;
+}
+
+button {
+  cursor: pointer;
+  font-weight: bold;
+  min-height: 44px;
+  background: #4da6ff;
+  color: white;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #3a85cc;
+}
+
+#dice {
+  display: flex;
+  gap: 8px;
+  font-size: clamp(22px, 4vh, 36px);
+  user-select: none;
+  justify-content: center;
+}
+
+#scores {
+  font-size: 18px;
+}
+
+#turnIndicator {
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+/* ===== KORT ===== */
+#card {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+#cardContent {
+  background: #111;
+  padding: 22px;
+  max-width: 90vw;
+  text-align: center;
+  border-radius: 12px;
+  color: white;
+}
+
+/* ===== MOBIL PORTRAIT ===== */
+@media (max-width: 600px) {
   #gameWrapper {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    align-items: flex-start;
-    width: 95vw;
-    max-width: 1000px;
-  }
-
-  /* ===== BRETT ===== */
-  #board {
-    position: relative;
-    height: 90vh;                 /* styr etter høyde */
-    max-height: 620px;
-    aspect-ratio: 950 / 620;
-    background: url("board.png") center/contain no-repeat;
-    flex-shrink: 0;
-    border: 2px solid #fff;
-    border-radius: 12px;
-  }
-
-  /* ===== SPILLERBRIKKER ===== */
-  .player {
-    position: absolute;
-    width: 4.5vh;
-    height: 4.5vh;
-    max-width: 42px;
-    max-height: 42px;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: left 0.3s ease, top 0.3s ease;
-    z-index: 10;
-    border: 2px solid #fff;
-  }
-
-  #p1 { background: #ff4d4d; }
-  #p2 { background: #4da6ff; }
-
-  /* ===== SIDE UI ===== */
-  #sideUI {
-    width: 28vw;
-    max-width: 280px;
-    display: flex;
     flex-direction: column;
-    gap: 12px;
+    height: 100dvh;
+  }
+
+  #board {
+    width: 95vw;
+    height: auto;
+  }
+
+  #sideUI {
+    width: 95vw;
+    height: auto;
+  }
+
+  .player {
+    width: 6vw;
+    height: 6vw;
+  }
+}
+
+/* ===== LANDSCAPE MOBIL FIX ===== */
+@media (max-height: 500px) and (orientation: landscape) {
+
+  #gameWrapper {
+    height: 100dvh;
+    align-items: center;
+  }
+
+  #board {
+    height: 94dvh;
+  }
+
+  #sideUI {
+    height: 94dvh;
+    width: 240px;
+    gap: 8px;
   }
 
   input, button {
-    padding: 8px;
-    font-size: clamp(14px, 2vh, 18px);
-    border-radius: 6px;
-    border: none;
-  }
-
-  input:focus {
-    outline: 2px solid #4da6ff;
-  }
-
-  button {
-    cursor: pointer;
-    font-weight: bold;
-    min-height: 44px; /* Apple touch minimum */
-    background: #4da6ff;
-    color: white;
-    transition: background 0.3s;
-  }
-
-  button:hover {
-    background: #3a85cc;
+    font-size: clamp(13px, 2.2vh, 16px);
+    padding: 6px;
   }
 
   #dice {
-    display: flex;
-    gap: 8px;
-    font-size: clamp(22px, 4vh, 36px);
-    user-select: none;
-    justify-content: center;
+    font-size: clamp(20px, 4vh, 28px);
   }
-
-  #scores {
-    font-size: 18px;
-  }
-
-  #turnIndicator {
-    font-weight: bold;
-    margin-bottom: 6px;
-    text-align: center;
-  }
-
-  /* ===== KORT ===== */
-  #card {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 50;
-  }
-
-  #cardContent {
-    background: #111;
-    padding: 22px;
-    max-width: 90vw;
-    text-align: center;
-    border-radius: 12px;
-    color: white;
-  }
-
-  /* ===== MOBIL PORTRAIT ===== */
-  @media (max-width: 600px) {
-    #gameWrapper {
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-
-    #board {
-      width: 95vw;
-      height: auto;
-      aspect-ratio: 950 / 620;
-    }
-
-    #sideUI {
-      width: 95vw;
-    }
-
-    .player {
-      width: 6vw;
-      height: 6vw;
-    }
-
-    #dice {
-      font-size: 28px;
-    }
-  }
-
-  /* ===== MOBIL LANDSCAPE OPTIMALISERING ===== */
-  @media (max-height: 500px) and (orientation: landscape) {
-
-    #gameWrapper {
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      width: 100vw;
-      height: 100vh;
-      gap: 12px;
-    }
-
-    #board {
-      height: 92vh;
-      max-height: none;
-    }
-
-    #sideUI {
-      width: 26vw;
-      max-width: 240px;
-      gap: 8px;
-    }
-
-    input, button {
-      font-size: clamp(13px, 2vh, 16px);
-      padding: 6px;
-    }
-
-    #dice {
-      font-size: clamp(20px, 4vh, 30px);
-    }
-  }
+}
 </style>
 </head>
 
 <body>
-  <div id="gameWrapper">
+<div id="gameWrapper">
 
-    <div id="board">
-      <div id="p1" class="player"></div>
-      <div id="p2" class="player"></div>
-    </div>
-
-    <div id="sideUI">
-      <input id="name1Input" placeholder="Spiller 1" autocomplete="off" />
-      <input id="name2Input" placeholder="Spiller 2" autocomplete="off" />
-
-      <div id="scores">
-        <div id="score1"></div>
-        <div id="score2"></div>
-      </div>
-
-      <div id="turnIndicator"></div>
-
-      <div id="dice">
-        <div id="d1" aria-label="Terning 1" role="img">🎲</div>
-        <div id="d2" aria-label="Terning 2" role="img">🎲</div>
-      </div>
-
-      <button id="rollBtn" onclick="roll()">Kast terning</button>
-    </div>
-
+  <div id="board">
+    <div id="p1" class="player"></div>
+    <div id="p2" class="player"></div>
   </div>
 
-  <!-- ===== KORT ===== -->
-  <div id="card" onclick="closeCard()">
-    <div id="cardContent">
-      <div id="cardText"></div>
-      <p><small>(Trykk for å fortsette)</small></p>
+  <div id="sideUI">
+    <input id="name1Input" placeholder="Spiller 1" autocomplete="off" />
+    <input id="name2Input" placeholder="Spiller 2" autocomplete="off" />
+
+    <div id="scores">
+      <div id="score1"></div>
+      <div id="score2"></div>
     </div>
+
+    <div id="turnIndicator"></div>
+
+    <div id="dice">
+      <div id="d1">🎲</div>
+      <div id="d2">🎲</div>
+    </div>
+
+    <button id="rollBtn" onclick="roll()">Kast terning</button>
   </div>
+
+</div>
+
+<!-- ===== KORT ===== -->
+<div id="card" onclick="closeCard()">
+  <div id="cardContent">
+    <div id="cardText"></div>
+    <p><small>(Trykk for å fortsette)</small></p>
+  </div>
+</div>
 
 <script>
-/* ===== HELE JS-DELEN DIN ER URØRT ===== */
+/* ===== JS HELT URØRT ===== */
 
 const JAIL_POS = 20;
 
