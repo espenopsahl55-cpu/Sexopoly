@@ -139,7 +139,7 @@
     color: white;
   }
 
-  /* ===== MOBIL TILPASNING (stående) ===== */
+  /* ===== MOBIL TILPASNING ===== */
   @media (max-width: 600px) {
     #gameWrapper {
       flex-direction: column;
@@ -157,8 +157,8 @@
     }
 
     .player {
-      width: 9vw;
-      height: 9vw;
+      width: 10vw;
+      height: 10vw;
     }
 
     #dice {
@@ -167,51 +167,6 @@
 
     input, button {
       font-size: 16px;
-      padding: 12px;
-    }
-
-    #name1Input,
-    #name2Input {
-      width: 70%;
-      align-self: center;
-    }
-  }
-
-  /* ===== MOBIL TILPASNING (liggende / bredere mobil som iPhone 16) ===== */
-  @media (max-width: 900px) and (orientation: landscape) {
-    #gameWrapper {
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-
-    #board {
-      width: 90vw;
-      aspect-ratio: 950 / 620;
-    }
-
-    #sideUI {
-      width: 90vw;
-    }
-
-    .player {
-      width: 8vw;
-      height: 8vw;
-    }
-
-    #dice {
-      font-size: 30px;
-    }
-
-    input, button {
-      font-size: 17px;
-      padding: 12px;
-    }
-
-    #name1Input,
-    #name2Input {
-      width: 65%;
-      align-self: center;
     }
   }
 </style>
@@ -373,8 +328,7 @@
     if (locked || winner) return;
     locked = true;
 
-  // === samme ===   (JavaScript videre uendret)...
-  players[0].name = name1Input.value.trim() || "Spiller 1";
+    players[0].name = name1Input.value.trim() || "Spiller 1";
     players[1].name = name2Input.value.trim() || "Spiller 2";
 
     updateScores();
