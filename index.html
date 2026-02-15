@@ -489,7 +489,24 @@ function endTurn() {
 players.forEach(place);
 updateScores();
 updateTurnIndicator();
+updateActiveGlow();   
+  
+players.forEach(place);
+updateScores();
+updateTurnIndicator();
 updateActiveGlow();   // <-- LEGG TIL
+</script>
+
+<!-- 🎷 BAKGRUNNSMUSIKK -->
+<audio id="bgMusic" src="jazz.mp3" loop></audio>
+
+<script>
+  document.body.addEventListener("click", function startMusic() {
+    const music = document.getElementById("bgMusic");
+    music.volume = 0.3; 
+    music.play();
+    document.body.removeEventListener("click", startMusic);
+  });
 </script>
 </body>
 </html>
