@@ -38,17 +38,21 @@ body {
   flex-direction: row;
 }
 
-/* ===== PIXEL-PERFEKT FORHOLD 1740 : 816 ===== */
+/* ===== BOARD ===== */
 #board {
   flex: 1740;
   height: 100dvh;
   background: url("board.png") no-repeat left center;
-  background-size: cover;
+
+  /* 🔥 KUTTER 200px AV HØYRESIDEN AV BILDET */
+  background-size: calc(100% + 200px) 100%;
   background-position: left center;
+
   position: relative;
   flex-shrink: 0;
 }
 
+/* ===== UI ===== */
 #sideUI {
   flex: 816;
   height: 100dvh;
@@ -443,4 +447,5 @@ updateTurnIndicator();
 </script>
 </body>
 </html>
+
 
