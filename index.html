@@ -75,6 +75,13 @@ body {
   border: 2px solid #fff;
 }
 
+/* ✨ ACTIVE GLOW */
+.player.active {
+  box-shadow:
+    0 0 12px gold,
+    0 0 24px gold,
+    0 0 36px rgba(255,215,0,0.9);
+}
 #p1 { background: #ff4d4d; }
 #p2 { background: #4da6ff; }
 
@@ -284,6 +291,11 @@ const card = document.getElementById("card");
 const cardText = document.getElementById("cardText");
 const name1Input = document.getElementById("name1Input");
 const name2Input = document.getElementById("name2Input");
+/* ===== ACTIVE PLAYER GLOW ===== */
+function updateActiveGlow() {
+  players.forEach(p => p.el.classList.remove("active"));
+  players[current].el.classList.add("active");
+}
 
 function place(p) {
   const board = document.getElementById("board");
@@ -471,12 +483,13 @@ function endTurn() {
   current = (current + 1) % players.length;
   locked = false;
   updateTurnIndicator();
+  updateActiveGlow();
 }
 
 players.forEach(place);
 updateScores();
 updateTurnIndicator();
-
+updateActiveGlow();   // <-- LEGG TIL
 </script>
 </body>
 </html>
