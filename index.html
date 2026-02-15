@@ -224,7 +224,7 @@ const tiles = [
   // ===== RIGHT (4) =====
   {x:91, y:28.8,type:"2points"},
   {x:91, y:43.1,type:"nothing"},
-  {x:91, y:57.4,type:"nothing"},
+  {x:91, y:57.4,type:"give2"},
   {x:91, y:71.7,type:"park"},
 
   // ===== BOTTOM (8) =====
@@ -232,7 +232,7 @@ const tiles = [
   {x:80.14, y:86,type:"klesplagg"},
   {x:69.29, y:86,type:"lust"},
   {x:58.43, y:86,type:"dare"},
-  {x:47.57, y:86,type:"nothing"},
+  {x:47.57, y:86,type:"give2"},
   {x:36.71, y:86,type:"dare"},
   {x:25.86, y:86,type:"lust"}, // <-- ny 24-rute du manglet
   {x:15,    y:86,type:"jail"},
@@ -425,22 +425,29 @@ function resolve(tile) {
       p.pos = (p.pos - tile.amount + tiles.length) % tiles.length;
       place(p);
       break;
-
-          case "klesplagg":
+    
+    case "klesplagg":
       showCard("Fjern 2 klesplagg👖🧦");
       break;
-
-case "park":
+      
+    case "park":
       showCard("gratis parkering🚗");
       break; 
 
-case "spotify":
+      case "spotify":
       showCard("Fyr på sex listå🎶");
       break; 
 
-case "bestem":
+    case "bestem":
       showCard("Bestem et utfordrings kort til partner🧑‍⚖️👩‍⚖️");
       break; 
+    
+    case "give2":
+  const partner = players[(current+1)%players.length];
+  partner.points += 2;
+  updateScores();
+  showCard("🎁 Gi poeng", `${partner.name} får 2 poeng!`);
+  break;
 
     default:
       endTurn();
