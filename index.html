@@ -38,19 +38,19 @@ body {
   flex-direction: row;
 }
 
-/* ===== BRETT (1851 av 2556 px) ===== */
+/* ===== PIXEL-PERFEKT FORHOLD 1740 : 816 ===== */
 #board {
-  width: 72.42vw;
+  flex: 1740;
   height: 100dvh;
   background: url("board.png") no-repeat left center;
-  background-size: 100% 100%;
+  background-size: cover;
+  background-position: left center;
   position: relative;
   flex-shrink: 0;
 }
 
-/* ===== UI (683 av 2556 px) ===== */
 #sideUI {
-  width: 27.58vw;
+  flex: 816;
   height: 100dvh;
   padding: 18px;
   display: flex;
@@ -443,3 +443,4 @@ updateTurnIndicator();
 </script>
 </body>
 </html>
+
