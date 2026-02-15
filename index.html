@@ -225,11 +225,11 @@ const tiles = [
   {x:91, y:28.8,type:"2points"},
   {x:91, y:43.1,type:"nothing"},
   {x:91, y:57.4,type:"nothing"},
-  {x:91, y:71.7,type:"nothing"},
+  {x:91, y:71.7,type:"park"},
 
   // ===== BOTTOM (8) =====
-  {x:91,    y:86,type:"nothing"},
-  {x:80.14, y:86,type:"dare"},
+  {x:91,    y:86,type:"spotify"},
+  {x:80.14, y:86,type:"klesplagg"},
   {x:69.29, y:86,type:"lust"},
   {x:58.43, y:86,type:"dare"},
   {x:47.57, y:86,type:"nothing"},
@@ -238,7 +238,7 @@ const tiles = [
   {x:15,    y:86,type:"jail"},
 
   // ===== LEFT (4) =====
-  {x:15, y:71.7,type:"nothing"},
+  {x:15, y:71.7,type:"bestem"},
   {x:15, y:57.4,type:"2points"},
   {x:15, y:43.1,type:"drink",amount:2},
   {x:15, y:28.8,type:"lust"}
@@ -425,6 +425,22 @@ function resolve(tile) {
       p.pos = (p.pos - tile.amount + tiles.length) % tiles.length;
       place(p);
       break;
+
+          case "klesplagg":
+      showCard("Fjern 2 klesplagg👖🧦");
+      break;
+
+case "park":
+      showCard("gratis parkering🚗");
+      break; 
+
+case "spotify":
+      showCard("Fyr på sex listå🎶");
+      break; 
+
+case "bestem":
+      showCard("Bestem et utfordrings kort til partner🧑‍⚖️👩‍⚖️");
+      break; 
 
     default:
       endTurn();
