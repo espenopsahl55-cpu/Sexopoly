@@ -2,461 +2,420 @@
 <html lang="no">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Sex o Pol</title>
 
 <style>
-  /* ===== BASE ===== */
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    font-family: Arial, sans-serif;
-    color: white;
-    overflow: hidden;
-    -webkit-tap-highlight-color: transparent;
-  }
-  * {
-    touch-action: manipulation;
-    box-sizing: border-box;
-  }
 
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
-  }
+/* ===== GLOBAL RESET ===== */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100dvh;
+  background: #000;
+  font-family: Arial, sans-serif;
+  color: white;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
 
-  /* ===== LAYOUT ===== */
-  #gameWrapper {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    align-items: flex-start;
-    width: 95vw;
-    max-width: 1000px;
-  }
+* {
+  box-sizing: border-box;
+  touch-action: manipulation;
+}
 
-  /* ===== BRETT ===== */
-  #board {
-    position: relative;
-    width: 70vw;
-    max-width: 700px;
-    aspect-ratio: 950 / 620;
-    background: url("board.png") center/contain no-repeat;
-    flex-shrink: 0;
-    border: 2px solid #fff;
-    border-radius: 12px;
-  }
+/* ===== LANDSCAPE LAYOUT ===== */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  /* ===== SPILLERBRIKKER ===== */
-  .player {
-    position: absolute;
-    width: 5vw;
-    max-width: 40px;
-    height: 5vw;
-    max-height: 40px;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: left 0.3s ease, top 0.3s ease;
-    z-index: 10;
-    border: 2px solid #fff;
-  }
-  #p1 { background: #ff4d4d; }
-  #p2 { background: #4da6ff; }
+#gameWrapper {
+  width: 100vw;
+  height: 100dvh;
+  display: flex;
+  flex-direction: row;
+}
 
-  /* ===== SIDE UI ===== */
-  #sideUI {
-    width: 26vw;
-    max-width: 280px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+/* ===== BRETT (FULL PRESISJON) ===== */
+#board {
+  flex: 1.8;
+  height: 100%;
+  background: url("board.png") no-repeat center center;
+  background-size: 100% 100%; /* VIKTIG – bruker din eksakte redigering */
+  position: relative;
+}
 
-  input, button {
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 6px;
-    border: none;
-  }
+/* ===== SPILLERBRIKKER ===== */
+.player {
+  position: absolute;
+  width: 4vh;
+  height: 4vh;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: left 0.25s ease, top 0.25s ease;
+  z-index: 10;
+  border: 2px solid #fff;
+}
 
-  input:focus {
-    outline: 2px solid #4da6ff;
-  }
+#p1 { background: #ff4d4d; }
+#p2 { background: #4da6ff; }
 
-  button {
-    cursor: pointer;
-    font-weight: bold;
-    min-height: 50px;
-    background: #4da6ff;
-    color: white;
-    transition: background 0.3s;
-  }
-  button:hover {
-    background: #3a85cc;
-  }
+/* ===== UI SIDE ===== */
+#sideUI {
+  flex: 1;
+  height: 100%;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #000;
+}
 
-  #dice {
-    display: flex;
-    gap: 12px;
-    font-size: 36px;
-    user-select: none;
-    justify-content: center;
-  }
+input, button {
+  padding: 12px;
+  font-size: 18px;
+  border-radius: 10px;
+  border: none;
+}
 
-  #scores {
-    font-size: 18px;
-  }
+input {
+  width: 100%;
+}
 
-  #turnIndicator {
-    font-weight: bold;
-    margin-bottom: 6px;
-    text-align: center;
-  }
+button {
+  cursor: pointer;
+  font-weight: bold;
+  min-height: 60px;
+  background: #4da6ff;
+  color: white;
+}
 
-  /* ===== KORT ===== */
-  #card {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 50;
-  }
+button:active {
+  transform: scale(0.97);
+}
 
-  #cardContent {
-    background: #111;
-    padding: 22px;
-    max-width: 90vw;
-    text-align: center;
-    border-radius: 12px;
-    color: white;
-  }
+#dice {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 42px;
+}
 
-  /* ===== MOBIL TILPASNING ===== */
-  @media (max-width: 600px) {
-    #gameWrapper {
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
+#scores {
+  font-size: 20px;
+}
 
-    #board {
-      width: 95vw;
-      aspect-ratio: 950 / 620;
-    }
+#turnIndicator {
+  font-weight: bold;
+  text-align: center;
+  font-size: 20px;
+}
 
-    #sideUI {
-      width: 95vw;
-    }
+/* ===== KORT MODAL ===== */
+#card {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
 
-    .player {
-      width: 4vw;
-      height: 4vw;
-    }
+#cardContent {
+  background: #111;
+  padding: 30px;
+  max-width: 80vw;
+  border-radius: 14px;
+  text-align: center;
+}
 
-    #dice {
-      font-size: 28px;
-    }
-
-    input, button {
-      font-size: 14px;
-    }
-  }
-    /* ===== GJØR NAVNEFELT KORTERE (SAMME HØYDE) ===== */
-  #name1Input,
-  #name2Input {
-    width: 70%;
-    align-self: center;
-  }
+/* ===== ROTASJONSKONTROLL ===== */
+#rotateWarning {
+  position: fixed;
+  inset: 0;
+  background: black;
+  color: white;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  font-size: 22px;
+  z-index: 100;
+}
 
 </style>
 </head>
 
 <body>
-  <div id="gameWrapper">
 
-    <div id="board">
-      <div id="p1" class="player"></div>
-      <div id="p2" class="player"></div>
-    </div>
+<div id="rotateWarning">
+  🔄 Snu telefonen til liggende for å spille
+</div>
 
-    <div id="sideUI">
+<div id="gameWrapper">
+
+  <div id="board">
+    <div id="p1" class="player"></div>
+    <div id="p2" class="player"></div>
+  </div>
+
+  <div id="sideUI">
+
+    <div>
       <input id="name1Input" placeholder="Spiller 1" autocomplete="off" />
       <input id="name2Input" placeholder="Spiller 2" autocomplete="off" />
-
-      <div id="scores">
-        <div id="score1"></div>
-        <div id="score2"></div>
-      </div>
-
-      <div id="turnIndicator"></div>
-
-      <div id="dice">
-        <div id="d1" aria-label="Terning 1" role="img">🎲</div>
-        <div id="d2" aria-label="Terning 2" role="img">🎲</div>
-      </div>
-
-      <button id="rollBtn" onclick="roll()">Kast terning</button>
     </div>
 
-  </div>
-
-  <!-- ===== KORT ===== -->
-  <div id="card" onclick="closeCard()">
-    <div id="cardContent">
-      <div id="cardText"></div>
-      <p><small>(Trykk for å fortsette)</small></p>
+    <div id="scores">
+      <div id="score1"></div>
+      <div id="score2"></div>
     </div>
+
+    <div id="turnIndicator"></div>
+
+    <div id="dice">
+      <div id="d1">🎲</div>
+      <div id="d2">🎲</div>
+    </div>
+
+    <button id="rollBtn" onclick="roll()">Kast terning</button>
+
   </div>
+</div>
+
+<!-- KORT -->
+<div id="card" onclick="closeCard()">
+  <div id="cardContent">
+    <div id="cardText"></div>
+    <p><small>(Trykk for å fortsette)</small></p>
+  </div>
+</div>
 
 <script>
-  // ===== KONSTANTER =====
-  const JAIL_POS = 20;
 
-  const tiles = [
-    {x:9.5,y:14.5,type:"lust"},
-    {x:21,y:14.5,type:"drink",amount:2},
-    {x:32,y:14.5,type:"nothing"},
-    {x:43,y:14.5,type:"2points"},
-    {x:54,y:14.5,type:"back",amount:2},
-    {x:65,y:14.5,type:"drink",amount:3},
-    {x:76,y:14.5,type:"lust"},
-    {x:87,y:14.5,type:"go_jail"},
-    {x:87,y:31,type:"nothing"},
-    {x:87,y:48,type:"drink",amount:2},
-    {x:87,y:65,type:"dare"},
-    {x:87,y:82,type:"back",amount:2},
-    {x:76,y:82,type:"nothing"},
-    {x:65,y:82,type:"drink",amount:1},
-    {x:54,y:82,type:"dare"},
-    {x:43,y:82,type:"2points"},
-    {x:32,y:82,type:"drink",amount:2},
-    {x:21,y:82,type:"nothing"},
-    {x:9.5,y:82,type:"dare"},
-    {x:0,y:82,type:"jail"},
-    {x:0,y:65,type:"2points"},
-    {x:0,y:48,type:"nothing"},
-    {x:0,y:31,type:"drink",amount:2},
-    {x:0,y:14.5,type:"start"}
-  ];
-
-  const lustCards = [
-    "Kyss partneren i 20 sekunder","Massér lårene i 1 minutt","Hvisk noe skittent",
-    "Gjett favoritt reisemål – feil: drikk 2 slurker","Stryk hendene på et valgfritt sted på partner i 30 sek",
-    "Si favoritt sexstilling","Få et kyss et sted du velger","Velg hvem som tar av et plagg",
-    "Klin i 30 sek – ta av partner 1 plagg","Fortell hvor du ønsker å ha sex",
-    "Hva var mest attraktivt ved første møte?","Stirr i øynene 30 sek mens du koser låret",
-    "Fortell favorittegenskaper","Kyss halsen i 30 sek","Nevn 2 ting som tenner deg","Sitt i fanget til partner én runde"
-  ];
-
-  const dareCards = [
-    "Ta av ett plagg","Drikk 3 slurker","La partneren velge neste kort",
-    "Slikk partner et sted du ønsker","Tease i 40 sek – partner drikker 3 slurker",
-    "Stimuler partner nedentil i 30 sek","Gi en lap dance i 40 sek",
-    "Hvis naken: valgfri stilling i 3 min – ellers 5 slurker",
-    "Bind for øynene – partner overrasker i 1 min","Ta av 3 plagg og ta 2 slurker"
-  ];
-
-  let players = [
-    {pos:0, el:null, name:"Spiller 1", jailed:false, jailAttempts:0, points:0, laps:0},
-    {pos:0, el:null, name:"Spiller 2", jailed:false, jailAttempts:0, points:0, laps:0}
-  ];
-
-  let current = 0;
-  let locked = false;
-  let winner = null;
-
-  const p1 = document.getElementById("p1");
-  const p2 = document.getElementById("p2");
-  const score1 = document.getElementById("score1");
-  const score2 = document.getElementById("score2");
-  const turnIndicator = document.getElementById("turnIndicator");
-  const d1 = document.getElementById("d1");
-  const d2 = document.getElementById("d2");
-  const card = document.getElementById("card");
-  const cardText = document.getElementById("cardText");
-  const name1Input = document.getElementById("name1Input");
-  const name2Input = document.getElementById("name2Input");
-
-  players[0].el = p1;
-  players[1].el = p2;
-
-  function place(p) {
-    const t = tiles[p.pos];
-    const board = document.getElementById("board");
-    p.el.style.left = (board.clientWidth * t.x / 100) + "px";
-    p.el.style.top = (board.clientHeight * t.y / 100) + "px";
+/* ===== ORIENTATION LOCK ===== */
+function checkOrientation() {
+  const warning = document.getElementById("rotateWarning");
+  if (window.innerHeight > window.innerWidth) {
+    warning.style.display = "flex";
+  } else {
+    warning.style.display = "none";
   }
+}
+window.addEventListener("resize", checkOrientation);
+checkOrientation();
 
-  function updateScores() {
-    score1.textContent = `${players[0].name}: ${players[0].points} ⭐`;
-    score2.textContent = `${players[1].name}: ${players[1].points} ⭐`;
-  }
+/* ===== GAME DATA ===== */
 
-  function updateTurnIndicator() {
-    turnIndicator.textContent = winner
-      ? `🏆 Vinner: ${winner.name}`
-      : `➡️ Din tur: ${players[current].name}`;
-  }
+const JAIL_POS = 20;
 
-  function draw(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
+const tiles = [
+  {x:9.5,y:14.5,type:"lust"},
+  {x:21,y:14.5,type:"drink",amount:2},
+  {x:32,y:14.5,type:"nothing"},
+  {x:43,y:14.5,type:"2points"},
+  {x:54,y:14.5,type:"back",amount:2},
+  {x:65,y:14.5,type:"drink",amount:3},
+  {x:76,y:14.5,type:"lust"},
+  {x:87,y:14.5,type:"go_jail"},
+  {x:87,y:31,type:"nothing"},
+  {x:87,y:48,type:"drink",amount:2},
+  {x:87,y:65,type:"dare"},
+  {x:87,y:82,type:"back",amount:2},
+  {x:76,y:82,type:"nothing"},
+  {x:65,y:82,type:"drink",amount:1},
+  {x:54,y:82,type:"dare"},
+  {x:43,y:82,type:"2points"},
+  {x:32,y:82,type:"drink",amount:2},
+  {x:21,y:82,type:"nothing"},
+  {x:9.5,y:82,type:"dare"},
+  {x:0,y:82,type:"jail"},
+  {x:0,y:65,type:"2points"},
+  {x:0,y:48,type:"nothing"},
+  {x:0,y:31,type:"drink",amount:2},
+  {x:0,y:14.5,type:"start"}
+];
 
-  function animateDice(cb) {
-    let rolls = 12;
-    let d1val = 1, d2val = 1;
+const lustCards = [
+  "Kyss partneren i 20 sekunder",
+  "Massér lårene i 1 minutt",
+  "Hvisk noe skittent",
+  "Gjett favoritt reisemål – feil: drikk 2 slurker",
+  "Stryk hendene på et valgfritt sted i 30 sek",
+  "Si favoritt sexstilling",
+  "Få et kyss et sted du velger",
+  "Velg hvem som tar av et plagg",
+  "Klin i 30 sek – ta av partner 1 plagg",
+  "Fortell hvor du ønsker å ha sex"
+];
 
-    const interval = setInterval(() => {
-      d1val = rand(6);
-      d2val = rand(6);
-      d1.textContent = d1val;
-      d2.textContent = d2val;
-      rolls--;
+const dareCards = [
+  "Ta av ett plagg",
+  "Drikk 3 slurker",
+  "La partneren velge neste kort",
+  "Tease i 40 sek",
+  "Gi en lap dance i 40 sek",
+  "Bind for øynene – partner overrasker i 1 min"
+];
 
-      if (rolls === 0) {
-        clearInterval(interval);
-        setTimeout(() => {
-          cb(d1val, d2val);
-          if (navigator.vibrate) navigator.vibrate(50);
-        }, 150);
-      }
-    }, 90);
-  }
+let players = [
+  {pos:0, el:null, name:"Spiller 1", jailed:false, jailAttempts:0, points:0, laps:0},
+  {pos:0, el:null, name:"Spiller 2", jailed:false, jailAttempts:0, points:0, laps:0}
+];
 
-  function roll() {
-    if (locked || winner) return;
-    locked = true;
+let current = 0;
+let locked = false;
+let winner = null;
 
-    players[0].name = name1Input.value.trim() || "Spiller 1";
-    players[1].name = name2Input.value.trim() || "Spiller 2";
+players[0].el = document.getElementById("p1");
+players[1].el = document.getElementById("p2");
 
-    updateScores();
-    updateTurnIndicator();
+const score1 = document.getElementById("score1");
+const score2 = document.getElementById("score2");
+const turnIndicator = document.getElementById("turnIndicator");
+const d1 = document.getElementById("d1");
+const d2 = document.getElementById("d2");
+const card = document.getElementById("card");
+const cardText = document.getElementById("cardText");
 
-    animateDice((d1val, d2val) => {
-      const p = players[current];
+function place(p) {
+  const board = document.getElementById("board");
+  const t = tiles[p.pos];
+  p.el.style.left = (board.clientWidth * t.x / 100) + "px";
+  p.el.style.top = (board.clientHeight * t.y / 100) + "px";
+}
 
-      if (p.jailed) {
-        if (d1val === 6 || d2val === 6) {
-          p.jailed = false;
-          p.jailAttempts = 0;
-          move(d1val + d2val);
-        } else {
-          p.jailAttempts++;
-          showCard("🚓 Fengsel", `Ingen 6 – ta ${p.jailAttempts * 2} slurker`);
-          endTurn();
-        }
-        return;
-      }
+function updateScores() {
+  score1.textContent = `${players[0].name}: ${players[0].points} ⭐`;
+  score2.textContent = `${players[1].name}: ${players[1].points} ⭐`;
+}
 
-      move(d1val + d2val);
-    });
-  }
+function updateTurnIndicator() {
+  turnIndicator.textContent = winner
+    ? `🏆 Vinner: ${winner.name}`
+    : `➡️ Din tur: ${players[current].name}`;
+}
 
-  function move(steps) {
-    const p = players[current];
-    let moved = 0;
+function rand(n) { return Math.floor(Math.random()*n)+1; }
 
-    const stepAnim = setInterval(() => {
-      const oldPos = p.pos;
-      p.pos = (p.pos + 1) % tiles.length;
-
-      if (oldPos === tiles.length - 1 && p.pos === 0) {
-        p.laps++;
-        if (p.laps === 6 && !winner) {
-          winner = p;
-          showCard("🎆 Gratulerer!", `${p.name} har vunnet!`);
-          clearInterval(stepAnim);
-          updateTurnIndicator();
-          return;
-        }
-      }
-
-      place(p);
-
-      moved++;
-      if (moved >= steps) {
-        clearInterval(stepAnim);
-        resolve(tiles[p.pos]);
-      }
-    }, 300);
-  }
-
-  function resolve(tile) {
-    const p = players[current];
-
-    switch(tile.type) {
-      case "go_jail":
-        p.pos = JAIL_POS;
-        p.jailed = true;
-        p.jailAttempts = 0;
-        place(p);
-        showCard("🚓 Fengsel", "Du sendes rett i fengsel!");
-        break;
-
-      case "2points":
-        p.points += 2;
-        updateScores();
-        showCard("⭐ Poeng", "Du får 2 poeng!");
-        break;
-
-      case "lust":
-        showCard("⭐ Lust", draw(lustCards));
-        break;
-
-      case "dare":
-        showCard("🔥 Dare", draw(dareCards));
-        break;
-
-      case "drink":
-        showCard("🍺 Drikk", `Ta ${tile.amount} slurker`);
-        break;
-
-      case "back":
-        showCard("⬅ Tilbake", `Gå ${tile.amount} ruter tilbake`);
-        p.pos = (p.pos - tile.amount + tiles.length) % tiles.length;
-        place(p);
-        break;
-
-      default:
-        endTurn();
-        break;
+function animateDice(cb) {
+  let rolls = 12;
+  let interval = setInterval(() => {
+    d1.textContent = rand(6);
+    d2.textContent = rand(6);
+    rolls--;
+    if (!rolls) {
+      clearInterval(interval);
+      cb(Number(d1.textContent), Number(d2.textContent));
     }
-  }
+  }, 90);
+}
 
-  function showCard(title, text) {
-    cardText.innerHTML = `<h2>${title}</h2><p>${text}</p>`;
-    card.style.display = "flex";
-  }
+function roll() {
+  if (locked || winner) return;
+  locked = true;
 
-  function closeCard() {
-    card.style.display = "none";
-    endTurn();
-  }
+  players[0].name = document.getElementById("name1Input").value || "Spiller 1";
+  players[1].name = document.getElementById("name2Input").value || "Spiller 2";
 
-  function endTurn() {
-    if (winner) return;
-    current = (current + 1) % players.length;
-    locked = false;
-    updateTurnIndicator();
-  }
-
-  function rand(n) {
-    return Math.floor(Math.random() * n) + 1;
-  }
-
-  // ===== INIT =====
-  players.forEach(place);
   updateScores();
   updateTurnIndicator();
+
+  animateDice((a,b)=> move(a+b));
+}
+
+function move(steps) {
+  const p = players[current];
+  let moved = 0;
+
+  const anim = setInterval(()=>{
+    const old = p.pos;
+    p.pos = (p.pos+1)%tiles.length;
+
+    if(old===tiles.length-1 && p.pos===0){
+      p.laps++;
+      if(p.laps===6 && !winner){
+        winner=p;
+        showCard("🎉 Gratulerer!",`${p.name} vant spillet!`);
+        clearInterval(anim);
+        return;
+      }
+    }
+
+    place(p);
+    moved++;
+    if(moved>=steps){
+      clearInterval(anim);
+      resolve(tiles[p.pos]);
+    }
+  },250);
+}
+
+function resolve(tile){
+  const p=players[current];
+
+  switch(tile.type){
+    case "2points":
+      p.points+=2;
+      updateScores();
+      showCard("⭐ Poeng","Du får 2 poeng!");
+      break;
+
+    case "lust":
+      showCard("⭐ Lust", lustCards[rand(lustCards.length)-1]);
+      break;
+
+    case "dare":
+      showCard("🔥 Dare", dareCards[rand(dareCards.length)-1]);
+      break;
+
+    case "drink":
+      showCard("🍺 Drikk",`Ta ${tile.amount} slurker`);
+      break;
+
+    case "back":
+      p.pos=(p.pos-tile.amount+tiles.length)%tiles.length;
+      place(p);
+      showCard("⬅ Tilbake",`Gå ${tile.amount} ruter tilbake`);
+      break;
+
+    case "go_jail":
+      p.pos=JAIL_POS;
+      place(p);
+      showCard("🚓 Fengsel","Du sendes rett i fengsel!");
+      break;
+
+    default:
+      endTurn();
+  }
+}
+
+function showCard(title,text){
+  cardText.innerHTML=`<h2>${title}</h2><p>${text}</p>`;
+  card.style.display="flex";
+}
+
+function closeCard(){
+  card.style.display="none";
+  endTurn();
+}
+
+function endTurn(){
+  if(winner) return;
+  current=(current+1)%players.length;
+  locked=false;
+  updateTurnIndicator();
+}
+
+/* INIT */
+players.forEach(place);
+updateScores();
+updateTurnIndicator();
+
 </script>
 </body>
 </html>
