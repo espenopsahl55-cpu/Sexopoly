@@ -11,7 +11,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  width: 100%;
+  width: 100vw;
   height: 100dvh;
   background: #000;
   font-family: Arial, sans-serif;
@@ -22,14 +22,12 @@ html, body {
 }
 
 * {
-  touch-action: manipulation;
   box-sizing: border-box;
+  touch-action: manipulation;
 }
 
 body {
   display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 /* ===== LAYOUT ===== */
@@ -40,14 +38,25 @@ body {
   flex-direction: row;
 }
 
-/* ===== BRETT ===== */
+/* ===== BRETT (1851 av 2556 px) ===== */
 #board {
+  width: 72.42vw;
   height: 100dvh;
-  aspect-ratio: 950 / 620; /* behold ratioen du brukte */
-  background: url("board.png") no-repeat left center; /* FORANKRET VENSTRE */
+  background: url("board.png") no-repeat left center;
   background-size: 100% 100%;
   position: relative;
   flex-shrink: 0;
+}
+
+/* ===== UI (683 av 2556 px) ===== */
+#sideUI {
+  width: 27.58vw;
+  height: 100dvh;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #000;
 }
 
 /* ===== SPILLERBRIKKER ===== */
@@ -65,17 +74,7 @@ body {
 #p1 { background: #ff4d4d; }
 #p2 { background: #4da6ff; }
 
-/* ===== SIDE UI ===== */
-#sideUI {
-  flex: 1;
-  height: 100dvh;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background: #000;
-}
-
+/* ===== UI STYLE ===== */
 input, button {
   padding: 12px;
   font-size: 18px;
@@ -83,9 +82,7 @@ input, button {
   border: none;
 }
 
-input {
-  width: 100%;
-}
+input { width: 100%; }
 
 button {
   cursor: pointer;
@@ -95,9 +92,7 @@ button {
   color: white;
 }
 
-button:active {
-  transform: scale(0.97);
-}
+button:active { transform: scale(0.97); }
 
 #dice {
   display: flex;
@@ -106,9 +101,7 @@ button:active {
   justify-content: center;
 }
 
-#scores {
-  font-size: 20px;
-}
+#scores { font-size: 20px; }
 
 #turnIndicator {
   font-weight: bold;
@@ -131,9 +124,8 @@ button:active {
   background: #111;
   padding: 30px;
   max-width: 80vw;
-  text-align: center;
   border-radius: 14px;
-  color: white;
+  text-align: center;
 }
 
 /* ===== ROTASJON ADVARSEL ===== */
@@ -210,8 +202,7 @@ function checkOrientation() {
 window.addEventListener("resize", checkOrientation);
 checkOrientation();
 
-/* ===== SPILLDATA ===== */
-
+/* ===== KONSTANTER ===== */
 const JAIL_POS = 20;
 
 const tiles = [
@@ -300,6 +291,10 @@ function updateTurnIndicator() {
 
 function draw(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function rand(n) {
+  return Math.floor(Math.random() * n) + 1;
 }
 
 function animateDice(cb) {
@@ -439,10 +434,6 @@ function endTurn() {
   current = (current + 1) % players.length;
   locked = false;
   updateTurnIndicator();
-}
-
-function rand(n) {
-  return Math.floor(Math.random() * n) + 1;
 }
 
 players.forEach(place);
