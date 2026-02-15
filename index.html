@@ -210,7 +210,9 @@ checkOrientation();
 const JAIL_POS = 20;
 
 const tiles = [
-  {x:9.5,y:14.5,type:"lust"},
+[
+  // TOP (8)
+  {x:9.5,y:14.5,type:"start"},
   {x:21,y:14.5,type:"drink",amount:2},
   {x:32,y:14.5,type:"nothing"},
   {x:43,y:14.5,type:"2points"},
@@ -218,22 +220,28 @@ const tiles = [
   {x:65,y:14.5,type:"drink",amount:3},
   {x:76,y:14.5,type:"lust"},
   {x:87,y:14.5,type:"go_jail"},
+
+  // RIGHT (4)
   {x:87,y:31,type:"nothing"},
   {x:87,y:48,type:"drink",amount:2},
   {x:87,y:65,type:"dare"},
   {x:87,y:82,type:"back",amount:2},
-  {x:76,y:82,type:"nothing"},
-  {x:65,y:82,type:"drink",amount:1},
-  {x:54,y:82,type:"dare"},
-  {x:43,y:82,type:"2points"},
-  {x:32,y:82,type:"drink",amount:2},
-  {x:21,y:82,type:"nothing"},
-  {x:9.5,y:82,type:"dare"},
-  {x:5,y:82,type:"jail"},
-  {x:5,y:65,type:"2points"},
-  {x:5,y:48,type:"nothing"},
-  {x:5,y:31,type:"drink",amount:2},
-  {x:5,y:14.5,type:"start"}
+
+  // BOTTOM (7 + hjørne = 8)
+  {x:76,y:82,type:"drink",amount:1},
+  {x:65,y:82,type:"dare"},
+  {x:54,y:82,type:"2points"},
+  {x:43,y:82,type:"drink",amount:2},
+  {x:32,y:82,type:"nothing"},
+  {x:21,y:82,type:"dare"},
+  {x:9.5,y:82,type:"jail"},
+
+  // LEFT (4 tilbake til start)
+  {x:9.5,y:65,type:"2points"},
+  {x:9.5,y:48,type:"nothing"},
+  {x:9.5,y:31,type:"drink",amount:2},
+  {x:9.5,y:14.5,type:"lust"}
+]
 ];
 
 const lustCards = [
