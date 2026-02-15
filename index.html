@@ -207,38 +207,41 @@ window.addEventListener("resize", checkOrientation);
 checkOrientation();
 
 /* ===== KONSTANTER ===== */
-const JAIL_POS = 20;
+const JAIL_POS = 19; // <-- oppdatert (forklart under)
+
 const tiles = [
-  // TOP
-  {x:15,y:14.5,type:"start"},
-  {x:21,y:14.5,type:"drink",amount:2},
-  {x:32,y:14.5,type:"nothing"},
-  {x:43,y:14.5,type:"2points"},
-  {x:54,y:14.5,type:"back",amount:2},
-  {x:65,y:14.5,type:"drink",amount:3},
-  {x:76,y:14.5,type:"lust"},
-  {x:91,y:14.5,type:"go_jail"},
 
-  // RIGHT
-  {x:91,y:31,type:"nothing"},
-  {x:91,y:48,type:"drink",amount:2},
-  {x:91,y:65,type:"dare"},
-  {x:91,y:75,type:"back",amount:2},
+  // ===== TOP (8) =====
+  {x:15,    y:14.5,type:"start"},
+  {x:25.86, y:14.5,type:"drink",amount:2},
+  {x:36.71, y:14.5,type:"nothing"},
+  {x:47.57, y:14.5,type:"2points"},
+  {x:58.43, y:14.5,type:"back",amount:2},
+  {x:69.29, y:14.5,type:"drink",amount:3},
+  {x:80.14, y:14.5,type:"lust"},
+  {x:91,    y:14.5,type:"go_jail"},
 
-  // BOTTOM
-  {x:91,y:86,type:"drink",amount:1},
-  {x:65,y:86,type:"dare"},
-  {x:54,y:86,type:"2points"},
-  {x:43,y:86,type:"drink",amount:2},
-  {x:32,y:86,type:"nothing"},
-  {x:21,y:86,type:"dare"},
-  {x:15,y:86,type:"jail"},
+  // ===== RIGHT (4) =====
+  {x:91, y:28.8,type:"nothing"},
+  {x:91, y:43.1,type:"drink",amount:2},
+  {x:91, y:57.4,type:"dare"},
+  {x:91, y:71.7,type:"back",amount:2},
 
-  // LEFT
-  {x:15,y:86,type:"2points"},
-  {x:15,y:75,type:"nothing"},
-  {x:15,y:68,type:"drink",amount:2},
-  {x:15,y:48,type:"lust"}
+  // ===== BOTTOM (8) =====
+  {x:91,    y:86,type:"drink",amount:1},
+  {x:80.14, y:86,type:"dare"},
+  {x:69.29, y:86,type:"2points"},
+  {x:58.43, y:86,type:"drink",amount:2},
+  {x:47.57, y:86,type:"nothing"},
+  {x:36.71, y:86,type:"dare"},
+  {x:25.86, y:86,type:"nothing"}, // <-- ny 24-rute du manglet
+  {x:15,    y:86,type:"jail"},
+
+  // ===== LEFT (4) =====
+  {x:15, y:71.7,type:"2points"},
+  {x:15, y:57.4,type:"nothing"},
+  {x:15, y:43.1,type:"drink",amount:2},
+  {x:15, y:28.8,type:"lust"}
 ];
 
 
