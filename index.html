@@ -357,23 +357,67 @@ function roll() {
   animateDice((d1val, d2val) => {
     const p = players[current];
 
-    if (p.jailed) {
+   if (p.jailed) {
+
+      // ✅ Fikk 6 → slipper ut + går
       if (d1val === 6 || d2val === 6) {
         p.jailed = false;
         p.jailAttempts = 0;
+
+        showCard(
+          "🔓 Fri!",
+          "Du kastet en 6-er og slipper ut av fengsel!"
+        );
+
         move(d1val + d2val);
-      } else {
-        p.jailAttempts++;
-        showCard("🚓 Fengsel", `Ingen 6 – ta ${p.jailAttempts * 2} slurker`);
-        endTurn();
+        return;
       }
+
+      // ❌ Fikk ikke 6
+      p.jailAttempts++;
+
+      // 1️⃣ Forsøk
+      if (p.jailAttempts === 1) {
+        showCard(
+          "🚓 Fengsel",
+          "Forsøk 1/3 – Ingen 6<br>Ta 2 slurker"
+        );
+      }
+
+      // 2️⃣ Forsøk
+      else if (p.jailAttempts === 2) {
+        showCard(
+          "🚓 Fengsel",
+          "Forsøk 2/3 – Ingen 6<br>Ta 4 slurker"
+        );
+      }
+
+      // 3️⃣ Forsøk → Dare + ut
+      else if (p.jailAttempts === 3) {
+
+        const dare = draw(dareCards);
+
+        showCard(
+          "🚓 Siste forsøk!",
+          `Forsøk 3/3 – Ingen 6<br><br>
+           Trekk Dare:<br><b>${dare}</b><br><br>
+           Du slipper ut og går videre!`
+        );
+
+        p.jailed = false;
+        p.jailAttempts = 0;
+
+        move(d1val + d2val);
+        return;
+      }
+
+      endTurn();
       return;
     }
 
-    move(d1val + d2val);
-  });
-}
-
+    /* =========================
+       🎲 NORMAL MOVE
+    ========================= */
 function move(steps) {
   const p = players[current];
   let moved = 0;
@@ -510,5 +554,7 @@ updateActiveGlow();   // <-- LEGG TIL
 </script>
 </body>
 </html>
+
+
 
 
