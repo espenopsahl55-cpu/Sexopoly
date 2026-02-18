@@ -622,9 +622,9 @@ if (players[0].pos === players[1].pos) {
       break;
 
 case "back":
+  p.pos = 0;           // Flytt til start med en gang
+  place(p);             // Oppdater posisjon
   showCard("🔙 Back!", "Du må gå tilbake til start!");
-  p.pos = 0;  // Flytt til start
-  place(p);   // Oppdater posisjon
   break;
     
     case "klesplagg":
