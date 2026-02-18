@@ -302,10 +302,9 @@ const dareCards = [
   "Hvis naken: valgfri stilling i 3 min – ellers 5 slurker",
   "Bind for øynene – partner overrasker i 1 min","Ta av 3 plagg og ta 2 slurker"
 ];
-
 let players = [
-  {pos:0, el:null, name:"Spiller 1", jailed:false, jailAttempts:0, points:0, laps:0},
-  {pos:0, el:null, name:"Spiller 2", jailed:false, jailAttempts:0, points:0, laps:0}
+ {pos:0, el:null, name:"Spiller 1", jailed:false, jailAttempts:0, jailFreeTurn:false, points:0, laps:0},
+ {pos:0, el:null, name:"Spiller 2", jailed:false, jailAttempts:0, jailFreeTurn:false, points:0, laps:0}
 ];
 
 let current = 0;
@@ -398,63 +397,78 @@ function roll() {
   animateDice((d1val, d2val) => {
     const p = players[current];
 
-   if (p.jailed) {
+if (p.jailed) {
 
-      // ✅ Fikk 6 → slipper ut + går
-      if (d1val === 6 || d2val === 6) {
-        p.jailed = false;
-        p.jailAttempts = 0;
+  // 🔓 Skal slippe ut automatisk
+  if (p.jailFreeTurn) {
+    p.jailed = false;
+    p.jailFreeTurn = false;
 
-        showCard(
-          "🔓 Fri!",
-          "Du kastet en 6-er og slipper ut av fengsel!"
-        );
+    showCard(
+      "🔓 Du slipper ut!",
+      "Du har sonet ferdig og går videre etter kastet."
+    );
 
-        move(d1val + d2val);
-        return;
-      }
+    move(d1val + d2val);
+    return;
+  }
 
-      // ❌ Fikk ikke 6
-      p.jailAttempts++;
+  // ✅ Fikk 6 → slipper ut direkte
+  if (d1val === 6 || d2val === 6) {
+    p.jailed = false;
+    p.jailAttempts = 0;
 
-      // 1️⃣ Forsøk
-      if (p.jailAttempts === 1) {
-        showCard(
-          "🚓 Fengsel",
-          "Forsøk 1/3 – Ingen 6<br>Ta 2 slurker"
-        );
-      }
+    showCard(
+      "🔓 Fri!",
+      "Du kastet en 6-er og slipper ut av fengsel!"
+    );
 
-      // 2️⃣ Forsøk
-      else if (p.jailAttempts === 2) {
-        showCard(
-          "🚓 Fengsel",
-          "Forsøk 2/3 – Ingen 6<br>Ta 4 slurker"
-        );
-      }
+    move(d1val + d2val);
+    return;
+  }
 
-      // 3️⃣ Forsøk → Dare + ut
-      else if (p.jailAttempts === 3) {
+  // ❌ Ingen 6
+  p.jailAttempts++;
 
-        const dare = draw(dareCards);
+  // 1️⃣ Forsøk
+  if (p.jailAttempts === 1) {
+    showCard(
+      "🚓 Fengsel",
+      "Forsøk 1/3 – Ingen 6<br>Ta 2 slurker"
+    );
+  }
 
-        showCard(
-          "🚓 Siste forsøk!",
-          `Forsøk 3/3 – Ingen 6<br><br>
-           Trekk Dare:<br><b>${dare}</b><br><br>
-           Du slipper ut og går videre!`
-        );
+  // 2️⃣ Forsøk
+  else if (p.jailAttempts === 2) {
+    showCard(
+      "🚓 Fengsel",
+      "Forsøk 2/3 – Ingen 6<br>Ta 4 slurker"
+    );
+  }
 
-        p.jailed = false;
-        p.jailAttempts = 0;
+  // 3️⃣ Forsøk → Dare + slipper neste tur
+  else if (p.jailAttempts === 3) {
 
-        move(d1val + d2val);
-        return;
-      }
+    const dare = draw(dareCards);
 
-      endTurn();
-      return;
-    }
+    showCard(
+      "🚓 Siste forsøk!",
+      `Forsøk 3/3 – Ingen 6<br><br>
+       Trekk Dare:<br><b>${dare}</b><br><br>
+       Du slipper ut neste tur.`
+    );
+
+    p.jailAttempts = 0;
+    p.jailFreeTurn = true; // 🔥 slippes ut neste tur
+
+    endTurn();
+    return;
+  }
+
+  endTurn();
+  return;
+}
+    
     /* =========================
        🎲 NORMAL MOVE
     ========================= */
@@ -503,6 +517,7 @@ function resolve(tile) {
       p.pos = JAIL_POS;
       p.jailed = true;
       p.jailAttempts = 0;
+      p.jailFreeTurn = false; // 🔥 viktig reset
       place(p);
       showCard("🚓 Fengsel", "Du sendes rett i fengsel!");
       break;
@@ -590,23 +605,27 @@ function showChoiceCard(player) {
   cardText.innerHTML = `
     <h2>Velg Lust eller Dare</h2>
     <div style="display:flex; gap:20px; justify-content:center; margin-top:20px;">
-      <button onclick="chooseCard('${player.name}', 'lust')">Lust</button>
-      <button onclick="chooseCard('${player.name}', 'dare')">Dare</button>
+      <button onclick="chooseCard(event, 'lust')">Lust</button>
+      <button onclick="chooseCard(event, 'dare')">Dare</button>
     </div>
   `;
   card.style.display = "flex";
   card.classList.add("show");
 }
+function chooseCard(e, type) {
+  e.stopPropagation(); // 🔥 stopper kortet fra å lukke seg
 
-function chooseCard(playerName, type) {
   const text = type === "lust" ? draw(lustCards) : draw(dareCards);
+
   cardText.innerHTML = `
     <h2>${type === "lust" ? "⭐ Lust" : "🔥 Dare"}</h2>
     <p>${text}</p>
     <p><small>(Trykk kortet for å fortsette)</small></p>
   `;
-
 }
+
+  
+
 
 function endTurn() {
   if (winner) return;
