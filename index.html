@@ -276,11 +276,11 @@ const tiles = [
   {x:58.43, y:14.5,type:"2points"},
   {x:69.29, y:14.5,type:"dare"},
   {x:80.14, y:14.5,type:"lust"},
-  {x:91,    y:14.5,type:"go_jail"},
+  {x:91,    y:14.5,type:"back", amount:2},
 
   // ===== RIGHT (4) =====
   {x:91, y:28.8,type:"2points"},
-  {x:91, y:43.1,type:"nothing"},
+  {x:91, y:43.1,type:"go_jail"},
   {x:91, y:57.4,type:"give2"},
   {x:91, y:71.7,type:"park"},
 
@@ -621,11 +621,11 @@ if (players[0].pos === players[1].pos) {
       showCard("🍺 Drikk", `Ta ${tile.amount} slurker`);
       break;
 
-    case "back":
-      showCard("⬅ Tilbake", `Gå ${tile.amount} ruter tilbake`);
-      p.pos = (p.pos - tile.amount + tiles.length) % tiles.length;
-      place(p);
-      break;
+case "back":
+  p.pos = (p.pos - tile.amount + tiles.length) % tiles.length;
+  place(p);
+  resolve(tiles[p.pos]); // <-- kjører handlingen på den nye ruten
+  break;
     
     case "klesplagg":
       showCard(" Klesplagg","Fjern 2 klesplagg👖🧦");
