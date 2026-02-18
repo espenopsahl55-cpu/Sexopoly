@@ -415,7 +415,7 @@ function showWildCard() {
   card.classList.add("show", "wild");
 
   // ✨ Legg til risting og snurring
-  cardContent.style.animation = "wildShake 1s infinite alternate, wildFlip 1s infinite alternate";
+
 }
 function updateScores() {
   score1.textContent = `${players[0].name}: ${players[0].points} ⭐`;
@@ -563,7 +563,7 @@ function move(steps) {
 
     if (oldPos === tiles.length - 1 && p.pos === 0) {
       p.laps++;
-      if (p.laps === 6 && !winner) {
+      if (p.laps === 12 && !winner) {
         winner = p;
         showCard("🎆 Gratulerer!", `${p.name} har vunnet!`);
         clearInterval(stepAnim);
@@ -628,11 +628,11 @@ if (players[0].pos === players[1].pos) {
       break;
     
     case "klesplagg":
-      showCard("Fjern 2 klesplagg👖🧦");
+      showCard(" Klesplagg","Fjern 2 klesplagg👖🧦");
       break;
       
     case "park":
-      showCard("gratis parkering🚗");
+      showCard("parkering","gratis parkering🚗");
       break; 
 
       case "spotify":
@@ -673,7 +673,6 @@ function showCard(title, text) {
 
 function closeCard() {
   card.classList.remove("show", "wild");
-  cardContent.style.animation = ""; // fjern animasjon
   setTimeout(() => {
     card.style.display = "none";
     locked = false; // 🔓 Lås opp spillet
