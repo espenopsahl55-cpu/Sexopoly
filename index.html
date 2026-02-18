@@ -62,7 +62,6 @@ body {
   justify-content: space-between;
   background: #000;
 }
-
 /* ===== SPILLERBRIKKER ===== */
 .player {
   position: absolute;
@@ -121,6 +120,32 @@ button:active { transform: scale(0.97); }
 }
 
 /* ===== KORT ===== */
+/* Fade-in / fade-out kort */
+#card {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#card.show {
+  display: flex;
+  opacity: 1;
+}
+
+/* Typewriter tekst */
+.typewriter {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid white;
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { border-color: white; }
+  50% { border-color: transparent; }
+}
+
+  
 #card {
   position: fixed;
   inset: 0;
@@ -187,9 +212,9 @@ button:active { transform: scale(0.97); }
       <div id="d2">🎲</div>
     </div>
 
-    <button id="rollBtn" onclick="roll()">Kast terning</button>
-
-  </div>
+   <button id="rollBtn" onclick="roll()">Kast terning</button>
+  <button id="infoBtn" onclick="showInfo()">(?)</button>
+  
 </div>
 
 <div id="card" onclick="closeCard()">
@@ -220,7 +245,7 @@ const tiles = [
 
   // ===== TOP (8) =====
   {x:15,    y:14.5,type:"start"},
-  {x:25.86, y:14.5,type:"lust"},
+  {x:25.86, y:14.5,type:"lust_or_dare"},
   {x:36.71, y:14.5,type:"drink",amount:2},
   {x:47.57, y:14.5,type:"nothing"},
   {x:58.43, y:14.5,type:"2points"},
@@ -241,14 +266,14 @@ const tiles = [
   {x:58.43, y:86,type:"dare"},
   {x:47.57, y:86,type:"give2"},
   {x:36.71, y:86,type:"dare"},
-  {x:25.86, y:86,type:"lust"}, // <-- ny 24-rute du manglet
+  {x:25.86, y:86,type:"lust_or_dare"}, // <-- ny 24-rute du manglet
   {x:15,    y:86,type:"jail"},
 
   // ===== LEFT (4) =====
   {x:15, y:71.7,type:"bestem"},
   {x:15, y:57.4,type:"2points"},
   {x:15, y:43.1,type:"drink",amount:2},
-  {x:15, y:28.8,type:"lust"}
+  {x:15, y:28.8,type:"lust_or_dare"}
 ];
 
 
@@ -296,7 +321,14 @@ function updateActiveGlow() {
   players.forEach(p => p.el.classList.remove("active"));
   players[current].el.classList.add("active");
 }
-
+function showInfo() {
+  const infoText = `
+    2 poeng: Massasje<br>
+    4 poeng: Velg om partner skal trekke Dare eller Lust<br>
+    7 poeng: Partner må ta av 1 plagg
+  `;
+  showCard("ℹ️ Poeng-info", infoText);
+}
 function place(p) {
   const board = document.getElementById("board");
   const t = tiles[p.pos];
@@ -466,6 +498,10 @@ function resolve(tile) {
       showCard("🚓 Fengsel", "Du sendes rett i fengsel!");
       break;
 
+    case "lust_or_dare":
+      showChoiceCard(p);
+      break;
+
     case "2points":
       p.points += 2;
       updateScores();
@@ -506,11 +542,17 @@ function resolve(tile) {
       showCard("Bestem et utfordrings kort til partner🧑‍⚖️👩‍⚖️");
       break; 
     
-    case "give2":
+case "give2":
+  const giver = players[current];
   const partner = players[(current+1)%players.length];
-  partner.points += 2;
-  updateScores();
-  showCard("🎁 Gi poeng", `${partner.name} får 2 poeng!`);
+  if (giver.points >= 2) {
+    giver.points -= 2;
+    partner.points += 2;
+    updateScores();
+    showCard("🎁 Gi poeng", `${giver.name} gir 2 poeng til ${partner.name}`);
+  } else {
+    showCard("🎁 Gi poeng", `${giver.name} har ikke nok poeng til å gi`);
+  }
   break;
 
     default:
@@ -520,13 +562,47 @@ function resolve(tile) {
 }
 
 function showCard(title, text) {
-  cardText.innerHTML = `<h2>${title}</h2><p>${text}</p>`;
+  cardText.innerHTML = `<h2>${title}</h2><p class="typewriter"></p>`;
   card.style.display = "flex";
+  card.classList.add("show");
+
+  const p = cardText.querySelector("p");
+  let i = 0;
+  
+  function typeWriter() {
+    if (i < text.length) {
+      p.textContent += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, 30); // 30ms per bokstav
+    }
+  }
+  typeWriter();
 }
 
+
 function closeCard() {
-  card.style.display = "none";
-  endTurn();
+  card.classList.remove("show");
+  setTimeout(() => {
+    card.style.display = "none";
+    endTurn();
+  }, 300);
+}
+function showChoiceCard(player) {
+  cardText.innerHTML = `
+    <h2>Velg Lust eller Dare</h2>
+    <div style="display:flex; gap:20px; justify-content:center; margin-top:20px;">
+      <button onclick="chooseCard('${player.name}', 'lust')">Lust</button>
+      <button onclick="chooseCard('${player.name}', 'dare')">Dare</button>
+    </div>
+  `;
+  card.style.display = "flex";
+  card.classList.add("show");
+}
+
+function chooseCard(playerName, type) {
+  const text = type === "lust" ? draw(lustCards) : draw(dareCards);
+  cardText.innerHTML = `<h2>${type === "lust" ? "⭐ Lust" : "🔥 Dare"}</h2><p>${text}</p><p><small>(Trykk for å fortsette)</small></p>`;
+
 }
 
 function endTurn() {
