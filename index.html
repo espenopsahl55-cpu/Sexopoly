@@ -185,7 +185,23 @@ button:active { transform: scale(0.97); }
   font-size: 22px;
   z-index: 100;
 }
+@keyframes wildShake {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(3deg); }
+  50% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+  100% { transform: rotate(0deg); }
+}
 
+@keyframes wildFlip {
+  0% { perspective: 600px; transform-style: preserve-3d; rotateY(0deg); }
+  50% { rotateY(180deg); }
+  100% { rotateY(0deg); }
+}
+
+#card.wild #cardContent {
+  animation: wildShake 0.5s infinite alternate, wildFlip 1.5s infinite alternate;
+}
 </style>
 </head>
 
@@ -306,7 +322,13 @@ let players = [
  {pos:0, el:null, name:"Spiller 1", jailed:false, jailAttempts:0, jailFreeTurn:false, points:0, laps:0},
  {pos:0, el:null, name:"Spiller 2", jailed:false, jailAttempts:0, jailFreeTurn:false, points:0, laps:0}
 ];
-
+const wildCards = [
+  "Alle tar 2 slurker 🍺",
+  "Bytt plass med partner 🔄",
+  "Få 3 poeng ekstra ⭐",
+  "Trekke Dare eller Lust for begge 🔥",
+  "Neste runde dobbel terning 🎲"
+];
 let current = 0;
 let locked = false;
 let winner = null;
@@ -343,7 +365,22 @@ function place(p) {
   p.el.style.left = (board.clientWidth * t.x / 100) + "px";
   p.el.style.top = (board.clientHeight * t.y / 100) + "px";
 }
+function showWildCard() {
+  locked = true; // 🔒 Lås spillet mens kortet vises
+  const text = draw(wildCards);
 
+  cardText.innerHTML = `
+    <h2>🎲 Wild Card!</h2>
+    <p>${text}</p>
+    <p><small>(Trykk kortet for å fortsette)</small></p>
+  `;
+
+  card.style.display = "flex";
+  card.classList.add("show", "wild");
+
+  // ✨ Legg til risting og snurring
+  cardContent.style.animation = "wildShake 1s infinite alternate, wildFlip 1s infinite alternate";
+}
 function updateScores() {
   score1.textContent = `${players[0].name}: ${players[0].points} ⭐`;
   score2.textContent = `${players[1].name}: ${players[1].points} ⭐`;
@@ -511,7 +548,11 @@ function move(steps) {
 
 function resolve(tile) {
   const p = players[current];
-
+// Hvis begge er på samme posisjon
+if (players[0].pos === players[1].pos) {
+  showWildCard();
+   return; // viktig! stopper alt annet til kortet er lukket
+}
   switch(tile.type) {
     case "go_jail":
       p.pos = JAIL_POS;
@@ -595,11 +636,14 @@ function showCard(title, text) {
 
 
 function closeCard() {
-  card.classList.remove("show");
+  card.classList.remove("show", "wild");
+  cardContent.style.animation = ""; // fjern animasjon
   setTimeout(() => {
     card.style.display = "none";
+    locked = false; // 🔓 Lås opp spillet
     endTurn();
   }, 300);
+
 }
 function showChoiceCard(player) {
   cardText.innerHTML = `
@@ -658,7 +702,7 @@ updateActiveGlow();   // <-- LEGG TIL
   });
 </script>
 </body>
-</html>
+</html> 
 
 
 
