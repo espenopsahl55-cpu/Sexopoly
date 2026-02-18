@@ -104,6 +104,15 @@ button {
 
 button:active { transform: scale(0.97); }
 
+#infoBtn {
+  min-height: 36px;       /* mindre høyde */
+  font-size: 14px;        /* mindre tekst */
+  padding: 6px 10px;      /* mindre padding */
+  background: #888;       /* mørkere grå, valgfritt */
+  color: white;
+  border-radius: 6px;
+}
+
 #dice {
   display: flex;
   gap: 20px;
@@ -562,21 +571,11 @@ case "give2":
 }
 
 function showCard(title, text) {
-  cardText.innerHTML = `<h2>${title}</h2><p class="typewriter"></p>`;
+  cardText.innerHTML = `<h2>${title}</h2><p>${text}</p><p><small>(Trykk kortet for å fortsette)</small></p>`;
   card.style.display = "flex";
   card.classList.add("show");
-
-  const p = cardText.querySelector("p");
-  let i = 0;
   
-  function typeWriter() {
-    if (i < text.length) {
-      p.textContent += text.charAt(i);
-      i++;
-      setTimeout(typeWriter, 30); // 30ms per bokstav
-    }
-  }
-  typeWriter();
+
 }
 
 
@@ -601,7 +600,11 @@ function showChoiceCard(player) {
 
 function chooseCard(playerName, type) {
   const text = type === "lust" ? draw(lustCards) : draw(dareCards);
-  cardText.innerHTML = `<h2>${type === "lust" ? "⭐ Lust" : "🔥 Dare"}</h2><p>${text}</p><p><small>(Trykk for å fortsette)</small></p>`;
+  cardText.innerHTML = `
+    <h2>${type === "lust" ? "⭐ Lust" : "🔥 Dare"}</h2>
+    <p>${text}</p>
+    <p><small>(Trykk kortet for å fortsette)</small></p>
+  `;
 
 }
 
