@@ -624,7 +624,6 @@ if (players[0].pos === players[1].pos) {
 case "back":
   p.pos = (p.pos - tile.amount + tiles.length) % tiles.length;
   place(p);
-  resolve(tiles[p.pos]); // <-- kjører handlingen på den nye ruten
   break;
     
     case "klesplagg":
