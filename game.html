@@ -256,6 +256,24 @@ button:active { transform: scale(0.97); }
 
 <script>
 
+  let wakeLockSentinel = null;
+
+async function requestWakeLock() {
+  try {
+    if (!("wakeLock" in navigator)) return;
+    wakeLockSentinel = await navigator.wakeLock.request("screen");
+  } catch (e) {
+    // kan feile på noen mobiler / batterisparing / ikke støttet
+  }
+}
+
+// hvis wake lock slipper når siden blir "skjult", be om den igjen når dere er tilbake
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    requestWakeLock();
+  }
+});
+
 /* ===== ROTASJONSSJEKK ===== */
 function checkOrientation() {
   const warning = document.getElementById("rotateWarning");
@@ -778,10 +796,12 @@ updateActiveGlow();   // <-- LEGG TIL
   });
 
   // ▶️ Start ved første trykk (mobil-policy)
-  document.body.addEventListener("click", function startMusic(){
-    playTrack(0);
-    document.body.removeEventListener("click", startMusic);
-  });
+document.body.addEventListener("click", function startMusic(){
+  requestWakeLock();      // 🔥 holder skjermen våken
+  playTrack(0);
+  document.body.removeEventListener("click", startMusic);
+});
+  
 </script>
 </body>
 </html> 
