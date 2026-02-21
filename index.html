@@ -2,43 +2,178 @@
 <html lang="no">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sex o Pol – Meny</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sex o Pol – Velg brett</title>
+
 <style>
-body{
+html, body{
   margin:0;
-  background:black;
+  padding:0;
+  background:#000;
   color:white;
-  font-family:Arial;
+  font-family:Arial, sans-serif;
+  height:100vh;
+  overflow:hidden;
+}
+
+body{
   display:flex;
   flex-direction:column;
-  justify-content:center;
   align-items:center;
-  height:100vh;
+  justify-content:center;
 }
+
+/* ===== TITTEL ===== /
+h1{
+  margin-bottom:20px;
+  font-size:32px;
+  text-align:center;
+}
+
+/ ===== CAROUSEL ===== /
+#carousel{
+  width:85vw;
+  max-width:650px;
+  overflow:hidden;
+  border-radius:16px;
+  position:relative;
+}
+
+#preview{
+  width:100%;
+  display:block;
+  border-radius:16px;
+  user-select:none;
+  -webkit-user-drag:none;
+  touch-action:pan-y;
+}
+
+/ ===== LABEL ===== /
+#boardLabel{
+  margin-top:14px;
+  font-size:18px;
+  opacity:.85;
+  text-align:center;
+}
+
+/ ===== DOTS ===== /
+#dots{
+  margin-top:10px;
+  display:flex;
+  gap:8px;
+  justify-content:center;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#555;
+}
+
+.dot.active{
+  background:#4da6ff;
+}
+
+/ ===== BUTTON ===== /
 button{
-  padding:15px 30px;
+  margin-top:26px;
+  padding:16px 32px;
   font-size:20px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   background:#4da6ff;
   color:white;
+  font-weight:bold;
   cursor:pointer;
+}
+
+button:active{
+  transform:scale(.96);
 }
 </style>
 </head>
+
 <body>
 
 <h1>Velg spillebrett</h1>
 
-<button onclick="startGame('board.png')">
-  Start spill
-</button>
+<div id="carousel">
+  <img id="preview" src="board.png" alt="">
+</div>
+
+<div id="boardLabel"></div>
+<div id="dots"></div>
+
+<button onclick="startGame()">Start spill</button>
 
 <script>
-function startGame(boardFile){
-  window.location.href = "game.html?board=" + boardFile;
+/ ===== BRETT LISTE ===== /
+const boards = [
+  {name:"Original", file:"board.png"},
+  {name:"Grønn/Lilla/Blå", file:"board2.png"},
+  {name:"Lilla/Grønn/Gul", file:"board3.png"},
+  {name:"Lilla/Gul", file:"board4.png"},
+  {name:"Blå/Gul", file:"board5.png"},
+  {name:"Lyseblå/Gul", file:"board6.png"},
+  {name:"Grønn/Gul", file:"board7.png"}
+];
+
+let index = 0;
+
+const preview = document.getElementById("preview");
+const label = document.getElementById("boardLabel");
+const dotsWrap = document.getElementById("dots");
+
+/ ===== LAG DOTS ===== /
+boards.forEach((_, i)=>{
+  const d = document.createElement("div");
+  d.className = "dot";
+  dotsWrap.appendChild(d);
+});
+
+/ ===== UPDATE UI ===== /
+function updateUI(){
+  preview.src = boards[index].file;
+  label.textContent = boards[index].name;
+
+  document.querySelectorAll(".dot").forEach((d,i)=>{
+    d.classList.toggle("active", i === index);
+  });
 }
+
+updateUI();
+
+/ ===== SWIPE ===== /
+let startX = 0;
+
+preview.addEventListener("touchstart", e=>{
+  startX = e.changedTouches[0].screenX;
+});
+
+preview.addEventListener("touchend", e=>{
+  const diff = e.changedTouches[0].screenX - startX;
+
+  if(diff < -50){
+    index = (index + 1) % boards.length;
+  }
+  else if(diff > 50){
+    index = (index - 1 + boards.length) % boards.length;
+  }
+
+  updateUI();
+});
+
+/ ===== START SPILL ===== /
+function startGame(){
+  const chosen = boards[index].file;
+  window.location.href = "game.html?board=" + chosen;
+}
+
+/ ===== FALLBACK HVIS BILDE MANGLER ===== */
+preview.onerror = () => {
+  preview.src = "board.png";
+};
 </script>
 
 </body>
