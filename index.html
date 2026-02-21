@@ -15,7 +15,7 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Roter-til-liggende overlay /
+  /* Roter-til-liggende overlay */
   #rotateWarning{
     position: fixed;
     inset: 0;
@@ -36,31 +36,31 @@
     flex-direction:column;
     justify-content:center;
     align-items:center;
-    gap:8px;
+    gap:10px;
     padding:16px;
     box-sizing:border-box;
   }
 
   h1{
     margin:0;
-    font-size:24px;
+    font-size:26px;
     text-align:center;
   }
 
-  / 🔥 ENDA MINDRE CARD /
+  /* Preview "card" */
   #previewCard{
-    width: min(52vw, 380px);
+    width: min(62vw, 460px);  /* litt mindre enn før, men trygg */
     border-radius:16px;
     background:#111;
-    padding:9px;
+    padding:10px;
     box-sizing:border-box;
     border:1px solid rgba(255,255,255,0.08);
   }
 
-  / 🔥 MER KOMPAKT HØYDE */
+  /* Preview-ramme: bruk fast høyde for stabilitet */
   #previewFrame{
     width:100%;
-    aspect-ratio: 26 / 9;
+    height: 140px;            /* 🔥 gjør preview mindre, stabilt */
     border-radius:12px;
     overflow:hidden;
     background:#000;
@@ -69,6 +69,7 @@
     justify-content:center;
   }
 
+  /* Full oversikt uten crop */
   #previewImg{
     width:100%;
     height:100%;
@@ -80,27 +81,27 @@
   }
 
   #boardLabel{
-    margin-top:6px;
-    font-size:14px;
+    margin-top:8px;
+    font-size:15px;
     opacity:.85;
     text-align:center;
   }
 
   #hint{
-    font-size:11px;
+    font-size:12px;
     opacity:.6;
     text-align:center;
   }
 
   #dots{
     display:flex;
-    gap:6px;
+    gap:7px;
     justify-content:center;
-    margin-top:6px;
+    margin-top:8px;
   }
 
   .dot{
-    width:6px; height:6px; border-radius:50%;
+    width:7px; height:7px; border-radius:50%;
     background:#555;
   }
 
@@ -110,19 +111,19 @@
 
   .actions{
     display:flex;
-    gap:10px;
+    gap:12px;
     align-items:center;
     justify-content:center;
   }
 
   button{
-    padding:12px 18px;
-    font-size:16px;
+    padding:13px 20px;
+    font-size:17px;
     border-radius:12px;
     border:none;
     font-weight:bold;
     cursor:pointer;
-    min-height:46px;
+    min-height:50px;
   }
 
   #startBtn{
@@ -137,12 +138,18 @@
   .navBtn{
     background:#222;
     color:#fff;
-    padding:12px 12px;
-    min-width:46px;
+    padding:13px 14px;
+    min-width:50px;
   }
 
   .navBtn:active{
     transform:scale(.97);
+  }
+
+  /* Enda litt mindre på veldig små skjermer */
+  @media (max-width: 420px){
+    #previewFrame{ height: 120px; }
+    h1{ font-size:24px; }
   }
 </style>
 </head>
@@ -225,7 +232,6 @@
   }
 
   let startX = 0;
-
   img.addEventListener("touchstart", e=>{
     startX = e.changedTouches[0].screenX;
   }, {passive:true});
@@ -241,9 +247,7 @@
     window.location.href = "game.html?board=" + encodeURIComponent(chosen);
   }
 
-  img.onerror = () => {
-    img.src = "board.png";
-  };
+  img.onerror = () => { img.src = "board.png"; };
 
   updateUI();
 </script>
