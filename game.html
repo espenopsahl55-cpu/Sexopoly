@@ -371,7 +371,14 @@ let winner = null;
 
 players[0].el = document.getElementById("p1");
 players[1].el = document.getElementById("p2");
+const params = new URLSearchParams(window.location.search);
+const selectedBoard = params.get("board");
 
+if (selectedBoard) {
+  const board = document.getElementById("board");
+  board.style.background = `url('${selectedBoard}') no-repeat left center`;
+  board.style.backgroundSize = "calc(100% + 200px) 100%";
+}
 const score1 = document.getElementById("score1");
 const score2 = document.getElementById("score2");
 const turnIndicator = document.getElementById("turnIndicator");
