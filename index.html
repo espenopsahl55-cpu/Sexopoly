@@ -69,6 +69,7 @@
     padding:24px;
     z-index: 500;
   }
+
   #splash h1{ margin:0; font-size:36px; letter-spacing:0.5px; }
   #splash .byline{ opacity:.75; font-size:16px; }
   #splash .tap{ margin-top:14px; font-size:14px; opacity:.7; }
@@ -77,7 +78,15 @@
     50% { opacity: .9; transform: translateY(-2px); }
   }
   #splash .tap{ animation: pulse 1.2s infinite; }
-
+#splashMascot{
+  width: min(45vw, 220px);
+  height: auto;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 18px rgba(77,166,255,0.35));
+  user-select: none;
+  -webkit-user-drag: none;
+  opacity: 0.95;
+}
   /* MENY */
   #wrap{
     height:100dvh;
@@ -159,7 +168,8 @@
     :root{ --preview-h: 120px; }
     #splash h1{ font-size:32px; }
     h2{ font-size:24px; }
-  }
+}
+  
 </style>
 </head>
 
@@ -177,6 +187,7 @@
 
 <!-- FORSIDE -->
 <div id="splash" onclick="enterMenu()" role="button" aria-label="Trykk for å fortsette">
+  <img id="splashMascot" src="mascot.png" alt="Sexopoly mascot">
   <h1>Welcome to Sexopol</h1>
   <div class="byline">Made by Espen Opsahl</div>
   <div class="tap">Trykk for å fortsette</div>
@@ -293,3 +304,4 @@
 
 </body>
 </html>
+
