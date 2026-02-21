@@ -7,8 +7,7 @@
 
 <style>
   :root{
-    /* Juster kun denne hvis du vil ha preview litt mindre/større */
-    --preview-h: 140px;   /* f.eks 120px for mindre */
+    --preview-h: 140px;
     --card-w: 520px;
     --accent: #4da6ff;
   }
@@ -22,7 +21,26 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Roter-til-liggende overlay */
+  /* START-OVERLAY */
+  #launchOverlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(6px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 900;
+    text-align: center;
+  }
+  #launchOverlay.show{ display:flex; }
+  #launchOverlay .title{ font-size: 24px; font-weight: bold; }
+  #launchOverlay .dice{ font-size: 40px; animation: spinDice 1s linear infinite; }
+  @keyframes spinDice{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+
+  /* ROTER-OVERLAY */
   #rotateWarning{
     position: fixed;
     inset: 0;
@@ -37,7 +55,7 @@
     padding: 24px;
   }
 
-  /* ===== SPLASH / FORSIDE ===== */
+  /* SPLASH */
   #splash{
     position: fixed;
     inset: 0;
@@ -49,36 +67,18 @@
     text-align:center;
     gap:14px;
     padding:24px;
-    z-index: 500; /* under rotateWarning, over alt annet */
+    z-index: 500;
   }
-
-  #splash h1{
-    margin:0;
-    font-size:36px;
-    letter-spacing:0.5px;
-  }
-
-  #splash .byline{
-    opacity:.75;
-    font-size:16px;
-  }
-
-  #splash .tap{
-    margin-top:14px;
-    font-size:14px;
-    opacity:.7;
-  }
-
-  /* liten “pulse” på tap-tekst */
+  #splash h1{ margin:0; font-size:36px; letter-spacing:0.5px; }
+  #splash .byline{ opacity:.75; font-size:16px; }
+  #splash .tap{ margin-top:14px; font-size:14px; opacity:.7; }
   @keyframes pulse {
     0%, 100% { opacity: .55; transform: translateY(0); }
     50% { opacity: .9; transform: translateY(-2px); }
   }
-  #splash .tap{
-    animation: pulse 1.2s infinite;
-  }
+  #splash .tap{ animation: pulse 1.2s infinite; }
 
-  /* ===== BRETTVELGER ===== */
+  /* MENY */
   #wrap{
     height:100dvh;
     display:flex;
@@ -89,12 +89,7 @@
     padding:18px;
     box-sizing:border-box;
   }
-
-  h2{
-    margin:0;
-    font-size:26px;
-    text-align:center;
-  }
+  h2{ margin:0; font-size:26px; text-align:center; }
 
   #previewCard{
     width: min(80vw, var(--card-w));
@@ -126,18 +121,8 @@
     touch-action: pan-y;
   }
 
-  #boardLabel{
-    margin-top:10px;
-    font-size:15px;
-    opacity:.85;
-    text-align:center;
-  }
-
-  #hint{
-    font-size:12px;
-    opacity:.6;
-    text-align:center;
-  }
+  #boardLabel{ margin-top:10px; font-size:15px; opacity:.85; text-align:center; }
+  #hint{ font-size:12px; opacity:.6; text-align:center; }
 
   #dots{
     display:flex;
@@ -145,18 +130,10 @@
     justify-content:center;
     margin-top:10px;
   }
-  .dot{
-    width:8px; height:8px; border-radius:50%;
-    background:#555;
-  }
+  .dot{ width:8px; height:8px; border-radius:50%; background:#555; }
   .dot.active{ background: var(--accent); }
 
-  .actions{
-    display:flex;
-    gap:12px;
-    align-items:center;
-    justify-content:center;
-  }
+  .actions{ display:flex; gap:12px; align-items:center; justify-content:center; }
 
   button{
     padding:14px 22px;
@@ -167,10 +144,7 @@
     cursor:pointer;
     min-height:54px;
   }
-  #startBtn{
-    background: var(--accent);
-    color:#fff;
-  }
+  #startBtn{ background: var(--accent); color:#fff; }
   #startBtn:active{ transform:scale(.97); }
 
   .navBtn{
@@ -190,6 +164,12 @@
 </head>
 
 <body>
+
+<!-- STARTING OVERLAY (MÅ LIGGE INNI BODY) -->
+<div id="launchOverlay">
+  <div class="title">Starter spillet…</div>
+  <div class="dice">🎲</div>
+</div>
 
 <div id="rotateWarning">
   🔄 Snu telefonen til liggende for å spille
@@ -224,7 +204,6 @@
 </div>
 
 <script>
-  // Krev liggende
   function checkOrientationMenu(){
     const warning = document.getElementById("rotateWarning");
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
@@ -233,16 +212,12 @@
   window.addEventListener("resize", checkOrientationMenu);
   checkOrientationMenu();
 
-  // Forside -> meny
   function enterMenu(){
-    // Hvis portrait: ikke gå videre, la rotateWarning forklare
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
     if (isPortrait) return;
-
     document.getElementById("splash").style.display = "none";
   }
 
-  // Brettliste
   const boards = [
     {name:"Original", file:"board.png"},
     {name:"Grønn/Lilla/Blå", file:"board2.png"},
@@ -283,7 +258,6 @@
     updateUI();
   }
 
-  // Swipe på preview
   let startX = 0;
   img.addEventListener("touchstart", e=>{
     startX = e.changedTouches[0].screenX;
@@ -296,7 +270,9 @@
   }, {passive:true});
 
   async function startGame(){
-    // Valgfritt: forsøk å låse orientation (funker ofte på Android, ikke iOS)
+    const overlay = document.getElementById("launchOverlay");
+    overlay.classList.add("show");
+
     try{
       if (screen.orientation && screen.orientation.lock){
         await screen.orientation.lock("landscape");
@@ -304,7 +280,10 @@
     }catch(e){}
 
     const chosen = boards[index].file;
-    window.location.href = "game.html?board=" + encodeURIComponent(chosen);
+
+    setTimeout(()=>{
+      window.location.href = "game.html?board=" + encodeURIComponent(chosen);
+    }, 420);
   }
 
   img.onerror = () => { img.src = "board.png"; };
