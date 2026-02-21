@@ -73,7 +73,12 @@ body {
   z-index: 10;
   border: 2px solid #fff;
 }
-
+#menuBtn{
+  background:#333;
+  color:#fff;
+  min-height:44px;
+  font-size:14px;
+}
 /* ✨ ACTIVE GLOW */
 .player.active {
   box-shadow:
@@ -239,7 +244,7 @@ button:active { transform: scale(0.97); }
 
    <button id="rollBtn" onclick="roll()">Kast terning</button>
   <button id="infoBtn" onclick="showInfo()">(?)</button>
-  
+  <button id="menuBtn" onclick="goToMenu()">⬅️ Meny</button>
 </div>
 
 <div id="card" onclick="closeCard()">
@@ -673,7 +678,9 @@ function showCard(title, text) {
   
 
 }
-
+function goToMenu(){
+  window.location.href = "index.html";
+}
 
 function closeCard() {
   card.classList.remove("show", "wild");
