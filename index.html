@@ -72,7 +72,12 @@
 
   #splash h1{ margin:0; font-size:36px; letter-spacing:0.5px; }
   #splash .byline{ opacity:.75; font-size:16px; }
-  #splash .tap{ margin-top:14px; font-size:14px; opacity:.7; }
+#splash .tap{
+  margin-top: 6px;
+  margin-bottom: 60px; /* ← denne løfter teksten opp */
+  font-size:14px;
+  opacity:.7; 
+}
   @keyframes pulse {
     0%, 100% { opacity: .55; transform: translateY(0); }
     50% { opacity: .9; transform: translateY(-2px); }
