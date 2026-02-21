@@ -737,13 +737,49 @@ updateActiveGlow();   // <-- LEGG TIL
 </script>
 
 <!-- 🎷 BAKGRUNNSMUSIKK -->
-<audio id="bgMusic" src="jazz.mp3" loop></audio>
+<audio id="bgMusic"></audio>
 
 <script>
-  document.body.addEventListener("click", function startMusic() {
-    const music = document.getElementById("bgMusic");
-    music.volume = 0.3; 
-    music.play();
+  const playlist = [
+    "jazz.mp3",
+    "jazz2.mp3",
+    "jazz3.mp3",
+    "jazz4.mp3",
+    "jazz5.mp3",
+    "jazz6.mp3",
+    "jazz7.mp3",
+    "jazz8.mp3"
+  ];
+
+  const music = document.getElementById("bgMusic");
+  let currentTrack = 0;
+
+  // 🔀 Shuffle playlist
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  shuffle(playlist);
+
+  function playTrack(i){
+    currentTrack = i;
+    music.src = playlist[currentTrack];
+    music.volume = 0.3;
+    music.play().catch(()=>{});
+  }
+
+  // ▶️ Når sang er ferdig → neste
+  music.addEventListener("ended", () => {
+    currentTrack = (currentTrack + 1) % playlist.length;
+    playTrack(currentTrack);
+  });
+
+  // ▶️ Start ved første trykk (mobil-policy)
+  document.body.addEventListener("click", function startMusic(){
+    playTrack(0);
     document.body.removeEventListener("click", startMusic);
   });
 </script>
