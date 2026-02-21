@@ -1,1 +1,45 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sex o Pol – Meny</title>
+<style>
+body{
+  margin:0;
+  background:black;
+  color:white;
+  font-family:Arial;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+button{
+  padding:15px 30px;
+  font-size:20px;
+  border:none;
+  border-radius:10px;
+  background:#4da6ff;
+  color:white;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
 
+<h1>Velg spillebrett</h1>
+
+<button onclick="startGame('board.png')">
+  Start spill
+</button>
+
+<script>
+function startGame(boardFile){
+  window.location.href = "game.html?board=" + boardFile;
+}
+</script>
+
+</body>
+</html>
