@@ -15,26 +15,41 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* Roter-til-liggende overlay */
+  #rotateWarning{
+    position: fixed;
+    inset: 0;
+    background: #000;
+    color: #fff;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    z-index: 999;
+    text-align: center;
+    padding: 24px;
+  }
+
   #wrap{
     height:100dvh;
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
-    gap:14px;
+    gap:12px;
     padding:18px;
     box-sizing:border-box;
   }
 
   h1{
     margin:0;
-    font-size:28px;
+    font-size:26px;
     text-align:center;
   }
 
-  /* Preview "card" */
+  /* Preview "card" (mindre enn før) */
   #previewCard{
-    width:min(84vw, 640px);
+    width: min(70vw, 520px);   /* 👈 mindre */
     border-radius:16px;
     background:#111;
     padding:12px;
@@ -42,10 +57,10 @@
     border:1px solid rgba(255,255,255,0.08);
   }
 
-  /* Holder preview mindre enn fullskjerm */
+  /* Preview-ramme (lavere) */
   #previewFrame{
     width:100%;
-    aspect-ratio: 16 / 9;         /* gir en ryddig oversikt */
+    aspect-ratio: 21 / 9;      /* 👈 mindre høyde, mer widescreen */
     border-radius:12px;
     overflow:hidden;
     background:#000;
@@ -54,7 +69,7 @@
     justify-content:center;
   }
 
-  /* Viktig: "contain" = oversikt, ikke crop/zoom */
+  /* "contain" = full oversikt, ingen crop */
   #previewImg{
     width:100%;
     height:100%;
@@ -67,13 +82,13 @@
 
   #boardLabel{
     margin-top:10px;
-    font-size:16px;
+    font-size:15px;
     opacity:.85;
     text-align:center;
   }
 
   #hint{
-    font-size:13px;
+    font-size:12px;
     opacity:.6;
     text-align:center;
   }
@@ -112,7 +127,6 @@
   }
   #startBtn:active{ transform:scale(.97); }
 
-  /* små piler (valgfritt men sexy på desktop) */
   .navBtn{
     background:#222;
     color:#fff;
@@ -120,33 +134,47 @@
     min-width:54px;
   }
   .navBtn:active{ transform:scale(.97); }
-
 </style>
 </head>
 
 <body>
-  <div id="wrap">
-    <h1>Velg spillebrett</h1>
 
-    <div id="previewCard">
-      <div id="previewFrame">
-        <img id="previewImg" src="board.png" alt="Preview">
-      </div>
+<!-- Krev liggende også i menyen -->
+<div id="rotateWarning">
+  🔄 Snu telefonen til liggende for å velge brett
+</div>
 
-      <div id="boardLabel"></div>
-      <div id="hint">Sveip på bildet for å bytte brett</div>
+<div id="wrap">
+  <h1>Velg spillebrett</h1>
 
-      <div id="dots"></div>
+  <div id="previewCard">
+    <div id="previewFrame">
+      <img id="previewImg" src="board.png" alt="Preview">
     </div>
 
-    <div class="actions">
-      <button class="navBtn" onclick="prevBoard()">◀</button>
-      <button id="startBtn" onclick="startGame()">Start spill</button>
-      <button class="navBtn" onclick="nextBoard()">▶</button>
-    </div>
+    <div id="boardLabel"></div>
+    <div id="hint">Sveip på bildet for å bytte brett</div>
+
+    <div id="dots"></div>
   </div>
 
+  <div class="actions">
+    <button class="navBtn" onclick="prevBoard()">◀</button>
+    <button id="startBtn" onclick="startGame()">Start spill</button>
+    <button class="navBtn" onclick="nextBoard()">▶</button>
+  </div>
+</div>
+
 <script>
+  /* Roter-sjekk (mer stabil enn innerHeight/innerWidth) */
+  function checkOrientationMenu(){
+    const warning = document.getElementById("rotateWarning");
+    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+    warning.style.display = isPortrait ? "flex" : "none";
+  }
+  window.addEventListener("resize", checkOrientationMenu);
+  checkOrientationMenu();
+
   const boards = [
     {name:"Original", file:"board.png"},
     {name:"Grønn/Lilla/Blå", file:"board2.png"},
@@ -212,5 +240,6 @@
 
   updateUI();
 </script>
+
 </body>
 </html>
