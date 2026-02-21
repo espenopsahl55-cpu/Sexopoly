@@ -6,175 +6,211 @@
 <title>Sex o Pol – Velg brett</title>
 
 <style>
-html, body{
-  margin:0;
-  padding:0;
-  background:#000;
-  color:white;
-  font-family:Arial, sans-serif;
-  height:100vh;
-  overflow:hidden;
-}
+  html, body{
+    margin:0; padding:0;
+    width:100vw; height:100dvh;
+    background:#000; color:#fff;
+    font-family:Arial, sans-serif;
+    overflow:hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-body{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-}
+  #wrap{
+    height:100dvh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:14px;
+    padding:18px;
+    box-sizing:border-box;
+  }
 
-/* ===== TITTEL ===== /
-h1{
-  margin-bottom:20px;
-  font-size:32px;
-  text-align:center;
-}
+  h1{
+    margin:0;
+    font-size:28px;
+    text-align:center;
+  }
 
-/ ===== CAROUSEL ===== /
-#carousel{
-  width:85vw;
-  max-width:650px;
-  overflow:hidden;
-  border-radius:16px;
-  position:relative;
-}
+  /* Preview "card" */
+  #previewCard{
+    width:min(84vw, 640px);
+    border-radius:16px;
+    background:#111;
+    padding:12px;
+    box-sizing:border-box;
+    border:1px solid rgba(255,255,255,0.08);
+  }
 
-#preview{
-  width:100%;
-  display:block;
-  border-radius:16px;
-  user-select:none;
-  -webkit-user-drag:none;
-  touch-action:pan-y;
-}
+  /* Holder preview mindre enn fullskjerm */
+  #previewFrame{
+    width:100%;
+    aspect-ratio: 16 / 9;         /* gir en ryddig oversikt */
+    border-radius:12px;
+    overflow:hidden;
+    background:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
 
-/ ===== LABEL ===== /
-#boardLabel{
-  margin-top:14px;
-  font-size:18px;
-  opacity:.85;
-  text-align:center;
-}
+  /* Viktig: "contain" = oversikt, ikke crop/zoom */
+  #previewImg{
+    width:100%;
+    height:100%;
+    object-fit: contain;
+    display:block;
+    user-select:none;
+    -webkit-user-drag:none;
+    touch-action: pan-y;
+  }
 
-/ ===== DOTS ===== /
-#dots{
-  margin-top:10px;
-  display:flex;
-  gap:8px;
-  justify-content:center;
-}
+  #boardLabel{
+    margin-top:10px;
+    font-size:16px;
+    opacity:.85;
+    text-align:center;
+  }
 
-.dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#555;
-}
+  #hint{
+    font-size:13px;
+    opacity:.6;
+    text-align:center;
+  }
 
-.dot.active{
-  background:#4da6ff;
-}
+  #dots{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-top:10px;
+  }
+  .dot{
+    width:8px; height:8px; border-radius:50%;
+    background:#555;
+  }
+  .dot.active{ background:#4da6ff; }
 
-/ ===== BUTTON ===== /
-button{
-  margin-top:26px;
-  padding:16px 32px;
-  font-size:20px;
-  border:none;
-  border-radius:12px;
-  background:#4da6ff;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-}
+  .actions{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    justify-content:center;
+  }
 
-button:active{
-  transform:scale(.96);
-}
+  button{
+    padding:14px 22px;
+    font-size:18px;
+    border-radius:12px;
+    border:none;
+    font-weight:bold;
+    cursor:pointer;
+    min-height:54px;
+  }
+  #startBtn{
+    background:#4da6ff;
+    color:#fff;
+  }
+  #startBtn:active{ transform:scale(.97); }
+
+  /* små piler (valgfritt men sexy på desktop) */
+  .navBtn{
+    background:#222;
+    color:#fff;
+    padding:14px 16px;
+    min-width:54px;
+  }
+  .navBtn:active{ transform:scale(.97); }
+
 </style>
 </head>
 
 <body>
+  <div id="wrap">
+    <h1>Velg spillebrett</h1>
 
-<h1>Velg spillebrett</h1>
+    <div id="previewCard">
+      <div id="previewFrame">
+        <img id="previewImg" src="board.png" alt="Preview">
+      </div>
 
-<div id="carousel">
-  <img id="preview" src="board.png" alt="">
-</div>
+      <div id="boardLabel"></div>
+      <div id="hint">Sveip på bildet for å bytte brett</div>
 
-<div id="boardLabel"></div>
-<div id="dots"></div>
+      <div id="dots"></div>
+    </div>
 
-<button onclick="startGame()">Start spill</button>
+    <div class="actions">
+      <button class="navBtn" onclick="prevBoard()">◀</button>
+      <button id="startBtn" onclick="startGame()">Start spill</button>
+      <button class="navBtn" onclick="nextBoard()">▶</button>
+    </div>
+  </div>
 
 <script>
-/ ===== BRETT LISTE ===== /
-const boards = [
-  {name:"Original", file:"board.png"},
-  {name:"Grønn/Lilla/Blå", file:"board2.png"},
-  {name:"Lilla/Grønn/Gul", file:"board3.png"},
-  {name:"Lilla/Gul", file:"board4.png"},
-  {name:"Blå/Gul", file:"board5.png"},
-  {name:"Lyseblå/Gul", file:"board6.png"},
-  {name:"Grønn/Gul", file:"board7.png"}
-];
+  const boards = [
+    {name:"Original", file:"board.png"},
+    {name:"Grønn/Lilla/Blå", file:"board2.png"},
+    {name:"Lilla/Grønn/Gul", file:"board3.png"},
+    {name:"Lilla/Gul", file:"board4.png"},
+    {name:"Blå/Gul", file:"board5.png"},
+    {name:"Lyseblå/Gul", file:"board6.png"},
+    {name:"Grønn/Gul", file:"board7.png"}
+  ];
 
-let index = 0;
+  let index = 0;
 
-const preview = document.getElementById("preview");
-const label = document.getElementById("boardLabel");
-const dotsWrap = document.getElementById("dots");
+  const img = document.getElementById("previewImg");
+  const label = document.getElementById("boardLabel");
+  const dotsWrap = document.getElementById("dots");
 
-/ ===== LAG DOTS ===== /
-boards.forEach((_, i)=>{
-  const d = document.createElement("div");
-  d.className = "dot";
-  dotsWrap.appendChild(d);
-});
-
-/ ===== UPDATE UI ===== /
-function updateUI(){
-  preview.src = boards[index].file;
-  label.textContent = boards[index].name;
-
-  document.querySelectorAll(".dot").forEach((d,i)=>{
-    d.classList.toggle("active", i === index);
+  // dots
+  boards.forEach(() => {
+    const d = document.createElement("div");
+    d.className = "dot";
+    dotsWrap.appendChild(d);
   });
-}
 
-updateUI();
+  function updateUI(){
+    img.src = boards[index].file;
+    label.textContent = boards[index].name;
 
-/ ===== SWIPE ===== /
-let startX = 0;
+    document.querySelectorAll(".dot").forEach((d,i)=>{
+      d.classList.toggle("active", i === index);
+    });
+  }
 
-preview.addEventListener("touchstart", e=>{
-  startX = e.changedTouches[0].screenX;
-});
-
-preview.addEventListener("touchend", e=>{
-  const diff = e.changedTouches[0].screenX - startX;
-
-  if(diff < -50){
+  function nextBoard(){
     index = (index + 1) % boards.length;
+    updateUI();
   }
-  else if(diff > 50){
+  function prevBoard(){
     index = (index - 1 + boards.length) % boards.length;
+    updateUI();
   }
+
+  // swipe
+  let startX = 0;
+  img.addEventListener("touchstart", e=>{
+    startX = e.changedTouches[0].screenX;
+  }, {passive:true});
+
+  img.addEventListener("touchend", e=>{
+    const diff = e.changedTouches[0].screenX - startX;
+    if (diff < -50) nextBoard();
+    else if (diff > 50) prevBoard();
+  }, {passive:true});
+
+  function startGame(){
+    const chosen = boards[index].file;
+    window.location.href = "game.html?board=" + encodeURIComponent(chosen);
+  }
+
+  // fallback hvis noen filer mangler
+  img.onerror = () => {
+    img.src = "board.png";
+  };
 
   updateUI();
-});
-
-/ ===== START SPILL ===== /
-function startGame(){
-  const chosen = boards[index].file;
-  window.location.href = "game.html?board=" + chosen;
-}
-
-/ ===== FALLBACK HVIS BILDE MANGLER ===== */
-preview.onerror = () => {
-  preview.src = "board.png";
-};
 </script>
-
 </body>
 </html>
