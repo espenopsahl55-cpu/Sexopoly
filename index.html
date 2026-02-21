@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sex o Pol – Velg brett</title>
+<title>Sex o Pol – Meny</title>
 
 <style>
   :root{
-    /* 🔥 JUSTER BARE DENNE for mindre/større preview */
-    --preview-h: 140px;   /* prøv 120px eller 110px for mindre */
+    /* Juster kun denne hvis du vil ha preview litt mindre/større */
+    --preview-h: 140px;   /* f.eks 120px for mindre */
     --card-w: 520px;
     --accent: #4da6ff;
   }
@@ -37,6 +37,48 @@
     padding: 24px;
   }
 
+  /* ===== SPLASH / FORSIDE ===== */
+  #splash{
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 40%, rgba(77,166,255,0.18), rgba(0,0,0,0) 55%), #000;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    gap:14px;
+    padding:24px;
+    z-index: 500; /* under rotateWarning, over alt annet */
+  }
+
+  #splash h1{
+    margin:0;
+    font-size:36px;
+    letter-spacing:0.5px;
+  }
+
+  #splash .byline{
+    opacity:.75;
+    font-size:16px;
+  }
+
+  #splash .tap{
+    margin-top:14px;
+    font-size:14px;
+    opacity:.7;
+  }
+
+  /* liten “pulse” på tap-tekst */
+  @keyframes pulse {
+    0%, 100% { opacity: .55; transform: translateY(0); }
+    50% { opacity: .9; transform: translateY(-2px); }
+  }
+  #splash .tap{
+    animation: pulse 1.2s infinite;
+  }
+
+  /* ===== BRETTVELGER ===== */
   #wrap{
     height:100dvh;
     display:flex;
@@ -48,13 +90,12 @@
     box-sizing:border-box;
   }
 
-  h1{
+  h2{
     margin:0;
     font-size:26px;
     text-align:center;
   }
 
-  /* Preview card */
   #previewCard{
     width: min(80vw, var(--card-w));
     border-radius:16px;
@@ -75,7 +116,6 @@
     justify-content:center;
   }
 
-  /* Full oversikt uten crop */
   #previewImg{
     width:100%;
     height:100%;
@@ -141,10 +181,10 @@
   }
   .navBtn:active{ transform:scale(.97); }
 
-  /* Litt mindre på små skjermer automatisk */
   @media (max-width: 420px){
     :root{ --preview-h: 120px; }
-    h1{ font-size:24px; }
+    #splash h1{ font-size:32px; }
+    h2{ font-size:24px; }
   }
 </style>
 </head>
@@ -152,11 +192,19 @@
 <body>
 
 <div id="rotateWarning">
-  🔄 Snu telefonen til liggende for å velge brett
+  🔄 Snu telefonen til liggende for å spille
 </div>
 
+<!-- FORSIDE -->
+<div id="splash" onclick="enterMenu()" role="button" aria-label="Trykk for å fortsette">
+  <h1>Welcome to Sexopol</h1>
+  <div class="byline">Made by Espen Opsahl</div>
+  <div class="tap">Trykk for å fortsette</div>
+</div>
+
+<!-- BRETTVELGER -->
 <div id="wrap">
-  <h1>Velg spillebrett</h1>
+  <h2>Velg spillebrett</h2>
 
   <div id="previewCard">
     <div id="previewFrame">
@@ -165,7 +213,6 @@
 
     <div id="boardLabel"></div>
     <div id="hint">Sveip på bildet for å bytte brett</div>
-
     <div id="dots"></div>
   </div>
 
@@ -177,6 +224,7 @@
 </div>
 
 <script>
+  // Krev liggende
   function checkOrientationMenu(){
     const warning = document.getElementById("rotateWarning");
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
@@ -185,6 +233,16 @@
   window.addEventListener("resize", checkOrientationMenu);
   checkOrientationMenu();
 
+  // Forside -> meny
+  function enterMenu(){
+    // Hvis portrait: ikke gå videre, la rotateWarning forklare
+    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+    if (isPortrait) return;
+
+    document.getElementById("splash").style.display = "none";
+  }
+
+  // Brettliste
   const boards = [
     {name:"Original", file:"board.png"},
     {name:"Grønn/Lilla/Blå", file:"board2.png"},
@@ -225,6 +283,7 @@
     updateUI();
   }
 
+  // Swipe på preview
   let startX = 0;
   img.addEventListener("touchstart", e=>{
     startX = e.changedTouches[0].screenX;
@@ -236,7 +295,14 @@
     else if (diff > 50) prevBoard();
   }, {passive:true});
 
-  function startGame(){
+  async function startGame(){
+    // Valgfritt: forsøk å låse orientation (funker ofte på Android, ikke iOS)
+    try{
+      if (screen.orientation && screen.orientation.lock){
+        await screen.orientation.lock("landscape");
+      }
+    }catch(e){}
+
     const chosen = boards[index].file;
     window.location.href = "game.html?board=" + encodeURIComponent(chosen);
   }
