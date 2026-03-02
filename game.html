@@ -229,12 +229,26 @@ body.theme-lysebla #sideUI input:focus{
     0 12px 34px rgba(0,0,0,0.65),
     0 0 0 4px rgba(60, 180, 255, 0.18);
 }
+
 #rollBtn{
   transition: transform .08s ease, box-shadow .2s ease;
 }
 
-#rollBtn:hover{
+/* ✅ hover-glow følger theme */
+body.theme-gul #rollBtn:hover{
   box-shadow: 0 0 22px rgba(255,200,0,0.8);
+}
+body.theme-lilla #rollBtn:hover{
+  box-shadow: 0 0 22px rgba(200,0,255,0.75);
+}
+body.theme-gronn #rollBtn:hover{
+  box-shadow: 0 0 22px rgba(0,200,120,0.65);
+}
+body.theme-lysegronn #rollBtn:hover{
+  box-shadow: 0 0 22px rgba(120,255,120,0.65);
+}
+body.theme-lysebla #rollBtn:hover{
+  box-shadow: 0 0 22px rgba(60,180,255,0.65);
 }
 #infoBtn {
   min-height: 36px;       /* mindre høyde */
@@ -542,13 +556,19 @@ let winner = null;
 
 players[0].el = document.getElementById("p1");
 players[1].el = document.getElementById("p2");
+
+/* ✅ LES FRA URL */
 const params = new URLSearchParams(window.location.search);
 const selectedBoard = params.get("board");
+const selectedTheme = params.get("theme") || "gul";
+
+/* ✅ SETT BRETT */
 if (selectedBoard) {
   document.getElementById("board").style.backgroundImage = `url('${selectedBoard}')`;
 }
 
-function applyTheme(board) {
+/* ✅ THEME */
+function applyTheme(theme) {
   document.body.classList.remove(
     "theme-gul",
     "theme-lilla",
@@ -557,22 +577,19 @@ function applyTheme(board) {
     "theme-lysebla"
   );
 
-  const name = (board || "").toLowerCase();
+  const t = (theme || "").toLowerCase();
 
-  if (name.includes("original")) document.body.classList.add("theme-gul");
-  else if (name.includes("gronn-lilla-bla")) document.body.classList.add("theme-lysegronn");
-  else if (name.includes("lilla") && !name.includes("gul")) document.body.classList.add("theme-lilla");
-  else if (name.includes("gronn-gul")) document.body.classList.add("theme-gronn");
-  else if (name.includes("lysebla")) document.body.classList.add("theme-lysebla");
-  else if (name.includes("bla-gul")) document.body.classList.add("theme-gul");
-  else if (name.includes("lilla-gul")) document.body.classList.add("theme-gul");
-  else if (name.includes("gul-lilla")) document.body.classList.add("theme-lilla");
-  else if (name.includes("gronn")) document.body.classList.add("theme-gronn");
-  else document.body.classList.add("theme-gul"); // fallback
+  if (t === "lilla") document.body.classList.add("theme-lilla");
+  else if (t === "gronn") document.body.classList.add("theme-gronn");
+  else if (t === "lysegronn") document.body.classList.add("theme-lysegronn");
+  else if (t === "lysebla") document.body.classList.add("theme-lysebla");
+  else document.body.classList.add("theme-gul");
 }
 
-applyTheme(selectedBoard);
-  
+/* ✅ KJØR THEME */
+applyTheme(selectedTheme);
+
+
 const score1 = document.getElementById("score1");
 const score2 = document.getElementById("score2");
 const turnIndicator = document.getElementById("turnIndicator");
