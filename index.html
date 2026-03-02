@@ -94,8 +94,44 @@
 
   border-radius: 12px; /* viktig for pen glow */
 }
+/* 🎨 LIVE BACKGROUND */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
 
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,0,150,0.18), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(77,166,255,0.18), transparent 40%),
+    radial-gradient(circle at 60% 20%, rgba(255,200,0,0.12), transparent 45%),
+    #000;
 
+  filter: blur(40px);
+  animation: bgFloat 18s ease-in-out infinite alternate;
+}
+
+@keyframes bgFloat{
+  0%{ transform: scale(1) translateY(0px); }
+  100%{ transform: scale(1.08) translateY(-20px); }
+}
+/* 🌑 VIGNETTE + FILM GRAIN */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+
+  /* vignette */
+  background:
+    radial-gradient(circle at 50% 40%, transparent 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.85) 100%);
+
+  /* “grain” (billig fake) */
+  opacity: .55;
+  mix-blend-mode: overlay;
+  filter: contrast(1.1);
+}
   /* MENY */
   #wrap{
     height:100dvh;
@@ -109,14 +145,17 @@
   }
   h2{ margin:0; font-size:26px; text-align:center; }
 
-  #previewCard{
-    width: min(80vw, var(--card-w));
-    border-radius:16px;
-    background:#111;
-    padding:12px;
-    box-sizing:border-box;
-    border:1px solid rgba(255,255,255,0.08);
-  }
+#previewCard{
+  width: min(80vw, var(--card-w));
+  border-radius:16px;
+  padding:12px;
+  box-sizing:border-box;
+
+  background: rgba(18,18,18,0.55);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 18px 55px rgba(0,0,0,0.55);
+}
 
   #previewFrame{
     width:100%;
