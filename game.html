@@ -335,7 +335,24 @@ body.theme-lysebla #rollBtn:hover{
   border-radius: 14px;
   text-align: center;
 }
+/* ===== CARD COLORS ===== */
 
+/* ===== CARD COLORS ===== */
+
+#card.lust #cardContent{
+  background: linear-gradient(135deg,#ffe066,#ffb300);
+  color:#1a1a1a;
+}
+
+#card.dare #cardContent{
+  background: linear-gradient(135deg,#ff8a00,#ff5e00);
+  color:white;
+}
+
+#card.wild #cardContent{
+  background: linear-gradient(135deg,#ff3b3b,#b30000);
+  color:white;
+}
 /* ===== ROTASJON ADVARSEL ===== */
 #rotateWarning {
   position: fixed;
@@ -881,10 +898,26 @@ case "give2":
 }
 
 function showCard(title, text) {
-  cardText.innerHTML = `<h2>${title}</h2><p>${text}</p><p><small>(Trykk kortet for å fortsette)</small></p>`;
+  // 🔥 fjern gamle farger
+  card.classList.remove("lust", "dare", "wild");
+
+  const t = (title || "").toLowerCase();
+
+  // 🎨 velg farge
+  if (t.includes("lust")) {
+    card.classList.add("lust"); // gul
+  } else if (t.includes("dare")) {
+    card.classList.add("dare"); // oransje
+  }
+
+  cardText.innerHTML = `
+    <h2>${title}</h2>
+    <p>${text}</p>
+    <p><small>(Trykk kortet for å fortsette)</small></p>
+  `;
+
   card.style.display = "flex";
   card.classList.add("show");
-  
 
 }
 function goToMenu(){
@@ -892,13 +925,13 @@ function goToMenu(){
 }
 
 function closeCard() {
-  card.classList.remove("show", "wild");
+  card.classList.remove("show", "wild", "lust", "dare");
+
   setTimeout(() => {
     card.style.display = "none";
-    locked = false; // 🔓 Lås opp spillet
+    locked = false;
     endTurn();
   }, 300);
-
 }
 function showChoiceCard(player) {
   cardText.innerHTML = `
