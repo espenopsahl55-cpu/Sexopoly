@@ -94,13 +94,44 @@
 
   border-radius: 12px; /* viktig for pen glow */
 }
+/* 🎨 LIVE BACKGROUND */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
 
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,0,150,0.18), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(77,166,255,0.18), transparent 40%),
+    radial-gradient(circle at 60% 20%, rgba(255,200,0,0.12), transparent 45%),
+    #000;
+
+  filter: blur(40px);
+  animation: bgFloat 18s ease-in-out infinite alternate;
+}
 
 @keyframes bgFloat{
   0%{ transform: scale(1) translateY(0px); }
   100%{ transform: scale(1.08) translateY(-20px); }
 }
+/* 🌑 VIGNETTE + FILM GRAIN */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
 
+  /* vignette */
+  background:
+    radial-gradient(circle at 50% 40%, transparent 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.85) 100%);
+
+  /* “grain” (billig fake) */
+  opacity: .55;
+  mix-blend-mode: overlay;
+  filter: contrast(1.1);
+}
   /* MENY */
   #wrap{
     height:100dvh;
@@ -186,56 +217,12 @@
     #splash h1{ font-size:32px; }
     h2{ font-size:24px; }
 }
- /* DIN EKSISTERENDE CSS ... */
-
-/* ✅ BACKGROUND LAG */
-#bg{
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255,0,150,0.22), transparent 45%),
-    radial-gradient(circle at 80% 70%, rgba(77,166,255,0.22), transparent 45%),
-    radial-gradient(circle at 60% 20%, rgba(255,200,0,0.16), transparent 55%),
-    #000;
-
-  filter: blur(34px);
-  animation: bgFloat 18s ease-in-out infinite alternate;
-}
-
-/* ✅ VIGNETTE + GRAIN oppå #bg */
-#bg::after{
-  content:"";
-  position:absolute;
-  inset:0;
-
-  background:
-    radial-gradient(circle at 50% 40%, transparent 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.88) 100%),
-    repeating-linear-gradient(
-      0deg,
-      rgba(255,255,255,0.035) 0px,
-      rgba(255,255,255,0.035) 1px,
-      transparent 2px,
-      transparent 4px
-    );
-
-  opacity: .55;
-  mix-blend-mode: overlay;
-  pointer-events:none;
-}
-
-/* ✅ Legg UI over bakgrunnen */
-#wrap, #splash, #rotateWarning, #launchOverlay{
-  position: relative;
-  z-index: 2;
-}
+  
 </style>
 </head>
 
 <body>
-<div id="bg"></div>
+
 <!-- STARTING OVERLAY (MÅ LIGGE INNI BODY) -->
 <div id="launchOverlay">
   <div class="title">Starter spillet…</div>
@@ -368,6 +355,8 @@ setTimeout(()=>{
 
 </body>
 </html>
+
+
 
 
 
