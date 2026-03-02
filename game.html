@@ -106,8 +106,40 @@ button {
   background: #4da6ff;
   color: white;
 }
-
 button:active { transform: scale(0.97); }
+
+/* ===== THEME SYSTEM ===== */
+/* (LIM INN HER) */
+
+body.theme-gul #rollBtn {
+  background: linear-gradient(135deg,#ffd54a,#ffb300);
+  color:#1a1a1a;
+  box-shadow:0 0 14px rgba(255,200,0,0.6);
+}
+
+body.theme-lilla #rollBtn {
+  background: linear-gradient(135deg,#a64dff,#ff4dff);
+  color:white;
+  box-shadow:0 0 14px rgba(200,0,255,0.6);
+}
+
+body.theme-gronn #rollBtn {
+  background: linear-gradient(135deg,#39d98a,#00b86b);
+  color:#052015;
+  box-shadow:0 0 14px rgba(0,200,120,0.5);
+}
+
+body.theme-lysegronn #rollBtn {
+  background: linear-gradient(135deg,#b9ff66,#52e36a);
+  color:#10210f;
+  box-shadow:0 0 14px rgba(120,255,120,0.5);
+}
+
+body.theme-lysebla #rollBtn {
+  background: linear-gradient(135deg,#5ad7ff,#3aa0ff);
+  color:#041623;
+  box-shadow:0 0 14px rgba(60,180,255,0.5);
+}
 
 #infoBtn {
   min-height: 36px;       /* mindre høyde */
@@ -399,6 +431,32 @@ const selectedBoard = params.get("board");
 if (selectedBoard) {
   document.getElementById("board").style.backgroundImage = `url('${selectedBoard}')`;
 }
+
+function applyTheme(board) {
+  document.body.classList.remove(
+    "theme-gul",
+    "theme-lilla",
+    "theme-gronn",
+    "theme-lysegronn",
+    "theme-lysebla"
+  );
+
+  const name = (board || "").toLowerCase();
+
+  if (name.includes("original")) document.body.classList.add("theme-gul");
+  else if (name.includes("gronn-lilla-bla")) document.body.classList.add("theme-lysegronn");
+  else if (name.includes("lilla") && !name.includes("gul")) document.body.classList.add("theme-lilla");
+  else if (name.includes("gronn-gul")) document.body.classList.add("theme-gronn");
+  else if (name.includes("lysebla")) document.body.classList.add("theme-lysebla");
+  else if (name.includes("bla-gul")) document.body.classList.add("theme-gul");
+  else if (name.includes("lilla-gul")) document.body.classList.add("theme-gul");
+  else if (name.includes("gul-lilla")) document.body.classList.add("theme-lilla");
+  else if (name.includes("gronn")) document.body.classList.add("theme-gronn");
+  else document.body.classList.add("theme-gul"); // fallback
+}
+
+applyTheme(selectedBoard);
+  
 const score1 = document.getElementById("score1");
 const score2 = document.getElementById("score2");
 const turnIndicator = document.getElementById("turnIndicator");
