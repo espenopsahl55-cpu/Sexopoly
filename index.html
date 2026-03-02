@@ -239,14 +239,14 @@
   }
 
   const boards = [
-    {name:"Original", file:"board.png"},
-    {name:"Grønn/Lilla/Blå", file:"board2.png"},
-    {name:"Lilla/Grønn/Gul", file:"board3.png"},
-    {name:"Lilla/Gul", file:"board4.png"},
-    {name:"Blå/Gul", file:"board5.png"},
-    {name:"Lyseblå/Gul", file:"board6.png"},
-    {name:"Grønn/Gul", file:"board7.png"}
-  ];
+  {name:"Original", file:"board.png",  theme:"gul"},
+  {name:"Grønn/Lilla/Blå", file:"board2.png", theme:"lysegronn"},
+  {name:"Lilla/Grønn/Gul", file:"board3.png", theme:"lilla"},
+  {name:"Lilla/Gul", file:"board4.png", theme:"gul"},
+  {name:"Blå/Gul", file:"board5.png", theme:"gul"},
+  {name:"Lyseblå/Gul", file:"board6.png", theme:"lysebla"},
+  {name:"Grønn/Gul", file:"board7.png", theme:"gronn"}
+];
 
   let index = 0;
 
@@ -299,11 +299,14 @@
       }
     }catch(e){}
 
-    const chosen = boards[index].file;
+const chosen = boards[index].file;
+const theme = boards[index].theme;
 
-    setTimeout(()=>{
-      window.location.href = "game.html?board=" + encodeURIComponent(chosen);
-    }, 420);
+setTimeout(()=>{
+  window.location.href =
+    "game.html?board=" + encodeURIComponent(chosen) +
+    "&theme=" + encodeURIComponent(theme);
+}, 420);
   }
 
   img.onerror = () => { img.src = "board.png"; };
