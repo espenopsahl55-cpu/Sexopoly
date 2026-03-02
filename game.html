@@ -232,7 +232,24 @@ body.theme-lysebla #sideUI input:focus{
   color: white;
   border-radius: 6px;
 }
+/* ===== BUTTON LAYOUT ===== */
 
+#bottomButtons{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#secondaryButtons{
+  display: flex;
+  gap: 12px;
+}
+
+#secondaryButtons button{
+  flex: 1; /* gjør de like brede */
+  min-height: 48px;
+  font-size: 16px;
+}
 #dice {
   display: flex;
   gap: 20px;
@@ -357,9 +374,13 @@ body.theme-lysebla #sideUI input:focus{
       <div id="d2">🎲</div>
     </div>
 
-   <button id="rollBtn" onclick="roll()">Kast terning</button>
-  <button id="infoBtn" onclick="showInfo()">(?)</button>
-  <button id="menuBtn" onclick="goToMenu()">⬅️ Meny</button>
+<div id="bottomButtons">
+  <button id="rollBtn" onclick="roll()">Kast terning</button>
+
+  <div id="secondaryButtons">
+    <button id="infoBtn" onclick="showInfo()">(?)</button>
+    <button id="menuBtn" onclick="goToMenu()">⬅️ Meny</button>
+  </div>
 </div>
 
 <div id="card" onclick="closeCard()">
