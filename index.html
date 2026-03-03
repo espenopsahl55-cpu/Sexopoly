@@ -21,7 +21,7 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* ✅ LIVE BAKGRUNN-LAG (vises kun i landscape via JS) */
+  /* ========= LIVE BACKGROUND (safe, alltid bak) ========= */
   #bg{
     position: fixed;
     inset: 0;
@@ -63,45 +63,53 @@
     100%{ transform: scale(1.08) translateY(-20px); }
   }
 
-  /* START-OVERLAY */
-  #launchOverlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.65);
-    backdrop-filter: blur(6px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 14px;
-    z-index: 900;
-    text-align: center;
-  }
-  #launchOverlay.show{ display:flex; }
-  #launchOverlay .title{ font-size: 24px; font-weight: bold; }
-  #launchOverlay .dice{ font-size: 40px; animation: spinDice 1s linear infinite; }
-  @keyframes spinDice{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
-
-  /* ROTER-OVERLAY */
+  /* ========= ROTER-OVERLAY (skal være ALLTID øverst) ========= */
   #rotateWarning{
     position: fixed;
     inset: 0;
     background: #000;
     color: #fff;
-    display: none;
+    display: none;              /* styres av JS */
     justify-content: center;
     align-items: center;
     font-size: 22px;
-    z-index: 999;
+    z-index: 3000;              /* høyest */
     text-align: center;
     padding: 24px;
   }
 
-  /* SPLASH */
+  /* ========= START-OVERLAY (LOADING) ========= */
+  #launchOverlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(8px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 2500;              /* under rotateWarning, over alt annet */
+    text-align: center;
+  }
+  #launchOverlay.show{ display:flex; }
+  #launchOverlay .title{ font-size: 28px; font-weight: bold; }
+  #launchOverlay .dice{ font-size: 46px; animation: spinDice 1s linear infinite; }
+  @keyframes spinDice{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+
+  /* Når vi starter spillet: skjul menyen så du ikke ser den bak overlay */
+  body.starting #wrap{
+    visibility: hidden;         /* skjuler innhold, men beholder layout */
+  }
+  body.starting #splash{
+    display:none !important;
+  }
+
+  /* ========= SPLASH ========= */
   #splash{
     position: fixed;
     inset: 0;
-    background: transparent; /* lar #bg vises bak i landscape */
+    background: transparent;
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -109,11 +117,13 @@
     text-align:center;
     gap:14px;
     padding:24px;
-    z-index: 500;
+    z-index: 1200;
   }
+
   #splash h1{ margin:0; font-size:36px; letter-spacing:0.5px; }
   #splash .byline{ opacity:.75; font-size:16px; }
   #splash .tap{ margin-top:14px; font-size:14px; opacity:.7; }
+
   @keyframes pulse {
     0%, 100% { opacity: .55; transform: translateY(0); }
     50% { opacity: .9; transform: translateY(-2px); }
@@ -128,11 +138,10 @@
     -webkit-user-drag: none;
     opacity: 0.95;
     filter: drop-shadow(0 0 12px rgba(77,166,255,0.35));
-    box-shadow: inset 0 0 18px rgba(77,166,255,0.12);
     border-radius: 12px;
   }
 
-  /* MENY */
+  /* ========= MENY ========= */
   #wrap{
     height:100dvh;
     display:flex;
@@ -142,7 +151,8 @@
     gap:12px;
     padding:18px;
     box-sizing:border-box;
-    background: transparent; /* lar #bg vises bak */
+    position: relative;
+    z-index: 1100;
   }
 
   h2{ margin:0; font-size:26px; text-align:center; }
@@ -219,31 +229,22 @@
     #splash h1{ font-size:32px; }
     h2{ font-size:24px; }
   }
-
-  /* ✅ Hold UI over bakgrunn */
-  #rotateWarning, #launchOverlay, #splash, #wrap{
-    position: relative;
-    z-index: 2;
-  }
 </style>
 </head>
 
 <body>
 
-<!-- ✅ BAKGRUNN-LAG -->
 <div id="bg"></div>
-
-<!-- STARTING OVERLAY -->
-<div id="launchOverlay">
-  <div class="title">Starter spillet…</div>
-  <div class="dice">🎲</div>
-</div>
 
 <div id="rotateWarning">
   🔄 Snu telefonen til liggende for å spille
 </div>
 
-<!-- FORSIDE -->
+<div id="launchOverlay">
+  <div class="title">Starter spillet…</div>
+  <div class="dice">🎲</div>
+</div>
+
 <div id="splash" onclick="enterMenu()" role="button" aria-label="Trykk for å fortsette">
   <img id="splashMascot" src="mascot.png" alt="Sexopoly mascot">
   <h1>Welcome to Sexopol</h1>
@@ -251,7 +252,6 @@
   <div class="tap">Trykk for å fortsette</div>
 </div>
 
-<!-- BRETTVELGER -->
 <div id="wrap">
   <h2>Velg spillebrett</h2>
 
@@ -273,27 +273,39 @@
 </div>
 
 <script>
-  function checkOrientationMenu(){
+  // Holder styr på om bruker har "gått inn" i menyen
+  let entered = false;
+
+  function setPortraitMode(isPortrait){
     const warning = document.getElementById("rotateWarning");
-    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-
-    const bg = document.getElementById("bg");
-    const wrap = document.getElementById("wrap");
     const splash = document.getElementById("splash");
+    const wrap = document.getElementById("wrap");
+    const overlay = document.getElementById("launchOverlay");
 
-    if (isPortrait) {
-      // ✅ Portrait: vis kun advarsel + splash (ingen “rar” meny)
+    if (isPortrait){
+      // ✅ Kun rotateWarning skal vises i portrett
       warning.style.display = "flex";
-      bg.style.display = "none";
+      splash.style.display = "none";
       wrap.style.display = "none";
-      splash.style.display = "flex";
+      overlay.classList.remove("show");
+      document.body.classList.remove("starting");
     } else {
-      // ✅ Landscape: vis bakgrunn + meny, skjul advarsel
       warning.style.display = "none";
-      bg.style.display = "block";
-      wrap.style.display = "flex";
-      // splash styrer du med enterMenu()
+
+      // ✅ I landscape: vis splash hvis ikke "entered", ellers vis meny
+      if (!entered){
+        splash.style.display = "flex";
+        wrap.style.display = "flex";
+      } else {
+        splash.style.display = "none";
+        wrap.style.display = "flex";
+      }
     }
+  }
+
+  function checkOrientationMenu(){
+    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+    setPortraitMode(isPortrait);
   }
 
   window.addEventListener("resize", checkOrientationMenu);
@@ -302,7 +314,9 @@
   function enterMenu(){
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
     if (isPortrait) return;
+    entered = true;
     document.getElementById("splash").style.display = "none";
+    document.getElementById("wrap").style.display = "flex";
   }
 
   const boards = [
@@ -340,7 +354,6 @@
     index = (index + 1) % boards.length;
     updateUI();
   }
-
   function prevBoard(){
     index = (index - 1 + boards.length) % boards.length;
     updateUI();
@@ -358,6 +371,12 @@
   }, {passive:true});
 
   async function startGame(){
+    // Hvis portrait: ikke start (bruker skal rotere)
+    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+    if (isPortrait) return;
+
+    // ✅ Skjul menyen (så du ikke ser den bak), vis loading
+    document.body.classList.add("starting");
     const overlay = document.getElementById("launchOverlay");
     overlay.classList.add("show");
 
@@ -384,5 +403,4 @@
 
 </body>
 </html>
-
 
