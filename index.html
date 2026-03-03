@@ -115,7 +115,12 @@
   #splash{
     position: fixed;
     inset: 0;
-    background: transparent;
+
+    /* ✅ viktig: ikke gjennomsiktig – så du slipper å se meny bak */
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -123,7 +128,7 @@
     text-align:center;
     gap:14px;
     padding:24px;
-    z-index: 500;
+    z-index: 700; /* ✅ over meny */
   }
 
   #splash h1{ margin:0; font-size:36px; letter-spacing:0.5px; }
@@ -150,7 +155,7 @@
   /* MENY */
   #wrap{
     height:100dvh;
-    display:flex;
+    display:none; /* ✅ viktig: meny skjules til du trykker “fortsett” */
     flex-direction:column;
     justify-content:center;
     align-items:center;
@@ -158,6 +163,7 @@
     padding:18px;
     box-sizing:border-box;
   }
+
   h2{ margin:0; font-size:26px; text-align:center; }
 
   #previewCard{
@@ -173,7 +179,6 @@
     border: 1px solid rgba(255,255,255,0.12);
     box-shadow: 0 22px 70px rgba(0,0,0,0.60);
 
-    /* litt “glans” */
     position: relative;
     overflow: hidden;
   }
@@ -208,13 +213,11 @@
     -webkit-user-drag:none;
     touch-action: pan-y;
 
-    /* ✅ smooth transition */
     opacity: 1;
     transform: translateY(0);
     transition: opacity .18s ease, transform .18s ease;
   }
 
-  /* ✅ bytte animasjon */
   #previewImg.swapOut{
     opacity: 0;
     transform: translateY(4px);
@@ -281,7 +284,6 @@
 
 <body>
 
-<!-- ✅ bakgrunnslag -->
 <div id="bg"></div>
 
 <!-- STARTING OVERLAY -->
@@ -324,23 +326,37 @@
 </div>
 
 <script>
+  const splashEl = document.getElementById("splash");
+  const wrapEl   = document.getElementById("wrap");
+
   function checkOrientationMenu(){
     const warning = document.getElementById("rotateWarning");
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+
     warning.style.display = isPortrait ? "flex" : "none";
 
-    // ✅ når portrait: sørg for at splash ikke “ligger oppå”
-    if (isPortrait) {
-      document.getElementById("splash").style.display = "flex";
+    // ✅ Portrait: vis bare rotate + splash (ikke meny)
+    if (isPortrait){
+      wrapEl.style.display = "none";
+      splashEl.style.display = "flex";
+      return;
+    }
+
+    // ✅ Landscape: hvis splash er borte → vis meny
+    if (splashEl.style.display === "none"){
+      wrapEl.style.display = "flex";
     }
   }
+
   window.addEventListener("resize", checkOrientationMenu);
   checkOrientationMenu();
 
   function enterMenu(){
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
     if (isPortrait) return;
-    document.getElementById("splash").style.display = "none";
+
+    splashEl.style.display = "none";
+    wrapEl.style.display = "flex";
   }
 
   const boards = [
@@ -365,11 +381,9 @@
     dotsWrap.appendChild(d);
   });
 
-  /* ✅ theme bakgrunn per brett */
   function applyMenuTheme(theme){
     const t = (theme || "").toLowerCase();
 
-    // defaults
     let g1 = "rgba(255,0,150,0.22)";
     let g2 = "rgba(77,166,255,0.22)";
     let g3 = "rgba(255,200,0,0.16)";
@@ -411,27 +425,21 @@
   function updateUI(withAnim = true){
     const b = boards[index];
 
-    // ✅ bakgrunn / accent
     applyMenuTheme(b.theme);
 
-    // ✅ label + dots
     label.textContent = b.name;
     document.querySelectorAll(".dot").forEach((d,i)=>{
       d.classList.toggle("active", i === index);
     });
 
-    // ✅ smooth bildebytte
     if (!withAnim) {
       img.src = b.file;
       return;
     }
 
     img.classList.add("swapOut");
-    setTimeout(() => {
-      img.src = b.file;
-    }, 120);
+    setTimeout(() => { img.src = b.file; }, 120);
 
-    // når bildet er lastet, fade inn igjen
     img.onload = () => {
       requestAnimationFrame(() => img.classList.remove("swapOut"));
     };
@@ -441,6 +449,7 @@
     index = (index + 1) % boards.length;
     updateUI(true);
   }
+
   function prevBoard(){
     index = (index - 1 + boards.length) % boards.length;
     updateUI(true);
@@ -479,7 +488,6 @@
 
   img.onerror = () => { img.src = "board.png"; };
 
-  // init
   updateUI(false);
 </script>
 
