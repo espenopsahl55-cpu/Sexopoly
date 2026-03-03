@@ -21,19 +21,46 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* ROTER-OVERLAY */
-  #rotateWarning{
+  /* ✅ LIVE BAKGRUNN-LAG (vises kun i landscape via JS) */
+  #bg{
     position: fixed;
     inset: 0;
-    background: #000;
-    color: #fff;
-    display: none; /* vises kun i portrait via JS */
-    justify-content: center;
-    align-items: center;
-    font-size: 22px;
-    z-index: 999;
-    text-align: center;
-    padding: 24px;
+    z-index: 0;
+    pointer-events: none;
+
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255,0,150,0.22), transparent 45%),
+      radial-gradient(circle at 80% 70%, rgba(77,166,255,0.22), transparent 45%),
+      radial-gradient(circle at 60% 20%, rgba(255,200,0,0.16), transparent 55%),
+      #000;
+
+    filter: blur(34px);
+    animation: bgFloat 18s ease-in-out infinite alternate;
+  }
+
+  #bg::after{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:
+      radial-gradient(circle at 50% 40%, transparent 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.88) 100%),
+      repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,0.035) 0px,
+        rgba(255,255,255,0.035) 1px,
+        transparent 2px,
+        transparent 4px
+      );
+
+    opacity: .55;
+    mix-blend-mode: overlay;
+    pointer-events:none;
+  }
+
+  @keyframes bgFloat{
+    0%{ transform: scale(1) translateY(0px); }
+    100%{ transform: scale(1.08) translateY(-20px); }
   }
 
   /* START-OVERLAY */
@@ -55,12 +82,27 @@
   #launchOverlay .dice{ font-size: 40px; animation: spinDice 1s linear infinite; }
   @keyframes spinDice{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
 
+  /* ROTER-OVERLAY */
+  #rotateWarning{
+    position: fixed;
+    inset: 0;
+    background: #000;
+    color: #fff;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    z-index: 999;
+    text-align: center;
+    padding: 24px;
+  }
+
   /* SPLASH */
   #splash{
     position: fixed;
     inset: 0;
-    background: #000;
-    display:flex;                 /* ✅ splash vises først */
+    background: transparent; /* lar #bg vises bak i landscape */
+    display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
@@ -69,11 +111,9 @@
     padding:24px;
     z-index: 500;
   }
-
   #splash h1{ margin:0; font-size:36px; letter-spacing:0.5px; }
   #splash .byline{ opacity:.75; font-size:16px; }
   #splash .tap{ margin-top:14px; font-size:14px; opacity:.7; }
-
   @keyframes pulse {
     0%, 100% { opacity: .55; transform: translateY(0); }
     50% { opacity: .9; transform: translateY(-2px); }
@@ -88,19 +128,21 @@
     -webkit-user-drag: none;
     opacity: 0.95;
     filter: drop-shadow(0 0 12px rgba(77,166,255,0.35));
+    box-shadow: inset 0 0 18px rgba(77,166,255,0.12);
     border-radius: 12px;
   }
 
   /* MENY */
   #wrap{
     height:100dvh;
-    display:none;                 /* ✅ meny skjules først */
+    display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
     gap:12px;
     padding:18px;
     box-sizing:border-box;
+    background: transparent; /* lar #bg vises bak */
   }
 
   h2{ margin:0; font-size:26px; text-align:center; }
@@ -108,10 +150,13 @@
   #previewCard{
     width: min(80vw, var(--card-w));
     border-radius:16px;
-    background:#111;
     padding:12px;
     box-sizing:border-box;
-    border:1px solid rgba(255,255,255,0.08);
+
+    background: rgba(18,18,18,0.55);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 18px 55px rgba(0,0,0,0.55);
   }
 
   #previewFrame{
@@ -174,21 +219,31 @@
     #splash h1{ font-size:32px; }
     h2{ font-size:24px; }
   }
+
+  /* ✅ Hold UI over bakgrunn */
+  #rotateWarning, #launchOverlay, #splash, #wrap{
+    position: relative;
+    z-index: 2;
+  }
 </style>
 </head>
 
 <body>
 
-<!-- ✅ VIKTIG: rotateWarning ligger øverst så den kan dekke alt -->
-<div id="rotateWarning">🔄 Snu telefonen til liggende for å spille</div>
+<!-- ✅ BAKGRUNN-LAG -->
+<div id="bg"></div>
 
-<!-- ✅ launch overlay -->
+<!-- STARTING OVERLAY -->
 <div id="launchOverlay">
   <div class="title">Starter spillet…</div>
   <div class="dice">🎲</div>
 </div>
 
-<!-- ✅ splash -->
+<div id="rotateWarning">
+  🔄 Snu telefonen til liggende for å spille
+</div>
+
+<!-- FORSIDE -->
 <div id="splash" onclick="enterMenu()" role="button" aria-label="Trykk for å fortsette">
   <img id="splashMascot" src="mascot.png" alt="Sexopoly mascot">
   <h1>Welcome to Sexopol</h1>
@@ -196,7 +251,7 @@
   <div class="tap">Trykk for å fortsette</div>
 </div>
 
-<!-- ✅ meny -->
+<!-- BRETTVELGER -->
 <div id="wrap">
   <h2>Velg spillebrett</h2>
 
@@ -222,17 +277,22 @@
     const warning = document.getElementById("rotateWarning");
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
 
+    const bg = document.getElementById("bg");
+    const wrap = document.getElementById("wrap");
+    const splash = document.getElementById("splash");
+
     if (isPortrait) {
+      // ✅ Portrait: vis kun advarsel + splash (ingen “rar” meny)
       warning.style.display = "flex";
-      // skjul alt bak warning for å unngå “rar skala”
-      document.getElementById("wrap").style.display = "none";
-      document.getElementById("splash").style.display = "flex";
+      bg.style.display = "none";
+      wrap.style.display = "none";
+      splash.style.display = "flex";
     } else {
+      // ✅ Landscape: vis bakgrunn + meny, skjul advarsel
       warning.style.display = "none";
-      // la splash være synlig til brukeren trykker
-      if (document.getElementById("splash").style.display !== "none") {
-        document.getElementById("splash").style.display = "flex";
-      }
+      bg.style.display = "block";
+      wrap.style.display = "flex";
+      // splash styrer du med enterMenu()
     }
   }
 
@@ -242,9 +302,7 @@
   function enterMenu(){
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
     if (isPortrait) return;
-
     document.getElementById("splash").style.display = "none";
-    document.getElementById("wrap").style.display = "flex";
   }
 
   const boards = [
@@ -278,8 +336,15 @@
     });
   }
 
-  function nextBoard(){ index = (index + 1) % boards.length; updateUI(); }
-  function prevBoard(){ index = (index - 1 + boards.length) % boards.length; updateUI(); }
+  function nextBoard(){
+    index = (index + 1) % boards.length;
+    updateUI();
+  }
+
+  function prevBoard(){
+    index = (index - 1 + boards.length) % boards.length;
+    updateUI();
+  }
 
   let startX = 0;
   img.addEventListener("touchstart", e=>{
@@ -319,8 +384,5 @@
 
 </body>
 </html>
-
-
-
 
 
