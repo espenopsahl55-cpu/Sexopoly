@@ -10,11 +10,6 @@
     --preview-h: 140px;
     --card-w: 520px;
     --accent: #4da6ff;
-
-    /* ✅ theme glow (oppdateres i JS) */
-    --g1: rgba(255,0,150,0.22);
-    --g2: rgba(77,166,255,0.22);
-    --g3: rgba(255,200,0,0.16);
   }
 
   html, body{
@@ -26,62 +21,12 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* ✅ BACKGROUND LAG (animated + vignette + grain) */
-  #bg{
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-
-    background:
-      radial-gradient(circle at 18% 30%, var(--g1), transparent 48%),
-      radial-gradient(circle at 82% 70%, var(--g2), transparent 50%),
-      radial-gradient(circle at 55% 18%, var(--g3), transparent 58%),
-      #000;
-
-    filter: blur(34px);
-    animation: bgFloat 18s ease-in-out infinite alternate;
-    transform: translateZ(0);
-  }
-
-  #bg::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-
-    background:
-      radial-gradient(circle at 50% 40%, transparent 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.90) 100%),
-      repeating-linear-gradient(
-        0deg,
-        rgba(255,255,255,0.035) 0px,
-        rgba(255,255,255,0.035) 1px,
-        transparent 2px,
-        transparent 4px
-      );
-
-    opacity: .55;
-    mix-blend-mode: overlay;
-  }
-
-  @keyframes bgFloat{
-    0%{ transform: scale(1) translateY(0px); }
-    100%{ transform: scale(1.08) translateY(-20px); }
-  }
-
-  /* sørg for at UI ligger over bakgrunn */
-  #wrap, #splash, #rotateWarning, #launchOverlay{
-    position: relative;
-    z-index: 2;
-  }
-
   /* START-OVERLAY */
   #launchOverlay{
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.68);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(6px);
     display: none;
     justify-content: center;
     align-items: center;
@@ -89,10 +34,18 @@
     gap: 14px;
     z-index: 900;
     text-align: center;
-    pointer-events: all;
+
+    /* ✅ smooth pop-in */
+    opacity: 0;
+    transform: scale(1.02);
+    transition: opacity .25s ease, transform .25s ease;
   }
-  #launchOverlay.show{ display:flex; }
-  #launchOverlay .title{ font-size: 24px; font-weight: bold; letter-spacing: .3px; }
+  #launchOverlay.show{
+    display:flex;
+    opacity: 1;
+    transform: scale(1);
+  }
+  #launchOverlay .title{ font-size: 24px; font-weight: bold; }
   #launchOverlay .dice{ font-size: 40px; animation: spinDice 1s linear infinite; }
   @keyframes spinDice{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
 
@@ -115,12 +68,7 @@
   #splash{
     position: fixed;
     inset: 0;
-
-    /* ✅ viktig: ikke gjennomsiktig – så du slipper å se meny bak */
-    background: rgba(0,0,0,0.65);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-
+    background: #000;
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -128,18 +76,24 @@
     text-align:center;
     gap:14px;
     padding:24px;
-    z-index: 700; /* ✅ over meny */
+    z-index: 500;
   }
 
   #splash h1{ margin:0; font-size:36px; letter-spacing:0.5px; }
   #splash .byline{ opacity:.75; font-size:16px; }
-  #splash .tap{ margin-top:14px; font-size:14px; opacity:.7; }
+
+  /* ✅ Hevet KUN denne teksten litt opp */
+  #splash .tap{
+    margin-top: 6px; /* var 14px før */
+    font-size:14px;
+    opacity:.7;
+    animation: pulse 1.2s infinite;
+  }
 
   @keyframes pulse {
     0%, 100% { opacity: .55; transform: translateY(0); }
     50% { opacity: .9; transform: translateY(-2px); }
   }
-  #splash .tap{ animation: pulse 1.2s infinite; }
 
   #splashMascot{
     width: min(32vw, 170px);
@@ -147,15 +101,59 @@
     margin-bottom: 8px;
     user-select: none;
     -webkit-user-drag: none;
-    opacity: 0.98;
-    filter: drop-shadow(0 0 18px rgba(77,166,255,0.22));
-    border-radius: 14px;
+    opacity: 0.95;
+
+    /* ✨ glow rundt */
+    filter: drop-shadow(0 0 12px rgba(77,166,255,0.35));
+
+    /* ✨ glow litt inn på bildet */
+    box-shadow: inset 0 0 18px rgba(77,166,255,0.12);
+
+    border-radius: 12px; /* viktig for pen glow */
+  }
+
+  /* 🎨 LIVE BACKGROUND */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-1;
+
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255,0,150,0.18), transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(77,166,255,0.18), transparent 40%),
+      radial-gradient(circle at 60% 20%, rgba(255,200,0,0.12), transparent 45%),
+      #000;
+
+    filter: blur(40px);
+    animation: bgFloat 18s ease-in-out infinite alternate;
+  }
+
+  @keyframes bgFloat{
+    0%{ transform: scale(1) translateY(0px); }
+    100%{ transform: scale(1.08) translateY(-20px); }
+  }
+
+  /* 🌑 VIGNETTE + FILM GRAIN */
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+
+    background:
+      radial-gradient(circle at 50% 40%, transparent 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.85) 100%);
+
+    opacity: .55;
+    mix-blend-mode: overlay;
+    filter: contrast(1.1);
   }
 
   /* MENY */
   #wrap{
     height:100dvh;
-    display:none; /* ✅ viktig: meny skjules til du trykker “fortsett” */
+    display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
@@ -163,42 +161,44 @@
     padding:18px;
     box-sizing:border-box;
   }
-
   h2{ margin:0; font-size:26px; text-align:center; }
 
   #previewCard{
     width: min(80vw, var(--card-w));
-    border-radius:18px;
-    padding:14px 14px 12px;
+    border-radius:16px;
+    padding:12px;
     box-sizing:border-box;
 
     background: rgba(18,18,18,0.55);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 18px 55px rgba(0,0,0,0.55);
 
-    border: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 22px 70px rgba(0,0,0,0.60);
-
+    /* ✅ for highlight overlay */
     position: relative;
     overflow: hidden;
   }
 
+  /* ✅ “glass highlight” på kortet */
   #previewCard::before{
     content:"";
     position:absolute;
     inset:-2px;
-    background: radial-gradient(circle at 30% 10%, rgba(255,255,255,0.10), transparent 45%);
     pointer-events:none;
-    opacity:.6;
+    background:
+      radial-gradient(circle at 25% 10%,
+        rgba(255,255,255,0.10),
+        transparent 55%);
+    opacity:.9;
+    mix-blend-mode: screen;
   }
 
   #previewFrame{
     width:100%;
     height: var(--preview-h);
-    border-radius:14px;
+    border-radius:12px;
     overflow:hidden;
-    background: rgba(0,0,0,0.55);
-    border: 1px solid rgba(255,255,255,0.10);
+    background:#000;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -213,18 +213,15 @@
     -webkit-user-drag:none;
     touch-action: pan-y;
 
+    /* ✅ smooth fade når brett byttes */
     opacity: 1;
-    transform: translateY(0);
-    transition: opacity .18s ease, transform .18s ease;
+    transition: opacity .18s ease;
+    will-change: opacity;
   }
+  #previewImg.is-fading{ opacity: 0; }
 
-  #previewImg.swapOut{
-    opacity: 0;
-    transform: translateY(4px);
-  }
-
-  #boardLabel{ margin-top:10px; font-size:16px; opacity:.92; text-align:center; }
-  #hint{ font-size:12px; opacity:.65; text-align:center; }
+  #boardLabel{ margin-top:10px; font-size:15px; opacity:.85; text-align:center; }
+  #hint{ font-size:12px; opacity:.6; text-align:center; }
 
   #dots{
     display:flex;
@@ -233,16 +230,16 @@
     margin-top:10px;
   }
   .dot{
-    width:8px; height:8px;
-    border-radius:50%;
+    width:8px; height:8px; border-radius:50%;
     background:#555;
-    opacity: .8;
-    transition: transform .18s ease, opacity .18s ease, background .18s ease;
+    opacity:.65;
+    transition: transform .18s ease, opacity .18s ease, box-shadow .18s ease, background .18s ease;
   }
   .dot.active{
     background: var(--accent);
     opacity: 1;
-    transform: scale(1.25);
+    transform: scale(1.15);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent);
   }
 
   .actions{ display:flex; gap:12px; align-items:center; justify-content:center; }
@@ -250,27 +247,33 @@
   button{
     padding:14px 22px;
     font-size:18px;
-    border-radius:14px;
+    border-radius:12px;
     border:none;
     font-weight:bold;
     cursor:pointer;
     min-height:54px;
-    transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
   }
 
+  /* ✅ premium start button */
   #startBtn{
-    background: var(--accent);
     color:#fff;
-    box-shadow: 0 14px 34px rgba(77,166,255,0.22);
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--accent) 92%, white 8%),
+      color-mix(in srgb, var(--accent) 92%, black 8%)
+    );
+    box-shadow:
+      0 14px 34px rgba(0,0,0,0.55),
+      0 0 18px color-mix(in srgb, var(--accent) 55%, transparent);
+    transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
   }
   #startBtn:active{ transform:scale(.97); }
 
   .navBtn{
-    background: rgba(34,34,34,0.85);
+    background:#222;
     color:#fff;
     padding:14px 16px;
     min-width:54px;
-    border: 1px solid rgba(255,255,255,0.10);
+    transition: transform .08s ease, filter .2s ease;
   }
   .navBtn:active{ transform:scale(.97); }
 
@@ -279,14 +282,17 @@
     #splash h1{ font-size:32px; }
     h2{ font-size:24px; }
   }
+
+  /* ✅ Respect reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
 </style>
 </head>
 
 <body>
 
-<div id="bg"></div>
-
-<!-- STARTING OVERLAY -->
+<!-- STARTING OVERLAY (MÅ LIGGE INNI BODY) -->
 <div id="launchOverlay">
   <div class="title">Starter spillet…</div>
   <div class="dice">🎲</div>
@@ -326,47 +332,28 @@
 </div>
 
 <script>
-  const splashEl = document.getElementById("splash");
-  const wrapEl   = document.getElementById("wrap");
-
   function checkOrientationMenu(){
     const warning = document.getElementById("rotateWarning");
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-
     warning.style.display = isPortrait ? "flex" : "none";
-
-    // ✅ Portrait: vis bare rotate + splash (ikke meny)
-    if (isPortrait){
-      wrapEl.style.display = "none";
-      splashEl.style.display = "flex";
-      return;
-    }
-
-    // ✅ Landscape: hvis splash er borte → vis meny
-    if (splashEl.style.display === "none"){
-      wrapEl.style.display = "flex";
-    }
   }
-
   window.addEventListener("resize", checkOrientationMenu);
   checkOrientationMenu();
 
   function enterMenu(){
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
     if (isPortrait) return;
-
-    splashEl.style.display = "none";
-    wrapEl.style.display = "flex";
+    document.getElementById("splash").style.display = "none";
   }
 
   const boards = [
-    {name:"Original", file:"board.png",  theme:"gul"},
-    {name:"Grønn/Lilla/Blå", file:"board2.png", theme:"lysegronn"},
-    {name:"Lilla/Grønn/Gul", file:"board3.png", theme:"lilla"},
-    {name:"Lilla/Gul", file:"board4.png", theme:"gul"},
-    {name:"Blå/Gul", file:"board5.png", theme:"gul"},
-    {name:"Lyseblå/Gul", file:"board6.png", theme:"lysebla"},
-    {name:"Grønn/Gul", file:"board7.png", theme:"gronn"}
+    {name:"Original", file:"board.png",  theme:"gul",      accent:"#ffcc3a"},
+    {name:"Grønn/Lilla/Blå", file:"board2.png", theme:"lysegronn", accent:"#66ff8a"},
+    {name:"Lilla/Grønn/Gul", file:"board3.png", theme:"lilla",    accent:"#b066ff"},
+    {name:"Lilla/Gul", file:"board4.png", theme:"gul",            accent:"#ffcc3a"},
+    {name:"Blå/Gul", file:"board5.png", theme:"gul",              accent:"#ffcc3a"},
+    {name:"Lyseblå/Gul", file:"board6.png", theme:"lysebla",      accent:"#5ad7ff"},
+    {name:"Grønn/Gul", file:"board7.png", theme:"gronn",          accent:"#39d98a"}
   ];
 
   let index = 0;
@@ -381,78 +368,38 @@
     dotsWrap.appendChild(d);
   });
 
-  function applyMenuTheme(theme){
-    const t = (theme || "").toLowerCase();
-
-    let g1 = "rgba(255,0,150,0.22)";
-    let g2 = "rgba(77,166,255,0.22)";
-    let g3 = "rgba(255,200,0,0.16)";
-    let accent = "#4da6ff";
-
-    if (t === "lilla") {
-      g1 = "rgba(180,60,255,0.26)";
-      g2 = "rgba(77,166,255,0.18)";
-      g3 = "rgba(255,200,0,0.10)";
-      accent = "#b36bff";
-    } else if (t === "gronn") {
-      g1 = "rgba(0,200,120,0.22)";
-      g2 = "rgba(77,166,255,0.14)";
-      g3 = "rgba(255,200,0,0.12)";
-      accent = "#39d98a";
-    } else if (t === "lysegronn") {
-      g1 = "rgba(120,255,120,0.22)";
-      g2 = "rgba(77,166,255,0.14)";
-      g3 = "rgba(255,0,150,0.10)";
-      accent = "#7dff7d";
-    } else if (t === "lysebla") {
-      g1 = "rgba(90,215,255,0.24)";
-      g2 = "rgba(77,166,255,0.18)";
-      g3 = "rgba(255,0,150,0.10)";
-      accent = "#5ad7ff";
-    } else if (t === "gul") {
-      g1 = "rgba(255,200,0,0.22)";
-      g2 = "rgba(255,0,150,0.14)";
-      g3 = "rgba(77,166,255,0.14)";
-      accent = "#ffd54a";
-    }
-
-    document.documentElement.style.setProperty("--g1", g1);
-    document.documentElement.style.setProperty("--g2", g2);
-    document.documentElement.style.setProperty("--g3", g3);
-    document.documentElement.style.setProperty("--accent", accent);
+  function setAccent(color){
+    if (!color) return;
+    document.documentElement.style.setProperty("--accent", color);
   }
 
-  function updateUI(withAnim = true){
-    const b = boards[index];
+  function updateUI(){
+    // ✅ Accent følger brettet
+    setAccent(boards[index].accent);
 
-    applyMenuTheme(b.theme);
+    // ✅ Fade-out → bytt bilde → fade-in
+    img.classList.add("is-fading");
+    setTimeout(() => {
+      img.src = boards[index].file;
+      label.textContent = boards[index].name;
 
-    label.textContent = b.name;
-    document.querySelectorAll(".dot").forEach((d,i)=>{
-      d.classList.toggle("active", i === index);
-    });
+      document.querySelectorAll(".dot").forEach((d,i)=>{
+        d.classList.toggle("active", i === index);
+      });
 
-    if (!withAnim) {
-      img.src = b.file;
-      return;
-    }
-
-    img.classList.add("swapOut");
-    setTimeout(() => { img.src = b.file; }, 120);
-
-    img.onload = () => {
-      requestAnimationFrame(() => img.classList.remove("swapOut"));
-    };
+      requestAnimationFrame(() => {
+        img.classList.remove("is-fading");
+      });
+    }, 140);
   }
 
   function nextBoard(){
     index = (index + 1) % boards.length;
-    updateUI(true);
+    updateUI();
   }
-
   function prevBoard(){
     index = (index - 1 + boards.length) % boards.length;
-    updateUI(true);
+    updateUI();
   }
 
   let startX = 0;
@@ -488,7 +435,7 @@
 
   img.onerror = () => { img.src = "board.png"; };
 
-  updateUI(false);
+  updateUI();
 </script>
 
 </body>
