@@ -10,6 +10,11 @@
     --preview-h: 140px;
     --card-w: 520px;
     --accent: #4da6ff;
+
+    /* ✅ theme glow (oppdateres i JS) */
+    --g1: rgba(255,0,150,0.22);
+    --g2: rgba(77,166,255,0.22);
+    --g3: rgba(255,200,0,0.16);
   }
 
   html, body{
@@ -21,7 +26,7 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* ✅ BAKGRUNN (ligger alltid bak alt) */
+  /* ✅ BACKGROUND LAG (animated + vignette + grain) */
   #bg{
     position: fixed;
     inset: 0;
@@ -29,27 +34,24 @@
     pointer-events: none;
 
     background:
-      radial-gradient(circle at 20% 30%, rgba(255,0,150,0.22), transparent 45%),
-      radial-gradient(circle at 80% 70%, rgba(77,166,255,0.22), transparent 45%),
-      radial-gradient(circle at 60% 20%, rgba(255,200,0,0.16), transparent 55%),
+      radial-gradient(circle at 18% 30%, var(--g1), transparent 48%),
+      radial-gradient(circle at 82% 70%, var(--g2), transparent 50%),
+      radial-gradient(circle at 55% 18%, var(--g3), transparent 58%),
       #000;
 
     filter: blur(34px);
     animation: bgFloat 18s ease-in-out infinite alternate;
+    transform: translateZ(0);
   }
 
-  @keyframes bgFloat{
-    0%{ transform: scale(1) translateY(0px); }
-    100%{ transform: scale(1.08) translateY(-20px); }
-  }
-
-  /* ✅ VIGNETTE + GRAIN på toppen av bakgrunn */
   #bg::after{
     content:"";
     position:absolute;
     inset:0;
+    pointer-events:none;
+
     background:
-      radial-gradient(circle at 50% 40%, transparent 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.88) 100%),
+      radial-gradient(circle at 50% 40%, transparent 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.90) 100%),
       repeating-linear-gradient(
         0deg,
         rgba(255,255,255,0.035) 0px,
@@ -57,12 +59,44 @@
         transparent 2px,
         transparent 4px
       );
+
     opacity: .55;
     mix-blend-mode: overlay;
-    pointer-events:none;
   }
 
-  /* ✅ ROTER-OVERLAY (skal dekke ALT og skjule alt bak) */
+  @keyframes bgFloat{
+    0%{ transform: scale(1) translateY(0px); }
+    100%{ transform: scale(1.08) translateY(-20px); }
+  }
+
+  /* sørg for at UI ligger over bakgrunn */
+  #wrap, #splash, #rotateWarning, #launchOverlay{
+    position: relative;
+    z-index: 2;
+  }
+
+  /* START-OVERLAY */
+  #launchOverlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.68);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 900;
+    text-align: center;
+    pointer-events: all;
+  }
+  #launchOverlay.show{ display:flex; }
+  #launchOverlay .title{ font-size: 24px; font-weight: bold; letter-spacing: .3px; }
+  #launchOverlay .dice{ font-size: 40px; animation: spinDice 1s linear infinite; }
+  @keyframes spinDice{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+
+  /* ROTER-OVERLAY */
   #rotateWarning{
     position: fixed;
     inset: 0;
@@ -72,35 +106,16 @@
     justify-content: center;
     align-items: center;
     font-size: 22px;
-    z-index: 2000;
+    z-index: 999;
     text-align: center;
     padding: 24px;
   }
 
-  /* ✅ START-OVERLAY (loading) – dekker ALT */
-  #launchOverlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.78);
-    backdrop-filter: blur(10px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 14px;
-    z-index: 1500;
-    text-align: center;
-  }
-  #launchOverlay.show{ display:flex; }
-  #launchOverlay .title{ font-size: 30px; font-weight: bold; }
-  #launchOverlay .dice{ font-size: 44px; animation: spinDice 1s linear infinite; }
-  @keyframes spinDice{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
-
-  /* ✅ SPLASH – alltid over meny til du trykker */
+  /* SPLASH */
   #splash{
     position: fixed;
     inset: 0;
-    background: transparent; /* lar bg synes */
+    background: transparent;
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -108,7 +123,7 @@
     text-align:center;
     gap:14px;
     padding:24px;
-    z-index: 1200;
+    z-index: 500;
   }
 
   #splash h1{ margin:0; font-size:36px; letter-spacing:0.5px; }
@@ -127,12 +142,12 @@
     margin-bottom: 8px;
     user-select: none;
     -webkit-user-drag: none;
-    opacity: 0.95;
-    filter: drop-shadow(0 0 12px rgba(77,166,255,0.35));
-    border-radius: 12px;
+    opacity: 0.98;
+    filter: drop-shadow(0 0 18px rgba(77,166,255,0.22));
+    border-radius: 14px;
   }
 
-  /* ✅ MENYWRAP – skjult helt til splash er trykket */
+  /* MENY */
   #wrap{
     height:100dvh;
     display:flex;
@@ -142,40 +157,43 @@
     gap:12px;
     padding:18px;
     box-sizing:border-box;
-    position: relative;
-    z-index: 10;
-
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .25s ease;
   }
-  #wrap.show{
-    visibility: visible;
-    opacity: 1;
-    pointer-events: auto;
-  }
-
   h2{ margin:0; font-size:26px; text-align:center; }
 
   #previewCard{
     width: min(80vw, var(--card-w));
-    border-radius:16px;
-    padding:12px;
+    border-radius:18px;
+    padding:14px 14px 12px;
     box-sizing:border-box;
 
     background: rgba(18,18,18,0.55);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.10);
-    box-shadow: 0 18px 55px rgba(0,0,0,0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 22px 70px rgba(0,0,0,0.60);
+
+    /* litt “glans” */
+    position: relative;
+    overflow: hidden;
+  }
+
+  #previewCard::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    background: radial-gradient(circle at 30% 10%, rgba(255,255,255,0.10), transparent 45%);
+    pointer-events:none;
+    opacity:.6;
   }
 
   #previewFrame{
     width:100%;
     height: var(--preview-h);
-    border-radius:12px;
+    border-radius:14px;
     overflow:hidden;
-    background:#000;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.10);
     display:flex;
     align-items:center;
     justify-content:center;
@@ -189,10 +207,21 @@
     user-select:none;
     -webkit-user-drag:none;
     touch-action: pan-y;
+
+    /* ✅ smooth transition */
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity .18s ease, transform .18s ease;
   }
 
-  #boardLabel{ margin-top:10px; font-size:15px; opacity:.85; text-align:center; }
-  #hint{ font-size:12px; opacity:.6; text-align:center; }
+  /* ✅ bytte animasjon */
+  #previewImg.swapOut{
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  #boardLabel{ margin-top:10px; font-size:16px; opacity:.92; text-align:center; }
+  #hint{ font-size:12px; opacity:.65; text-align:center; }
 
   #dots{
     display:flex;
@@ -200,28 +229,45 @@
     justify-content:center;
     margin-top:10px;
   }
-  .dot{ width:8px; height:8px; border-radius:50%; background:#555; }
-  .dot.active{ background: var(--accent); }
+  .dot{
+    width:8px; height:8px;
+    border-radius:50%;
+    background:#555;
+    opacity: .8;
+    transition: transform .18s ease, opacity .18s ease, background .18s ease;
+  }
+  .dot.active{
+    background: var(--accent);
+    opacity: 1;
+    transform: scale(1.25);
+  }
 
   .actions{ display:flex; gap:12px; align-items:center; justify-content:center; }
 
   button{
     padding:14px 22px;
     font-size:18px;
-    border-radius:12px;
+    border-radius:14px;
     border:none;
     font-weight:bold;
     cursor:pointer;
     min-height:54px;
+    transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
   }
-  #startBtn{ background: var(--accent); color:#fff; }
+
+  #startBtn{
+    background: var(--accent);
+    color:#fff;
+    box-shadow: 0 14px 34px rgba(77,166,255,0.22);
+  }
   #startBtn:active{ transform:scale(.97); }
 
   .navBtn{
-    background:#222;
+    background: rgba(34,34,34,0.85);
     color:#fff;
     padding:14px 16px;
     min-width:54px;
+    border: 1px solid rgba(255,255,255,0.10);
   }
   .navBtn:active{ transform:scale(.97); }
 
@@ -235,24 +281,28 @@
 
 <body>
 
+<!-- ✅ bakgrunnslag -->
 <div id="bg"></div>
 
-<div id="rotateWarning">
-  🔄 Snu telefonen til liggende for å spille
-</div>
-
+<!-- STARTING OVERLAY -->
 <div id="launchOverlay">
   <div class="title">Starter spillet…</div>
   <div class="dice">🎲</div>
 </div>
 
-<div id="splash" role="button" aria-label="Trykk for å fortsette">
+<div id="rotateWarning">
+  🔄 Snu telefonen til liggende for å spille
+</div>
+
+<!-- FORSIDE -->
+<div id="splash" onclick="enterMenu()" role="button" aria-label="Trykk for å fortsette">
   <img id="splashMascot" src="mascot.png" alt="Sexopoly mascot">
   <h1>Welcome to Sexopol</h1>
   <div class="byline">Made by Espen Opsahl</div>
   <div class="tap">Trykk for å fortsette</div>
 </div>
 
+<!-- BRETTVELGER -->
 <div id="wrap">
   <h2>Velg spillebrett</h2>
 
@@ -274,49 +324,24 @@
 </div>
 
 <script>
-  let hasEntered = false;
+  function checkOrientationMenu(){
+    const warning = document.getElementById("rotateWarning");
+    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+    warning.style.display = isPortrait ? "flex" : "none";
 
-  function isPortrait(){
-    return window.matchMedia("(orientation: portrait)").matches;
-  }
-
-  function updateVisibility(){
-    const rotate = document.getElementById("rotateWarning");
-    const splash = document.getElementById("splash");
-    const wrap = document.getElementById("wrap");
-    const launch = document.getElementById("launchOverlay");
-
-    if (isPortrait()){
-      // ✅ I stående: vis kun rotateWarning
-      rotate.style.display = "flex";
-
-      splash.style.display = "none";
-      wrap.classList.remove("show");
-      launch.classList.remove("show");
-      return;
-    }
-
-    // ✅ I liggende: skjul rotateWarning
-    rotate.style.display = "none";
-
-    // hvis ikke gått videre: vis splash, skjul meny
-    if (!hasEntered){
-      splash.style.display = "flex";
-      wrap.classList.remove("show");
-    } else {
-      splash.style.display = "none";
-      wrap.classList.add("show");
+    // ✅ når portrait: sørg for at splash ikke “ligger oppå”
+    if (isPortrait) {
+      document.getElementById("splash").style.display = "flex";
     }
   }
+  window.addEventListener("resize", checkOrientationMenu);
+  checkOrientationMenu();
 
-  window.addEventListener("resize", updateVisibility);
-  window.addEventListener("orientationchange", updateVisibility);
-
-  document.getElementById("splash").addEventListener("click", () => {
-    if (isPortrait()) return;
-    hasEntered = true;
-    updateVisibility();
-  });
+  function enterMenu(){
+    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+    if (isPortrait) return;
+    document.getElementById("splash").style.display = "none";
+  }
 
   const boards = [
     {name:"Original", file:"board.png",  theme:"gul"},
@@ -340,23 +365,85 @@
     dotsWrap.appendChild(d);
   });
 
-  function updateUI(){
-    img.src = boards[index].file;
-    label.textContent = boards[index].name;
+  /* ✅ theme bakgrunn per brett */
+  function applyMenuTheme(theme){
+    const t = (theme || "").toLowerCase();
 
+    // defaults
+    let g1 = "rgba(255,0,150,0.22)";
+    let g2 = "rgba(77,166,255,0.22)";
+    let g3 = "rgba(255,200,0,0.16)";
+    let accent = "#4da6ff";
+
+    if (t === "lilla") {
+      g1 = "rgba(180,60,255,0.26)";
+      g2 = "rgba(77,166,255,0.18)";
+      g3 = "rgba(255,200,0,0.10)";
+      accent = "#b36bff";
+    } else if (t === "gronn") {
+      g1 = "rgba(0,200,120,0.22)";
+      g2 = "rgba(77,166,255,0.14)";
+      g3 = "rgba(255,200,0,0.12)";
+      accent = "#39d98a";
+    } else if (t === "lysegronn") {
+      g1 = "rgba(120,255,120,0.22)";
+      g2 = "rgba(77,166,255,0.14)";
+      g3 = "rgba(255,0,150,0.10)";
+      accent = "#7dff7d";
+    } else if (t === "lysebla") {
+      g1 = "rgba(90,215,255,0.24)";
+      g2 = "rgba(77,166,255,0.18)";
+      g3 = "rgba(255,0,150,0.10)";
+      accent = "#5ad7ff";
+    } else if (t === "gul") {
+      g1 = "rgba(255,200,0,0.22)";
+      g2 = "rgba(255,0,150,0.14)";
+      g3 = "rgba(77,166,255,0.14)";
+      accent = "#ffd54a";
+    }
+
+    document.documentElement.style.setProperty("--g1", g1);
+    document.documentElement.style.setProperty("--g2", g2);
+    document.documentElement.style.setProperty("--g3", g3);
+    document.documentElement.style.setProperty("--accent", accent);
+  }
+
+  function updateUI(withAnim = true){
+    const b = boards[index];
+
+    // ✅ bakgrunn / accent
+    applyMenuTheme(b.theme);
+
+    // ✅ label + dots
+    label.textContent = b.name;
     document.querySelectorAll(".dot").forEach((d,i)=>{
       d.classList.toggle("active", i === index);
     });
+
+    // ✅ smooth bildebytte
+    if (!withAnim) {
+      img.src = b.file;
+      return;
+    }
+
+    img.classList.add("swapOut");
+    setTimeout(() => {
+      img.src = b.file;
+    }, 120);
+
+    // når bildet er lastet, fade inn igjen
+    img.onload = () => {
+      requestAnimationFrame(() => img.classList.remove("swapOut"));
+    };
   }
 
   function nextBoard(){
     index = (index + 1) % boards.length;
-    updateUI();
+    updateUI(true);
   }
-
   function prevBoard(){
     index = (index - 1 + boards.length) % boards.length;
-    updateUI();
+    updateUI(true);
   }
 
   let startX = 0;
@@ -392,8 +479,8 @@
 
   img.onerror = () => { img.src = "board.png"; };
 
-  updateUI();
-  updateVisibility();
+  // init
+  updateUI(false);
 </script>
 
 </body>
