@@ -74,7 +74,11 @@
     position: relative;
     z-index: 2;
   }
-
+@keyframes mascotFloat{
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
   /* START-OVERLAY */
   #launchOverlay{
     position: fixed;
@@ -149,16 +153,19 @@
   }
   #splash .tap{ animation: pulse 1.2s infinite; }
 
-  #splashMascot{
-    width: min(32vw, 170px);
-    height: auto;
-    margin-bottom: 8px;
-    user-select: none;
-    -webkit-user-drag: none;
-    opacity: 0.98;
-filter: drop-shadow(0 0 34px rgba(180, 20, 40, 0.55));
-    border-radius: 14px;
-  }
+#splashMascot{
+  width: 240px;
+  max-width: 40vw;
+  height: auto;
+  margin-bottom: 8px;
+  user-select: none;
+  -webkit-user-drag: none;
+  opacity: 0.98;
+  filter: 
+  drop-shadow(0 0 30px rgba(180,20,40,0.6))
+  drop-shadow(0 0 60px rgba(180,20,40,0.35));
+  animation: mascotFloat 4s ease-in-out infinite;
+}
 
   /* MENY */
   #wrap{
