@@ -70,7 +70,7 @@
   }
 
   /* sørg for at UI ligger over bakgrunn */
-  #wrap, #splash, #rotateWarning, #launchOverlay{
+  #wrap, #splash, #nameScreen, #rotateWarning, #launchOverlay{
     position: relative;
     z-index: 2;
   }
@@ -181,6 +181,27 @@
   color:white;
   font-size:18px;
   border:none;
+}
+#nameScreen{
+  position: fixed;
+  inset: 0;
+
+  background:
+    radial-gradient(circle at 50% 30%, rgba(180, 20, 40, 0.28), transparent 60%),
+    radial-gradient(circle at 20% 80%, rgba(255, 80, 80, 0.16), transparent 55%),
+    rgba(0,0,0,0.78);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding: 24px;
+  z-index: 700;
 }
   /* MENY */
   #wrap{
@@ -336,7 +357,7 @@ transform: translateX(24px);
   <div class="tap">Trykk for å fortsette</div>
 </div>
 <!-- NAVN SKJERM -->
-<div id="nameScreen" style="display:none; flex-direction:column; align-items:center; gap:16px;">
+<div id="nameScreen">
 
   <h2>Skriv inn spillernavn</h2>
 
