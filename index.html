@@ -424,30 +424,43 @@ transform: translateX(24px);
 <script>
   const splashEl = document.getElementById("splash");
   const wrapEl   = document.getElementById("wrap");
+  const nameScreen = document.getElementById("nameScreen");
 
-  function checkOrientationMenu(){
-    const warning = document.getElementById("rotateWarning");
-    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+function checkOrientationMenu(){
+  const warning = document.getElementById("rotateWarning");
+  const isPortrait = window.matchMedia("(orientation: portrait)").matches;
 
-    warning.style.display = isPortrait ? "flex" : "none";
+  warning.style.display = isPortrait ? "flex" : "none";
 
-    // ✅ Portrait: vis bare rotate + splash (ikke meny)
-    if (isPortrait){
-      wrapEl.style.display = "none";
-      splashEl.style.display = "flex";
-      return;
-    }
-
-    // ✅ Landscape: hvis splash er borte → vis meny
-    if (splashEl.style.display === "none"){
-      wrapEl.style.display = "flex";
-    }
+  // ✅ Portrait: vis bare rotate + splash (ikke navn / ikke brettvelger)
+  if (isPortrait){
+    wrapEl.style.display = "none";
+    nameScreen.style.display = "none";
+    splashEl.style.display = "flex";
+    return;
   }
+
+  // ✅ Landscape:
+  // 1) Hvis vi fortsatt er på splash → ikke vis noe annet før du trykker
+  if (splashEl.style.display !== "none"){
+    wrapEl.style.display = "none";
+    nameScreen.style.display = "none";
+    return;
+  }
+
+  // 2) Hvis vi er på navnskjerm → ikke vis brettvelger samtidig
+  if (nameScreen.style.display !== "none"){
+    wrapEl.style.display = "none";
+    return;
+  }
+
+  // 3) Ellers (splash skjult + name skjult) → vis brettvelger
+  wrapEl.style.display = "flex";
+}
 
   window.addEventListener("resize", checkOrientationMenu);
   checkOrientationMenu();
 
-const nameScreen = document.getElementById("nameScreen");
 
 function enterMenu(){
   const isPortrait = window.matchMedia("(orientation: portrait)").matches;
