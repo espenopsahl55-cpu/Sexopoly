@@ -560,6 +560,11 @@ let players = [
  {pos:0, el:null, name:"Spiller 1", jailed:false, jailAttempts:0, jailFreeTurn:false, points:0, laps:0},
  {pos:0, el:null, name:"Spiller 2", jailed:false, jailAttempts:0, jailFreeTurn:false, points:0, laps:0}
 ];
+const savedP1 = localStorage.getItem("p1");
+const savedP2 = localStorage.getItem("p2");
+
+if(savedP1) players[0].name = savedP1;
+if(savedP2) players[1].name = savedP2;
 const wildCards = [
   "bli bedre kjent, stimuler hverandre i 1 minutt ",
   "sitter dere i hver deres stol? av med alle klær(boxer og truse er greit) og sitt på fanget 1 runde",
