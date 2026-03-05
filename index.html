@@ -166,7 +166,22 @@
   drop-shadow(0 0 60px rgba(180,20,40,0.35));
   animation: mascotFloat 4s ease-in-out infinite;
 }
+#nameScreen input{
+  width:260px;
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  font-size:18px;
+}
 
+#nameScreen button{
+  padding:14px 22px;
+  border-radius:12px;
+  background:var(--accent);
+  color:white;
+  font-size:18px;
+  border:none;
+}
   /* MENY */
   #wrap{
     height:100dvh;
@@ -320,7 +335,17 @@ transform: translateX(24px);
   <div class="byline">Made by Espen Opsahl</div>
   <div class="tap">Trykk for å fortsette</div>
 </div>
+<!-- NAVN SKJERM -->
+<div id="nameScreen" style="display:none; flex-direction:column; align-items:center; gap:16px;">
 
+  <h2>Skriv inn spillernavn</h2>
+
+  <input id="player1Name" placeholder="Spiller 1">
+  <input id="player2Name" placeholder="Spiller 2">
+
+  <button onclick="goToBoardSelect()">Fortsett</button>
+
+</div>
 <!-- BRETTVELGER -->
 <div id="wrap">
   <h2>Velg spillebrett</h2>
@@ -368,14 +393,26 @@ transform: translateX(24px);
   window.addEventListener("resize", checkOrientationMenu);
   checkOrientationMenu();
 
-  function enterMenu(){
-    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-    if (isPortrait) return;
+const nameScreen = document.getElementById("nameScreen");
 
-    splashEl.style.display = "none";
-    wrapEl.style.display = "flex";
-  }
+function enterMenu(){
+  const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+  if (isPortrait) return;
 
+  splashEl.style.display = "none";
+  nameScreen.style.display = "flex";
+}
+function goToBoardSelect(){
+
+  const p1 = document.getElementById("player1Name").value || "Spiller 1";
+  const p2 = document.getElementById("player2Name").value || "Spiller 2";
+
+  localStorage.setItem("p1", p1);
+  localStorage.setItem("p2", p2);
+
+  nameScreen.style.display = "none";
+  wrapEl.style.display = "flex";
+}
   const boards = [
     {name:"Original", file:"board.png",  theme:"gul"},
     {name:"Grønn/Lilla/Blå", file:"board2.png", theme:"lysegronn"},
