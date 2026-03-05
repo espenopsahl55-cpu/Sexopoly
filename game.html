@@ -400,11 +400,6 @@ body.theme-lysebla #rollBtn:hover{
 
   <div id="sideUI">
 
-    <div>
-      <input id="name1Input" placeholder="Spiller 1" autocomplete="off" />
-      <input id="name2Input" placeholder="Spiller 2" autocomplete="off" />
-    </div>
-
     <div id="scores">
       <div id="score1"></div>
       <div id="score2"></div>
@@ -620,8 +615,7 @@ const d2 = document.getElementById("d2");
 const diceFaces = ["⚀","⚁","⚂","⚃","⚄","⚅"];
 const card = document.getElementById("card");
 const cardText = document.getElementById("cardText");
-const name1Input = document.getElementById("name1Input");
-const name2Input = document.getElementById("name2Input");
+  
 /* ===== ACTIVE PLAYER GLOW ===== */
 function updateActiveGlow() {
   players.forEach(p => p.el.classList.remove("active"));
@@ -701,8 +695,6 @@ function roll() {
   if (locked || winner) return;
   locked = true;
 
-  players[0].name = name1Input.value.trim() || "Spiller 1";
-  players[1].name = name2Input.value.trim() || "Spiller 2";
 
   updateScores();
   updateTurnIndicator();
