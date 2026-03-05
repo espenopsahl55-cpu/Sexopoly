@@ -203,6 +203,31 @@
   padding: 24px;
   z-index: 700;
 }
+#nameLayout{
+  display:flex;
+  align-items:center;
+  gap:40px;
+}
+
+#nameFields{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  align-items:center;
+}
+
+#nameMascot{
+  width:220px;
+  max-width:30vw;
+  height:auto;
+  opacity:0.95;
+
+  filter:
+  drop-shadow(0 0 30px rgba(180,20,40,0.6))
+  drop-shadow(0 0 60px rgba(180,20,40,0.35));
+
+    animation: mascotFloat 4s ease-in-out infinite;
+}
   /* MENY */
   #wrap{
     height:100dvh;
@@ -358,13 +383,21 @@ transform: translateX(24px);
 </div>
 <!-- NAVN SKJERM -->
 <div id="nameScreen">
+<div id="nameLayout">
 
-  <h2>Skriv inn spillernavn</h2>
+  <div id="nameFields">
+    <h2>Skriv inn spillernavn</h2>
 
-  <input id="player1Name" placeholder="Spiller 1">
-  <input id="player2Name" placeholder="Spiller 2">
+    <input id="player1Name" placeholder="Spiller 1">
+    <input id="player2Name" placeholder="Spiller 2">
 
-  <button onclick="goToBoardSelect()">Fortsett</button>
+    <button onclick="goToBoardSelect()">Fortsett</button>
+  </div>
+
+  <img id="nameMascot" src="mascot.png" alt="Mascot">
+
+</div>
+
 
 </div>
 <!-- BRETTVELGER -->
