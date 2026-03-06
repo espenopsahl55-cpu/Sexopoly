@@ -353,6 +353,30 @@ body.theme-lysebla #rollBtn:hover{
   background: linear-gradient(135deg,#ff3b3b,#b30000);
   color:white;
 }
+#card.drink #cardContent{
+  background: linear-gradient(135deg,#8b5a2b,#5c3a1e);
+  color:white;
+}
+
+#card.bestem #cardContent{
+  background: linear-gradient(135deg,#4da6ff,#1f6ed4);
+  color:white;
+}
+
+#card.park #cardContent{
+  background: linear-gradient(135deg,#39d98a,#138a4f);
+  color:white;
+}
+
+#card.give2 #cardContent{
+  background: linear-gradient(135deg,#b36bff,#7b2cff);
+  color:white;
+}
+
+#card.klesplagg #cardContent{
+  background: linear-gradient(135deg,#ffffff,#e9e9e9);
+  color:#111;
+}
 /* ===== ROTASJON ADVARSEL ===== */
 #rotateWarning {
   position: fixed;
@@ -849,9 +873,9 @@ if (players[0].pos === players[1].pos) {
       showCard("🔥 Dare", draw(dareCards));
       break;
 
-    case "drink":
-      showCard("🍺 Drikk", `Ta ${tile.amount} slurker`);
-      break;
+case "drink":
+  showCard("🍺 Drikk", `Ta ${tile.amount} slurker`, "drink");
+  break;
 
 case "back":
   p.pos = 0;           // Flytt til start med en gang
@@ -859,21 +883,21 @@ case "back":
   showCard("🔙 Back!", "Du må gå tilbake til start!");
   break;
     
-    case "klesplagg":
-      showCard(" Klesplagg","Fjern 2 klesplagg👖🧦");
-      break;
+case "klesplagg":
+  showCard("👕 Klesplagg", "Fjern 2 klesplagg 👖🧦", "klesplagg");
+  break;
       
-    case "park":
-      showCard("parkering","gratis parkering🚗");
-      break; 
+case "park":
+  showCard("🚗 Gratis parkering", "Du havnet på gratis parkering!", "park");
+  break;
 
       case "spotify":
       showCard("Fyr på sex listå🎶");
       break; 
 
-    case "bestem":
-      showCard("Bestem et utfordrings kort til partner🧑‍⚖️👩‍⚖️");
-      break; 
+case "bestem":
+  showCard("🧑‍⚖️ Bestem", "Bestem et utfordringskort til partner", "bestem");
+  break;
     
 case "give2":
   const giver = players[current];
@@ -882,9 +906,9 @@ case "give2":
     giver.points -= 2;
     partner.points += 2;
     updateScores();
-    showCard("🎁 Gi poeng", `${giver.name} gir 2 poeng til ${partner.name}`);
+    showCard("💜 Gi 2 poeng", `${giver.name} gir 2 poeng til ${partner.name}`, "give2");
   } else {
-    showCard("🎁 Gi poeng", `${giver.name} har ikke nok poeng til å gi`);
+    showCard("💜 Gi 2 poeng", `${giver.name} har ikke nok poeng til å gi`, "give2");
   }
   break;
 
@@ -894,17 +918,20 @@ case "give2":
   }
 }
 
-function showCard(title, text) {
-  // 🔥 fjern gamle farger
-  card.classList.remove("lust", "dare", "wild");
+function showCard(title, text, type = "") {
+  card.classList.remove(
+    "lust",
+    "dare",
+    "wild",
+    "drink",
+    "bestem",
+    "park",
+    "give2",
+    "klesplagg"
+  );
 
-  const t = (title || "").toLowerCase();
-
-  // 🎨 velg farge
-  if (t.includes("lust")) {
-    card.classList.add("lust"); // gul
-  } else if (t.includes("dare")) {
-    card.classList.add("dare"); // oransje
+  if (type) {
+    card.classList.add(type);
   }
 
   cardText.innerHTML = `
@@ -915,14 +942,23 @@ function showCard(title, text) {
 
   card.style.display = "flex";
   card.classList.add("show");
-
 }
 function goToMenu(){
   window.location.href = "index.html";
 }
 
 function closeCard() {
-  card.classList.remove("show", "wild", "lust", "dare");
+  card.classList.remove(
+    "show",
+    "wild",
+    "lust",
+    "dare",
+    "drink",
+    "bestem",
+    "park",
+    "give2",
+    "klesplagg"
+  );
 
   setTimeout(() => {
     card.style.display = "none";
