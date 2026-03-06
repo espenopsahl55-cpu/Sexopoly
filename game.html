@@ -377,6 +377,49 @@ body.theme-lysebla #rollBtn:hover{
   background: linear-gradient(135deg,#ffffff,#e9e9e9);
   color:#111;
 }
+#card.jail #cardContent{
+  background: linear-gradient(135deg, #5f5f5f, #2f2f2f);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.15);
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,0.04) inset,
+    0 0 12px rgba(255,0,0,0.35),
+    0 0 12px rgba(0,120,255,0.35);
+  animation: jailBorderFlash 1s infinite alternate;
+}
+
+#card.jailfree #cardContent{
+  background: linear-gradient(135deg, #b9ffb0, #66d17a);
+  color: #10210f;
+  border: 2px solid rgba(255,255,255,0.22);
+  box-shadow:
+    0 0 18px rgba(120,255,120,0.35),
+    0 0 36px rgba(120,255,120,0.18);
+}
+
+@keyframes jailBorderFlash {
+  0% {
+    box-shadow:
+      0 0 0 2px rgba(255,255,255,0.04) inset,
+      0 0 8px rgba(255,0,0,0.95),
+      0 0 18px rgba(255,0,0,0.65),
+      0 0 0 2px rgba(255,0,0,0.65);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px rgba(255,255,255,0.04) inset,
+      0 0 8px rgba(0,120,255,0.95),
+      0 0 18px rgba(0,120,255,0.65),
+      0 0 0 2px rgba(0,120,255,0.65);
+  }
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(255,255,255,0.04) inset,
+      0 0 8px rgba(255,0,0,0.95),
+      0 0 18px rgba(255,0,0,0.65),
+      0 0 0 2px rgba(255,0,0,0.65);
+  }
+}
 /* ===== ROTASJON ADVARSEL ===== */
 #rotateWarning {
   position: fixed;
@@ -733,11 +776,11 @@ if (p.jailed) {
     p.jailed = false;
     p.jailFreeTurn = false;
 
-    showCard(
-      "🔓 Du slipper ut!",
-      "Du har sonet ferdig og går videre etter kastet."
-    );
-
+showCard(
+  "🔓 Du slipper ut!",
+  "Du har sonet ferdig og går videre etter kastet.",
+  "jailfree"
+);
     move(d1val + d2val);
     return;
   }
@@ -747,11 +790,11 @@ if (p.jailed) {
     p.jailed = false;
     p.jailAttempts = 0;
 
-    showCard(
-      "🔓 Fri!",
-      "Du kastet en 6-er og slipper ut av fengsel!"
-    );
-
+showCard(
+  "🔓 Fri!",
+  "Du kastet en 6-er og slipper ut av fengsel!",
+  "jailfree"
+);
     move(d1val + d2val);
     return;
   }
@@ -761,18 +804,20 @@ if (p.jailed) {
 
   // 1️⃣ Forsøk
   if (p.jailAttempts === 1) {
-    showCard(
-      "🚓 Fengsel",
-      "Forsøk 1/3 – Ingen 6<br>Ta 2 slurker"
-    );
+showCard(
+  "🚓 Fengsel",
+  "Forsøk 1/3 – Ingen 6<br>Ta 2 slurker",
+  "jail"
+);
   }
 
   // 2️⃣ Forsøk
   else if (p.jailAttempts === 2) {
-    showCard(
-      "🚓 Fengsel",
-      "Forsøk 2/3 – Ingen 6<br>Ta 4 slurker"
-    );
+showCard(
+  "🚓 Fengsel",
+  "Forsøk 2/3 – Ingen 6<br>Ta 4 slurker",
+  "jail"
+);  
   }
 
   // 3️⃣ Forsøk → Dare + slipper neste tur
@@ -780,12 +825,13 @@ if (p.jailed) {
 
     const dare = draw(dareCards);
 
-    showCard(
-      "🚓 Siste forsøk!",
-      `Forsøk 3/3 – Ingen 6<br><br>
-       Trekk Dare:<br><b>${dare}</b><br><br>
-       Du slipper ut neste tur.`
-    );
+showCard(
+  "🚓 Siste forsøk!",
+  `Forsøk 3/3 – Ingen 6<br><br>
+   Trekk Dare:<br><b>${dare}</b><br><br>
+   Du slipper ut neste tur.`,
+  "jailfree"
+);
 
     p.jailAttempts = 0;
     p.jailFreeTurn = true; // 🔥 slippes ut neste tur
@@ -846,14 +892,14 @@ if (players[0].pos === players[1].pos) {
    return; // viktig! stopper alt annet til kortet er lukket
 }
   switch(tile.type) {
-    case "go_jail":
-      p.pos = JAIL_POS;
-      p.jailed = true;
-      p.jailAttempts = 0;
-      p.jailFreeTurn = false; // 🔥 viktig reset
-      place(p);
-      showCard("🚓 Fengsel", "Du sendes rett i fengsel!");
-      break;
+case "go_jail":
+  p.pos = JAIL_POS;
+  p.jailed = true;
+  p.jailAttempts = 0;
+  p.jailFreeTurn = false;
+  place(p);
+  showCard("🚓 Fengsel", "Du sendes rett i fengsel!", "jail");
+  break;
 
     case "lust_or_dare":
       showChoiceCard(p);
@@ -927,7 +973,9 @@ function showCard(title, text, type = "") {
     "bestem",
     "park",
     "give2",
-    "klesplagg"
+    "klesplagg",
+    "jail",
+    "jailfree"
   );
 
   if (type) {
@@ -946,7 +994,6 @@ function showCard(title, text, type = "") {
 function goToMenu(){
   window.location.href = "index.html";
 }
-
 function closeCard() {
   card.classList.remove(
     "show",
@@ -957,7 +1004,9 @@ function closeCard() {
     "bestem",
     "park",
     "give2",
-    "klesplagg"
+    "klesplagg",
+    "jail",
+    "jailfree"
   );
 
   setTimeout(() => {
@@ -966,6 +1015,8 @@ function closeCard() {
     endTurn();
   }, 300);
 }
+
+
 function showChoiceCard(player) {
   cardText.innerHTML = `
     <h2>Velg Lust eller Dare</h2>
@@ -989,6 +1040,8 @@ function chooseCard(e, type) {
     "park",
     "give2",
     "klesplagg"
+    "jail",
+    "jailfree"
   );
 
   card.classList.add(type);
