@@ -230,6 +230,53 @@ body.theme-lysebla #rollBtn {
   color:#041623;
   box-shadow:0 0 14px rgba(60,180,255,0.5);
 }
+/* ===== MENU POPUP THEME BUTTONS ===== */
+#menuPopupContent button{
+  min-height: 54px;
+  border-radius: 14px;
+  font-weight: bold;
+  transition: transform .08s ease, box-shadow .2s ease;
+}
+
+/* GUL */
+body.theme-gul #menuPopupContent button{
+  background: linear-gradient(135deg,#ffd54a,#ffb300);
+  color:#1a1a1a;
+  box-shadow: 0 0 12px rgba(255,200,0,0.35);
+}
+
+/* LILLA */
+body.theme-lilla #menuPopupContent button{
+  background: linear-gradient(135deg,#a64dff,#ff4dff);
+  color:white;
+  box-shadow: 0 0 12px rgba(200,0,255,0.30);
+}
+
+/* GRØNN */
+body.theme-gronn #menuPopupContent button{
+  background: linear-gradient(135deg,#39d98a,#00b86b);
+  color:#052015;
+  box-shadow: 0 0 12px rgba(0,200,120,0.28);
+}
+
+/* LYSEGRØNN */
+body.theme-lysegronn #menuPopupContent button{
+  background: linear-gradient(135deg,#b9ff66,#52e36a);
+  color:#10210f;
+  box-shadow: 0 0 12px rgba(120,255,120,0.28);
+}
+
+/* LYSEBLÅ */
+body.theme-lysebla #menuPopupContent button{
+  background: linear-gradient(135deg,#5ad7ff,#3aa0ff);
+  color:#041623;
+  box-shadow: 0 0 12px rgba(60,180,255,0.28);
+}
+
+/* litt trykkfølelse */
+#menuPopupContent button:active{
+  transform: scale(0.97);
+}
 /* ===== THEMED INPUT GLOW (valgfritt) ===== */
 body.theme-gul #sideUI input:focus{
   box-shadow:
