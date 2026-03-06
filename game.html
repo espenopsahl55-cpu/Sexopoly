@@ -901,7 +901,6 @@ function showWildCard() {
 function updateScores() {
   score1.textContent = `${players[0].name}: ${players[0].points} ⭐`;
   score2.textContent = `${players[1].name}: ${players[1].points} ⭐`;
-  updateActiveGlow(); 
 }
 
 function updateTurnIndicator() {
@@ -1266,13 +1265,7 @@ function goToPlayerNames(){
 function goToBoardPicker(){
   localStorage.setItem("menuTarget", "boards");
   window.location.href = "index.html";
-}
-
-players.forEach(place);
-updateScores();
-updateTurnIndicator();
-updateActiveGlow();   
-  
+}    
 players.forEach(place);
 updateScores();
 updateTurnIndicator();
