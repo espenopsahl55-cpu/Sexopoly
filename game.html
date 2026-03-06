@@ -865,13 +865,13 @@ if (players[0].pos === players[1].pos) {
       showCard("⭐ Poeng", "Du får 2 poeng!");
       break;
 
-    case "lust":
-      showCard("⭐ Lust", draw(lustCards));
-      break;
+case "lust":
+  showCard("⭐ Lust", draw(lustCards), "lust");
+  break;
 
-    case "dare":
-      showCard("🔥 Dare", draw(dareCards));
-      break;
+case "dare":
+  showCard("🔥 Dare", draw(dareCards), "dare");
+  break;
 
 case "drink":
   showCard("🍺 Drikk", `Ta ${tile.amount} slurker`, "drink");
@@ -978,7 +978,20 @@ function showChoiceCard(player) {
   card.classList.add("show");
 }
 function chooseCard(e, type) {
-  e.stopPropagation(); // 🔥 stopper kortet fra å lukke seg
+  e.stopPropagation();
+
+  card.classList.remove(
+    "lust",
+    "dare",
+    "wild",
+    "drink",
+    "bestem",
+    "park",
+    "give2",
+    "klesplagg"
+  );
+
+  card.classList.add(type);
 
   const text = type === "lust" ? draw(lustCards) : draw(dareCards);
 
