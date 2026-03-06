@@ -1242,6 +1242,7 @@ function endTurn() {
   if (winner) return;
   current = (current + 1) % players.length;
   locked = false;
+  updateScores();
   updateTurnIndicator();
   updateActiveGlow();
 }
