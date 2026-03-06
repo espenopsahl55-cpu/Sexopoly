@@ -286,13 +286,25 @@ body.theme-lysegronn #rollBtn:hover{
 body.theme-lysebla #rollBtn:hover{
   box-shadow: 0 0 22px rgba(60,180,255,0.65);
 }
-#infoBtn {
-  min-height: 36px;       /* mindre høyde */
-  font-size: 14px;        /* mindre tekst */
-  padding: 6px 10px;      /* mindre padding */
-  background: #888;       /* mørkere grå, valgfritt */
-  color: white;
-  border-radius: 6px;
+#secondaryButtons button{
+  flex:1;
+  min-height:48px;
+  font-size:16px;
+
+  background:linear-gradient(
+    180deg,
+    rgba(52,52,58,0.95),
+    rgba(22,22,26,0.95)
+  );
+
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 8px 20px rgba(0,0,0,0.35);
+
+  color:white;
 }
 /* ===== BUTTON LAYOUT ===== */
 
