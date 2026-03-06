@@ -425,7 +425,28 @@ transform: translateX(24px);
   const splashEl = document.getElementById("splash");
   const wrapEl   = document.getElementById("wrap");
   const nameScreen = document.getElementById("nameScreen");
+function openFromSavedMenuTarget(){
+  const target = localStorage.getItem("menuTarget");
+  if (!target) return;
 
+  localStorage.removeItem("menuTarget");
+
+  const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+  if (isPortrait) return;
+
+  splashEl.style.display = "none";
+
+  if (target === "players") {
+    nameScreen.style.display = "flex";
+    wrapEl.style.display = "none";
+
+    document.getElementById("player1Name").value = localStorage.getItem("p1") || "";
+    document.getElementById("player2Name").value = localStorage.getItem("p2") || "";
+  } else if (target === "boards") {
+    nameScreen.style.display = "none";
+    wrapEl.style.display = "flex";
+  }
+}
 function checkOrientationMenu(){
   const warning = document.getElementById("rotateWarning");
   const isPortrait = window.matchMedia("(orientation: portrait)").matches;
@@ -460,7 +481,7 @@ function checkOrientationMenu(){
 
   window.addEventListener("resize", checkOrientationMenu);
   checkOrientationMenu();
-
+  openFromSavedMenuTarget();
 
 function enterMenu(){
   const isPortrait = window.matchMedia("(orientation: portrait)").matches;
