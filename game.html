@@ -895,6 +895,7 @@ function showWildCard() {
 function updateScores() {
   score1.textContent = `${players[0].name}: ${players[0].points} ⭐`;
   score2.textContent = `${players[1].name}: ${players[1].points} ⭐`;
+  updateActiveGlow(); 
 }
 
 function updateTurnIndicator() {
