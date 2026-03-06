@@ -375,6 +375,48 @@ body.theme-lysebla #rollBtn:hover{
 
   backdrop-filter: blur(6px);
 }
+.scoreActive{
+  border:1px solid rgba(255,255,255,0.15);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 8px 24px rgba(0,0,0,0.45),
+    0 0 18px rgba(255,200,0,0.35);
+}
+body.theme-gul .scoreActive{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 8px 24px rgba(0,0,0,0.45),
+    0 0 18px rgba(255,200,0,0.45);
+}
+
+body.theme-lilla .scoreActive{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 8px 24px rgba(0,0,0,0.45),
+    0 0 18px rgba(200,60,255,0.45);
+}
+
+body.theme-gronn .scoreActive{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 8px 24px rgba(0,0,0,0.45),
+    0 0 18px rgba(0,200,120,0.45);
+}
+
+body.theme-lysegronn .scoreActive{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 8px 24px rgba(0,0,0,0.45),
+    0 0 18px rgba(120,255,120,0.45);
+}
+
+body.theme-lysebla .scoreActive{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 8px 24px rgba(0,0,0,0.45),
+    0 0 18px rgba(80,180,255,0.45);
+}
 #turnIndicator {
   display: inline-flex;
   align-items: center;
@@ -814,6 +856,11 @@ const cardText = document.getElementById("cardText");
 function updateActiveGlow() {
   players.forEach(p => p.el.classList.remove("active"));
   players[current].el.classList.add("active");
+
+  document.getElementById("score1").classList.remove("scoreActive");
+  document.getElementById("score2").classList.remove("scoreActive");
+
+  document.getElementById("score" + (current + 1)).classList.add("scoreActive");
 }
 function showInfo() {
   const infoText = `
