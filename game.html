@@ -319,8 +319,38 @@ body.theme-lysebla #rollBtn:hover{
   justify-content: center;
 }
 
-#scores { font-size: 20px; }
+#scores{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 
+  padding: 12px 14px;
+  border-radius: 16px;
+
+  background: linear-gradient(180deg, rgba(30,30,36,0.92), rgba(12,12,16,0.92));
+  border: 1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 8px 22px rgba(0,0,0,0.35);
+
+  font-size: 19px;
+  line-height: 1.35;
+}
+#score1, #score2{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 8px 10px;
+  border-radius: 12px;
+
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+
+  text-shadow: 0 0 8px rgba(255,255,255,0.06);
+}
 #turnIndicator {
   display: inline-flex;
   align-items: center;
