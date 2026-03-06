@@ -160,8 +160,44 @@ button {
   background: #4da6ff;
   color: white;
 }
-button:active { transform: scale(0.97); }
+  #menuPopup{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 120;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
 
+#menuPopup.show{
+  display: flex;
+}
+
+#menuPopupContent{
+  width: min(88vw, 420px);
+  background: linear-gradient(180deg, rgba(25,25,28,0.96), rgba(10,10,12,0.96));
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  text-align: center;
+}
+
+#menuPopupContent h2{
+  margin: 0 0 6px;
+}
+
+#menuPopupContent button{
+  min-height: 54px;
+  border-radius: 14px;
+}
+button:active { transform: scale(0.97); }
 /* ===== THEME SYSTEM ===== */
 /* (LIM INN HER) */
 
@@ -484,7 +520,7 @@ body.theme-lysebla #rollBtn:hover{
 
   <div id="secondaryButtons">
     <button id="infoBtn" onclick="showInfo()">(?)</button>
-    <button id="menuBtn" onclick="goToMenu()">⬅️ Meny</button>
+<button id="menuBtn" onclick="openMenuPopup()">⬅️ Meny</button>
   </div>
 </div>
 
@@ -494,7 +530,15 @@ body.theme-lysebla #rollBtn:hover{
     <p><small>(Trykk for å fortsette)</small></p>
   </div>
 </div>
-
+<div id="menuPopup" onclick="closeMenuPopup()">
+  <div id="menuPopupContent" onclick="event.stopPropagation()">
+    <h2>Meny</h2>
+    <button onclick="goToBoardPicker()">Brettvelger</button>
+    <button onclick="goToPlayerNames()">Spillere</button>
+    <button onclick="restartGame()">Restart spill</button>
+    <button onclick="closeMenuPopup()">Avbryt</button>
+  </div>
+</div>
 <script>
 
   let wakeLockSentinel = null;
@@ -1064,6 +1108,27 @@ function endTurn() {
   locked = false;
   updateTurnIndicator();
   updateActiveGlow();
+}
+function openMenuPopup(){
+  document.getElementById("menuPopup").classList.add("show");
+}
+
+function closeMenuPopup(){
+  document.getElementById("menuPopup").classList.remove("show");
+}
+
+function restartGame(){
+  window.location.href = window.location.href;
+}
+
+function goToPlayerNames(){
+  localStorage.setItem("menuTarget", "players");
+  window.location.href = "index.html";
+}
+
+function goToBoardPicker(){
+  localStorage.setItem("menuTarget", "boards");
+  window.location.href = "index.html";
 }
 
 players.forEach(place);
