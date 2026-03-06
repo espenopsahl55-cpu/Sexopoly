@@ -854,13 +854,19 @@ const cardText = document.getElementById("cardText");
   
 /* ===== ACTIVE PLAYER GLOW ===== */
 function updateActiveGlow() {
+
   players.forEach(p => p.el.classList.remove("active"));
   players[current].el.classList.add("active");
 
-  document.getElementById("score1").classList.remove("scoreActive");
-  document.getElementById("score2").classList.remove("scoreActive");
+  score1.classList.remove("scoreActive");
+  score2.classList.remove("scoreActive");
 
-  document.getElementById("score" + (current + 1)).classList.add("scoreActive");
+  if(current === 0){
+    score1.classList.add("scoreActive");
+  } else {
+    score2.classList.add("scoreActive");
+  }
+
 }
 function showInfo() {
   const infoText = `
