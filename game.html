@@ -334,6 +334,41 @@ body.theme-lysebla #rollBtn:hover{
     drop-shadow(0 0 10px rgba(255,255,255,0.25))
     drop-shadow(0 0 20px rgba(255,255,255,0.12));
 }
+#dice div{
+  transition: transform .12s ease, filter .12s ease;
+  will-change: transform, filter;
+}
+
+#dice.rolling #d1{
+  animation: diceShakeLeft .16s linear infinite;
+}
+
+#dice.rolling #d2{
+  animation: diceShakeRight .16s linear infinite;
+}
+
+#dice div.diceImpact{
+  transform: scale(1.18);
+  filter:
+    drop-shadow(0 0 14px rgba(255,255,255,0.38))
+    drop-shadow(0 0 28px rgba(255,255,255,0.18));
+}
+
+@keyframes diceShakeLeft{
+  0%   { transform: translateX(0) rotate(0deg); }
+  25%  { transform: translateX(-2px) rotate(-6deg); }
+  50%  { transform: translateY(1px) rotate(4deg); }
+  75%  { transform: translateX(2px) rotate(-4deg); }
+  100% { transform: translateX(0) rotate(0deg); }
+}
+
+@keyframes diceShakeRight{
+  0%   { transform: translateX(0) rotate(0deg); }
+  25%  { transform: translateX(2px) rotate(6deg); }
+  50%  { transform: translateY(-1px) rotate(-4deg); }
+  75%  { transform: translateX(-2px) rotate(4deg); }
+  100% { transform: translateX(0) rotate(0deg); }
+}
 #scores{
   display: flex;
   flex-direction: column;
@@ -921,19 +956,32 @@ function animateDice(cb) {
   let rolls = 12;
   let d1val = 1, d2val = 1;
 
+  const diceWrap = document.getElementById("dice");
+  diceWrap.classList.add("rolling");
+
   const interval = setInterval(() => {
     d1val = rand(6);
     d2val = rand(6);
-    d1.textContent = diceFaces[d1val-1];
-    d2.textContent = diceFaces[d2val-1];
+
+    d1.textContent = diceFaces[d1val - 1];
+    d2.textContent = diceFaces[d2val - 1];
+
     rolls--;
 
     if (rolls === 0) {
       clearInterval(interval);
+      diceWrap.classList.remove("rolling");
+
+      d1.classList.add("diceImpact");
+      d2.classList.add("diceImpact");
+
+      if (navigator.vibrate) navigator.vibrate(50);
+
       setTimeout(() => {
+        d1.classList.remove("diceImpact");
+        d2.classList.remove("diceImpact");
         cb(d1val, d2val);
-        if (navigator.vibrate) navigator.vibrate(50);
-      }, 150);
+      }, 180);
     }
   }, 90);
 }
