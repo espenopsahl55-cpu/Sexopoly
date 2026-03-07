@@ -40,17 +40,17 @@ body {
 
 /* ===== BOARD ===== */
 #board {
-  flex: 1740;
   height: 100dvh;
-  background: url("board.png") no-repeat left center;
-  background-size: 100% 100%;
+  aspect-ratio: 1 / 1;
+  background: url("board.png") no-repeat center;
+  background-size: contain;
   position: relative;
   flex-shrink: 0;
 }
 
 /* ===== UI ===== */
 #sideUI {
-  flex: 816;
+  flex: 1;
   height: 100dvh;
   padding: 18px;
   display: flex;
