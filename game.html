@@ -34,29 +34,33 @@ body {
 #gameWrapper {
   width: 100vw;
   height: 100dvh;
-  display: flex;
-  flex-direction: row;
+  position: relative;
+  overflow: hidden;
 }
 
 /* ===== BOARD ===== */
 #board {
-  height: 100dvh;
-  width: 100dvh;
-  background: url("board.png") no-repeat center;
-  background-size: contain;
-  position: relative;
-  flex-shrink: 0;
+  position: absolute;
+  inset: 0;
+  background: url("board.png") no-repeat left center;
+  background-size: auto 100%;
 }
 
 /* ===== UI ===== */
 #sideUI {
-  flex: 1;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 34vw;
+  max-width: 420px;
+  min-width: 300px;
   height: 100dvh;
   padding: 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #000;
+  background: transparent;
+  z-index: 20;
 }
 /* ===== SPILLERBRIKKER ===== */
 .player {
