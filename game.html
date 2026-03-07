@@ -34,34 +34,33 @@ body {
 #gameWrapper {
   width: 100vw;
   height: 100dvh;
-  position: relative;
-  overflow: hidden;
+  display: flex;
+  flex-direction: row;
 }
 
 /* ===== BOARD ===== */
 #board {
-  position: absolute;
-  inset: 0;
-  background-image: url("board.png");
-  background-repeat: no-repeat;
+  flex: 1740;
+  height: 100dvh;
+  background: url("board.png") no-repeat left center;
+
+  /* 🔥 KUTTER 200px AV HØYRESIDEN AV BILDET */
+  background-size: calc(100% + 200px) 100%;
   background-position: left center;
-  background-size: auto 100%;
+
+  position: relative;
+  flex-shrink: 0;
 }
 
 /* ===== UI ===== */
 #sideUI {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: min(34vw, 420px);
-  min-width: 300px;
+  flex: 816;
   height: 100dvh;
   padding: 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: transparent;
-  z-index: 20;
+  background: #000;
 }
 /* ===== SPILLERBRIKKER ===== */
 .player {
@@ -1485,7 +1484,6 @@ document.body.addEventListener("click", function startMusic(){
 </script>
 </body>
 </html> 
-
 
 
 
