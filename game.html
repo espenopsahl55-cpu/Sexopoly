@@ -42,7 +42,9 @@ body {
 #board {
   position: absolute;
   inset: 0;
-  background: url("board.png") no-repeat left center;
+  background-image: url("board.png");
+  background-repeat: no-repeat;
+  background-position: left center;
   background-size: auto 100%;
 }
 
@@ -50,7 +52,7 @@ body {
 #sideUI {
   position: absolute;
   top: 0;
-  right: -80px;   /* skyver UI litt ut */
+  right: 0;
   width: min(34vw, 420px);
   min-width: 300px;
   height: 100dvh;
