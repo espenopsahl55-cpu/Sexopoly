@@ -39,28 +39,33 @@ body {
 }
 
 /* ===== BOARD ===== */
-#board {
-  flex: 1740;
-  height: 100dvh;
-  background: url("board.png") no-repeat left center;
+#board{
+  flex:1740;
 
-  /* 🔥 KUTTER 200px AV HØYRESIDEN AV BILDET */
-  background-size: calc(100% + 200px) 100%;
-  background-position: left center;
+  background:url("board.png") no-repeat center;
+  background-size:100% 100%;
 
-  position: relative;
-  flex-shrink: 0;
+  position:relative;
+  flex-shrink:0;
+
+  aspect-ratio:2400 / 1400;
+
 }
 
 /* ===== UI ===== */
-#sideUI {
-  flex: 816;
-  height: 100dvh;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background: #000;
+#sideUI{
+  flex:816;
+  min-width:260px;
+  max-width:420px;
+
+  height:100dvh;
+  padding:18px;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+
+  background:#000;
 }
 /* ===== SPILLERBRIKKER ===== */
 .player {
