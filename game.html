@@ -203,37 +203,56 @@ button {
   border-radius: 14px;
 }
 button:active { transform: scale(0.97); }
+
 /* ===== THEME SYSTEM ===== */
-/* (LIM INN HER) */
 
-body.theme-gul #rollBtn {
-  background: linear-gradient(135deg,#ffd54a,#ffb300);
+/* 1) ORANSJ */
+body.theme-oransj #rollBtn {
+  background: linear-gradient(135deg,#ffb347,#ff7a00);
   color:#1a1a1a;
-  box-shadow:0 0 14px rgba(255,200,0,0.6);
+  box-shadow:0 0 14px rgba(255,140,0,0.55);
 }
 
-body.theme-lilla #rollBtn {
-  background: linear-gradient(135deg,#a64dff,#ff4dff);
-  color:white;
-  box-shadow:0 0 14px rgba(200,0,255,0.6);
-}
-
-body.theme-gronn #rollBtn {
-  background: linear-gradient(135deg,#39d98a,#00b86b);
-  color:#052015;
-  box-shadow:0 0 14px rgba(0,200,120,0.5);
-}
-
-body.theme-lysegronn #rollBtn {
-  background: linear-gradient(135deg,#b9ff66,#52e36a);
-  color:#10210f;
-  box-shadow:0 0 14px rgba(120,255,120,0.5);
-}
-
-body.theme-lysebla #rollBtn {
-  background: linear-gradient(135deg,#5ad7ff,#3aa0ff);
+/* 2) MØRKERE LYSEBLÅ */
+body.theme-morklysebla #rollBtn {
+  background: linear-gradient(135deg,#4fc3f7,#1976d2);
   color:#041623;
-  box-shadow:0 0 14px rgba(60,180,255,0.5);
+  box-shadow:0 0 14px rgba(50,160,255,0.5);
+}
+
+/* 3) LYSEBLÅ */
+body.theme-lysebla #rollBtn {
+  background: linear-gradient(135deg,#7ddfff,#47b8ff);
+  color:#041623;
+  box-shadow:0 0 14px rgba(90,200,255,0.5);
+}
+
+/* 4) LYSELILLA */
+body.theme-lyselilla #rollBtn {
+  background: linear-gradient(135deg,#d8b4ff,#b266ff);
+  color:#221133;
+  box-shadow:0 0 14px rgba(190,120,255,0.45);
+}
+
+/* 5) RØD */
+body.theme-rod #rollBtn {
+  background: linear-gradient(135deg,#ff6b6b,#d62828);
+  color:white;
+  box-shadow:0 0 14px rgba(255,70,70,0.5);
+}
+
+/* 6) LYSEGUL */
+body.theme-lysegul #rollBtn {
+  background: linear-gradient(135deg,#fff3a3,#ffd95a);
+  color:#3a2c00;
+  box-shadow:0 0 14px rgba(255,220,90,0.45);
+}
+
+/* 7) BLÅHVIT */
+body.theme-blahvit #rollBtn {
+  background: linear-gradient(135deg,#f8fdff,#a8d8ff);
+  color:#0b2239;
+  box-shadow:0 0 14px rgba(180,220,255,0.5);
 }
 /* ===== MENU POPUP THEME BUTTONS ===== */
 #menuPopupContent button{
@@ -323,20 +342,27 @@ body.theme-lysebla #sideUI input:focus{
 }
 
 /* ✅ hover-glow følger theme */
-body.theme-gul #rollBtn:hover{
-  box-shadow: 0 0 22px rgba(255,200,0,0.8);
+/* ✅ hover-glow følger theme */
+body.theme-oransj #rollBtn:hover{
+  box-shadow: 0 0 22px rgba(255,140,0,0.75);
 }
-body.theme-lilla #rollBtn:hover{
-  box-shadow: 0 0 22px rgba(200,0,255,0.75);
-}
-body.theme-gronn #rollBtn:hover{
-  box-shadow: 0 0 22px rgba(0,200,120,0.65);
-}
-body.theme-lysegronn #rollBtn:hover{
-  box-shadow: 0 0 22px rgba(120,255,120,0.65);
+body.theme-morklysebla #rollBtn:hover{
+  box-shadow: 0 0 22px rgba(50,160,255,0.7);
 }
 body.theme-lysebla #rollBtn:hover{
-  box-shadow: 0 0 22px rgba(60,180,255,0.65);
+  box-shadow: 0 0 22px rgba(90,200,255,0.7);
+}
+body.theme-lyselilla #rollBtn:hover{
+  box-shadow: 0 0 22px rgba(190,120,255,0.7);
+}
+body.theme-rod #rollBtn:hover{
+  box-shadow: 0 0 22px rgba(255,70,70,0.7);
+}
+body.theme-lysegul #rollBtn:hover{
+  box-shadow: 0 0 22px rgba(255,220,90,0.7);
+}
+body.theme-blahvit #rollBtn:hover{
+  box-shadow: 0 0 22px rgba(180,220,255,0.7);
 }
 #secondaryButtons button{
   flex:1;
@@ -1022,20 +1048,25 @@ if (selectedBoard) {
 /* ✅ THEME */
 function applyTheme(theme) {
   document.body.classList.remove(
-    "theme-gul",
-    "theme-lilla",
-    "theme-gronn",
-    "theme-lysegronn",
-    "theme-lysebla"
+    "theme-oransj",
+    "theme-morklysebla",
+    "theme-lysebla",
+    "theme-lyselilla",
+    "theme-rod",
+    "theme-lysegul",
+    "theme-blahvit"
   );
 
   const t = (theme || "").toLowerCase();
 
-  if (t === "lilla") document.body.classList.add("theme-lilla");
-  else if (t === "gronn") document.body.classList.add("theme-gronn");
-  else if (t === "lysegronn") document.body.classList.add("theme-lysegronn");
+  if (t === "oransj") document.body.classList.add("theme-oransj");
+  else if (t === "morklysebla") document.body.classList.add("theme-morklysebla");
   else if (t === "lysebla") document.body.classList.add("theme-lysebla");
-  else document.body.classList.add("theme-gul");
+  else if (t === "lyselilla") document.body.classList.add("theme-lyselilla");
+  else if (t === "rod") document.body.classList.add("theme-rod");
+  else if (t === "lysegul") document.body.classList.add("theme-lysegul");
+  else if (t === "blahvit") document.body.classList.add("theme-blahvit");
+  else document.body.classList.add("theme-oransj");
 }
 
 /* ✅ KJØR THEME */
