@@ -51,8 +51,6 @@ body {
   aspect-ratio:2400 / 1400;
 
 }
-
-/* ===== UI ===== */
 #sideUI{
   flex:816;
   min-width:260px;
@@ -65,8 +63,46 @@ body {
   flex-direction:column;
   justify-content:space-between;
 
-  background:#000;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255,255,255,0.06), transparent 40%),
+    #000;
+
+  position:relative;
 }
+#sideUI::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:18px;
+  right:18px;
+  height:2px;
+  border-radius:2px;
+  background:rgba(255,255,255,0.10);
+}
+body.theme-oransj #sideUI::before{
+  background: linear-gradient(90deg,#ffb347,#ff7a00);
+}
+
+body.theme-lysebla #sideUI::before{
+  background: linear-gradient(90deg,#7ddfff,#47b8ff);
+}
+
+body.theme-lyselilla #sideUI::before{
+  background: linear-gradient(90deg,#d8b4ff,#b266ff);
+}
+
+body.theme-rod #sideUI::before{
+  background: linear-gradient(90deg,#ff6b6b,#d62828);
+}
+
+body.theme-lysegul #sideUI::before{
+  background: linear-gradient(90deg,#fff3a3,#ffd95a);
+}
+
+body.theme-blahvit #sideUI::before{
+  background: linear-gradient(90deg,#f8fdff,#a8d8ff);
+}
+/* ===== UI ===== */
 /* ===== SPILLERBRIKKER ===== */
 .player {
   position: absolute;
