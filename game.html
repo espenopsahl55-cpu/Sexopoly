@@ -84,6 +84,17 @@ body {
   min-height:44px;
   font-size:14px;
 }
+#infoBtn{
+  background: linear-gradient(135deg,#ffe066,#ffb300);
+  color:#1a1a1a;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    0 8px 20px rgba(0,0,0,0.35),
+    0 0 10px rgba(255,200,0,0.35);
+
+  font-size:20px;
+}
 /* ✨ ACTIVE GLOW */
 .player.active {
   box-shadow:
@@ -397,7 +408,7 @@ body.theme-blahvit #rollBtn:hover{
   gap: 12px;
 }
 
-#secondaryButtons button{
+#secondaryButtons button:not(#infoBtn){
   flex: 1; /* gjør de like brede */
   min-height: 48px;
   font-size: 16px;
@@ -808,8 +819,8 @@ body.theme-lysebla .scoreActive{
   <button id="rollBtn" onclick="roll()">Kast terning</button>
 
   <div id="secondaryButtons">
-    <button id="infoBtn" onclick="showInfo()">(?)</button>
-<button id="menuBtn" onclick="openMenuPopup()">⬅️ Meny</button>
+    <button id="infoBtn" onclick="showInfo()">⭐️</button>
+<button id="menuBtn" onclick="openMenuPopup()">🔙 Meny</button>
   </div>
 </div>
 
