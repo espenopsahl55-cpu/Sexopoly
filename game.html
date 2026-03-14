@@ -910,44 +910,66 @@ body.theme-blahvit #turnIndicator{
 
 /* ===== CARD COLORS ===== */
 
+/* LUST – LILLA */
 #card.lust #cardContent{
-  background: linear-gradient(135deg,#ffe066,#ffb300);
-  color:#1a1a1a;
-}
-
-#card.dare #cardContent{
-  background: linear-gradient(135deg,#ff8a00,#ff5e00);
+  background: linear-gradient(135deg,#b36bff,#7b2cff);
   color:white;
 }
+
+/* DARE / UTFORDRING – RØD */
+#card.dare #cardContent{
+  background: linear-gradient(135deg,#ff4d4d,#b30000);
+  color:white;
+}
+
 
 #card.wild #cardContent{
   background: linear-gradient(135deg,#ff3b3b,#b30000);
   color:white;
 }
+/* DRINK – HVIT */
 #card.drink #cardContent{
-  background: linear-gradient(135deg,#8b5a2b,#5c3a1e);
-  color:white;
+  background: linear-gradient(135deg,#ffffff,#e9e9e9);
+  color:#111;
 }
 
+/* 2 POENG – GUL */
+#card.points #cardContent{
+  background: linear-gradient(135deg,#ffe066,#ffb300);
+  color:#1a1a1a;
+}
+
+/* BESTEM – valgfritt, behold blå hvis du vil */
 #card.bestem #cardContent{
   background: linear-gradient(135deg,#4da6ff,#1f6ed4);
   color:white;
 }
 
+/* PARKERING – GRØNN */
 #card.park #cardContent{
   background: linear-gradient(135deg,#39d98a,#138a4f);
   color:white;
 }
 
+/* GI 2 POENG – ORANSJ */
 #card.give2 #cardContent{
-  background: linear-gradient(135deg,#b36bff,#7b2cff);
+  background: linear-gradient(135deg,#ff9a3c,#ff6a00);
   color:white;
 }
 
+/* 2 KLESPLAGG – BLÅ */
 #card.klesplagg #cardContent{
-  background: linear-gradient(135deg,#ffffff,#e9e9e9);
-  color:#111;
+  background: linear-gradient(135deg,#4da6ff,#1f6ed4);
+  color:white;
 }
+
+/* TILBAKE TIL START – BLÅ */
+#card.back #cardContent{
+  background: linear-gradient(135deg,#4da6ff,#1f6ed4);
+  color:white;
+}
+
+
 #card.jail #cardContent{
   background: linear-gradient(135deg, #5f5f5f, #2f2f2f);
   color: white;
@@ -1588,11 +1610,11 @@ case "go_jail":
       showChoiceCard(p);
       break;
 
-    case "2points":
-      p.points += 2;
-      updateScores();
-      showCard("⭐ Poeng", "Du får 2 poeng!");
-      break;
+case "2points":
+  p.points += 2;
+  updateScores();
+  showCard("⭐ 2 poeng", "Du får 2 poeng!", "points");
+  break;
 
 case "lust":
   showCard("⭐ Lust", draw(lustCards), "lust");
@@ -1607,9 +1629,9 @@ case "drink":
   break;
 
 case "back":
-  p.pos = 0;           // Flytt til start med en gang
-  place(p);             // Oppdater posisjon
-  showCard("🔙 Back!", "Du må gå tilbake til start!");
+  p.pos = 0;
+  place(p);
+  showCard("🔙 Tilbake til start!", "Du må gå tilbake til start!", "back");
   break;
     
 case "klesplagg":
@@ -1657,6 +1679,8 @@ function showCard(title, text, type = "") {
     "park",
     "give2",
     "klesplagg",
+    "points",
+    "back",
     "jail",
     "jailfree"
   );
@@ -1688,9 +1712,12 @@ function closeCard() {
     "park",
     "give2",
     "klesplagg",
+    "points",
+    "back",
     "jail",
     "jailfree"
-  );
+   );
+
 
   setTimeout(() => {
     card.style.display = "none";
@@ -1715,17 +1742,20 @@ function chooseCard(e, type) {
   e.stopPropagation();
 
   card.classList.remove(
-    "lust",
-    "dare",
-    "wild",
-    "drink",
-    "bestem",
-    "park",
-    "give2",
-    "klesplagg",
-    "jail",
-    "jailfree"
-  );
+  "lust",
+  "dare",
+  "wild",
+  "drink",
+  "bestem",
+  "park",
+  "give2",
+  "klesplagg",
+  "points",
+  "back",
+  "jail",
+  "jailfree"
+);
+  
 
   card.classList.add(type);
 
