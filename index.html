@@ -228,6 +228,26 @@
 
     animation: mascotFloat 4s ease-in-out infinite;
 }
+.tokenPicker{
+  display:flex;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.token{
+  width:48px;
+  height:48px;
+  object-fit:contain;
+  border-radius:10px;
+  border:2px solid transparent;
+  cursor:pointer;
+  background:rgba(255,255,255,0.05);
+}
+
+.token.selected{
+  border-color:var(--accent);
+  box-shadow:0 0 10px rgba(255,255,255,0.3);
+}
   /* MENY */
   #wrap{
     height:100dvh;
@@ -388,8 +408,21 @@ transform: translateX(0px);
   <div id="nameFields">
     <h2>Skriv inn spillernavn</h2>
 
-    <input id="player1Name" placeholder="Spiller 1">
-    <input id="player2Name" placeholder="Spiller 2">
+<input id="player1Name" placeholder="Spiller 1">
+
+<div class="tokenPicker">
+  <img src="token1.png" onclick="selectToken(event, 1, 'token1.png')" class="token">
+  <img src="token2.png" onclick="selectToken(event, 1, 'token2.png')" class="token">
+  <img src="token3.png" onclick="selectToken(event, 1, 'token3.png')" class="token">
+</div>
+
+<input id="player2Name" placeholder="Spiller 2">
+
+<div class="tokenPicker">
+  <img src="token1.png" onclick="selectToken(event, 2, 'token1.png')" class="token">
+  <img src="token2.png" onclick="selectToken(event, 2, 'token2.png')" class="token">
+  <img src="token3.png" onclick="selectToken(event, 2, 'token3.png')" class="token">
+</div>
 
     <button onclick="goToBoardSelect()">Fortsett</button>
   </div>
@@ -425,6 +458,25 @@ transform: translateX(0px);
   const splashEl = document.getElementById("splash");
   const wrapEl   = document.getElementById("wrap");
   const nameScreen = document.getElementById("nameScreen");
+
+   let p1Token = "token1.png";
+let p2Token = "token2.png";
+
+function selectToken(e, player, file) {
+  if (player === 1) {
+    p1Token = file;
+    localStorage.setItem("p1token", file);
+  } else {
+    p2Token = file;
+    localStorage.setItem("p2token", file);
+  }
+
+  document.querySelectorAll(".tokenPicker")[player - 1]
+    .querySelectorAll(".token")
+    .forEach(t => t.classList.remove("selected"));
+
+  e.target.classList.add("selected");
+}
 function openFromSavedMenuTarget(){
   const target = localStorage.getItem("menuTarget");
   if (!target) return;
@@ -461,6 +513,7 @@ function checkOrientationMenu(){
     return;
   }
 
+
   // ✅ Landscape:
   // 1) Hvis vi fortsatt er på splash → ikke vis noe annet før du trykker
   if (splashEl.style.display !== "none"){
@@ -491,7 +544,8 @@ function enterMenu(){
   nameScreen.style.display = "flex";
 }
 function goToBoardSelect(){
-
+localStorage.setItem("p1token", p1Token);
+localStorage.setItem("p2token", p2Token);
   const p1 = document.getElementById("player1Name").value || "Spiller 1";
   const p2 = document.getElementById("player2Name").value || "Spiller 2";
 
