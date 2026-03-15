@@ -1696,7 +1696,10 @@ function move(steps) {
     moved++;
     if (moved >= steps) {
       clearInterval(stepAnim);
-      resolve(tiles[p.pos]);
+
+      setTimeout(() => {
+        resolve(tiles[p.pos]);
+      }, 450);
     }
   }, 300);
 }
