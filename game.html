@@ -263,6 +263,92 @@ button {
 }
 button:active { transform: scale(0.97); }
 
+  #shopPopup{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 130;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+#shopPopup.show{
+  display: flex;
+}
+
+#shopPopupContent{
+  width: min(88vw, 460px);
+  background: linear-gradient(180deg, rgba(25,25,28,0.96), rgba(10,10,12,0.96));
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  text-align: center;
+}
+
+#shopItems{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.shopRow{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.30));
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.shopText{
+  text-align: left;
+  flex: 1;
+}
+
+.shopPrice{
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.shopDesc{
+  font-size: 15px;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+.shopBuyBtn{
+  min-width: 96px;
+  min-height: 46px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 800;
+  background: linear-gradient(135deg,#ffe066,#ffb300);
+  color:#1a1a1a;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.20),
+    0 8px 18px rgba(0,0,0,0.35);
+}
+
+.shopRowDisabled{
+  opacity: 0.5;
+}
+
+.shopBuyBtn:disabled{
+  background: linear-gradient(180deg, #555, #333);
+  color: rgba(255,255,255,0.7);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 /* ===== THEME SYSTEM ===== */
 
 /* 1) ORANSJ */
@@ -1234,7 +1320,7 @@ body.theme-blahvit #turnIndicator{
   <button id="rollBtn" onclick="roll()">Kast terning</button>
 
   <div id="secondaryButtons">
-    <button id="infoBtn" onclick="showInfo()">⭐️</button>
+<button id="infoBtn" onclick="openShopPopup()">⭐️Butikk</button>
 <button id="menuBtn" onclick="openMenuPopup()">🔙 Meny</button>
   </div>
 </div>
@@ -1251,6 +1337,13 @@ body.theme-blahvit #turnIndicator{
     <button onclick="goToPlayerNames()">Spillere</button>
     <button onclick="restartGame()">Restart spill</button>
     <button onclick="closeMenuPopup()">Avbryt</button>
+  </div>
+</div>
+<div id="shopPopup" onclick="closeShopPopup()">
+  <div id="shopPopupContent" onclick="event.stopPropagation()">
+    <h2>Poengbutikk</h2>
+    <div id="shopItems"></div>
+    <button onclick="closeShopPopup()">Lukk</button>
   </div>
 </div>
 <script>
@@ -1524,13 +1617,141 @@ function updateActiveGlow() {
   }
 
 }
-function showInfo() {
-  const infoText = `
-    2 poeng: Massasje<br>
-    4 poeng: Velg om partner skal trekke Dare eller Lust<br>
-    7 poeng: Partner må ta av 1 plagg
+
+function openShopPopup(){
+  const p = players[current];
+  const shopItems = document.getElementById("shopItems");
+
+  const canBuy2 = p.points >= 2;
+  const canBuy4 = p.points >= 4;
+  const canBuy7 = p.points >= 7;
+
+  shopItems.innerHTML = `
+    <div style="margin-bottom:8px; font-weight:bold;">
+      ${p.name} har ${p.points} ⭐
+    </div>
+
+    <div class="shopRow ${!canBuy2 ? 'shopRowDisabled' : ''}">
+      <div class="shopText">
+        <div class="shopPrice">2 ⭐</div>
+        <div class="shopDesc">Massasje i 1 minutt</div>
+      </div>
+      <button class="shopBuyBtn" ${!canBuy2 ? 'disabled' : ''} onclick="buyReward(2)">
+        ${canBuy2 ? 'Kjøp' : 'For dyrt'}
+      </button>
+    </div>
+
+    <div class="shopRow ${!canBuy4 ? 'shopRowDisabled' : ''}">
+      <div class="shopText">
+        <div class="shopPrice">4 ⭐</div>
+        <div class="shopDesc">Velg om partner skal få Lust eller Dare</div>
+      </div>
+      <button class="shopBuyBtn" ${!canBuy4 ? 'disabled' : ''} onclick="buyReward(4)">
+        ${canBuy4 ? 'Kjøp' : 'For dyrt'}
+      </button>
+    </div>
+
+    <div class="shopRow ${!canBuy7 ? 'shopRowDisabled' : ''}">
+      <div class="shopText">
+        <div class="shopPrice">7 ⭐</div>
+        <div class="shopDesc">Partner må ta av 1 plagg</div>
+      </div>
+      <button class="shopBuyBtn" ${!canBuy7 ? 'disabled' : ''} onclick="buyReward(7)">
+        ${canBuy7 ? 'Kjøp' : 'For dyrt'}
+      </button>
+    </div>
   `;
-  showCard("ℹ️ Poeng-info", infoText);
+
+  document.getElementById("shopPopup").classList.add("show");
+}
+
+function closeShopPopup(){
+  document.getElementById("shopPopup").classList.remove("show");
+}
+
+function buyReward(cost){
+  const p = players[current];
+  if (p.points < cost) return;
+
+  p.points -= cost;
+  updateScores();
+  closeShopPopup();
+
+  if (cost === 2) {
+    showCard("💆 Massasje", `${p.name} kjøpte massasje i 1 minutt`, "points", false);
+  }
+
+  if (cost === 4) {
+    showBuyChoiceCard();
+  }
+
+  if (cost === 7) {
+    showCard("👕 Kjøp", `Partneren til ${p.name} må ta av 1 plagg`, "klesplagg", false);
+  }
+}
+
+function showBuyChoiceCard() {
+  cardEndsTurn = false;
+
+  card.classList.remove(
+    "lust",
+    "dare",
+    "wild",
+    "drink",
+    "bestem",
+    "park",
+    "give2",
+    "klesplagg",
+    "points",
+    "back",
+    "jail",
+    "jailfree",
+    "choice"
+  );
+
+  card.classList.add("choice");
+
+  cardText.innerHTML = `
+    <h2>Velg kort til partner</h2>
+    <div class="choiceButtons">
+      <button class="choiceBtn lustBtn" onclick="buyChooseCard(event, 'lust')">⭐️ Lust</button>
+      <button class="choiceBtn dareBtn" onclick="buyChooseCard(event, 'dare')">🔥 Dare</button>
+    </div>
+  `;
+
+  card.style.display = "flex";
+  requestAnimationFrame(() => card.classList.add("show"));
+}
+
+function buyChooseCard(e, type) {
+  e.stopPropagation();
+
+  card.classList.remove(
+    "choice",
+    "lust",
+    "dare",
+    "wild",
+    "drink",
+    "bestem",
+    "park",
+    "give2",
+    "klesplagg",
+    "points",
+    "back",
+    "jail",
+    "jailfree"
+  );
+
+  card.classList.add(type);
+
+  const text = type === "lust" ? draw(lustCards) : draw(dareCards);
+  const partner = players[(current + 1) % players.length];
+
+  cardText.innerHTML = `
+    <h2>${type === "lust" ? "⭐ Lust til " + partner.name : "🔥 Dare til " + partner.name}</h2>
+    <p>${text}</p>
+    <div class="cardHint">Trykk for å fortsette</div>
+  `;
 }
 function place(p) {
   const board = document.getElementById("board");
