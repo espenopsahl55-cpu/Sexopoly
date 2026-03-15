@@ -262,22 +262,23 @@
 
   h2{ margin:0; font-size:26px; text-align:center; }
 
-  #previewCard{
-    width: min(80vw, var(--card-w));
-    border-radius:18px;
-    padding:14px 14px 12px;
-    box-sizing:border-box;
+#previewCard{
+  width: min(80vw, var(--card-w));
+  border-radius: 22px;
+  padding: 16px 16px 14px;
+  box-sizing: border-box;
 
-    background: rgba(18,18,18,0.55);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+  background: rgba(18,18,18,0.42);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 
-    border: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 22px 70px rgba(0,0,0,0.60);
-
-    position: relative;
-    overflow: hidden;
-  }
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    0 22px 70px rgba(0,0,0,0.60),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  position: relative;
+  overflow: hidden;
+}
 
   #previewCard::before{
     content:"";
@@ -290,17 +291,17 @@
 #previewCard::before{
   display: none;
 }
-  #previewFrame{
-    width:100%;
-    height: var(--preview-h);
-    border-radius:14px;
-    overflow:hidden;
-background: #000;
-    border: 1px solid rgba(255,255,255,0.10);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
+#previewFrame{
+  width:100%;
+  height: var(--preview-h);
+  border-radius:16px;
+  overflow:hidden;
+  background: rgba(0,0,0,0.72);
+  border: 1px solid rgba(255,255,255,0.08);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
 #previewImg{
   width:100%;
