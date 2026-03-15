@@ -295,22 +295,22 @@
     align-items: center;
     overflow: hidden;
   }
+#carouselTrack{
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 6px 14vw;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  align-items: center;
+}
 
-  #carouselTrack{
-    display: flex;
-    gap: 18px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    padding: 6px 18vw;
-    width: 100%;
-    max-width: 100vw;
-    box-sizing: border-box;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    align-items: center;
-  }
 
   #carouselTrack::-webkit-scrollbar{
     display: none;
@@ -318,7 +318,7 @@
 
 .boardSlide{
   flex: 0 0 auto;
-  aspect-ratio: 1500 / 1400;
+  aspect-ratio: 1850 / 1400;
   height: var(--preview-h);
   min-width: 0;
 
@@ -340,8 +340,8 @@
   justify-content:center;
 }
 
-  .boardSlide.active{
-    transform: scale(1);
+.boardSlide.active{
+  transform: scale(1.04);
     opacity: 1;
     box-shadow:
       0 26px 80px rgba(0,0,0,0.72),
