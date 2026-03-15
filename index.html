@@ -316,28 +316,30 @@
     display: none;
   }
 
-  .boardSlide{
-    flex: 0 0 82vw;
-    max-width: 1200px;
-    min-width: 520px;
-    height: var(--preview-h);
-    scroll-snap-align: center;
-    border-radius: 22px;
-    overflow: hidden;
-    position: relative;
-    background: rgba(18,18,18,0.42);
-    border: 1px solid rgba(255,255,255,0.10);
-    box-shadow:
-      0 22px 70px rgba(0,0,0,0.60),
-      inset 0 1px 0 rgba(255,255,255,0.06);
-    transform: scale(.92);
-    opacity: .62;
-    transition: transform .22s ease, opacity .22s ease, box-shadow .22s ease;
-    cursor: pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
+.boardSlide{
+  flex: 0 0 auto;
+  aspect-ratio: 1 / 1;
+  height: var(--preview-h);
+  max-width: 1200px;
+  min-width: 420px;
+
+  scroll-snap-align: center;
+  border-radius: 22px;
+  overflow: hidden;
+  position: relative;
+  background: rgba(18,18,18,0.42);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    0 22px 70px rgba(0,0,0,0.60),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  transform: scale(.92);
+  opacity: .62;
+  transition: transform .22s ease, opacity .22s ease, box-shadow .22s ease;
+  cursor: pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
   .boardSlide.active{
     transform: scale(1);
