@@ -819,7 +819,44 @@ body.theme-lysebla .scoreActive{
     0 8px 24px rgba(0,0,0,0.45),
     0 0 18px rgba(80,180,255,0.45);
 }
+.pointFx{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 900;
+  font-size: clamp(28px, 4vw, 46px);
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0;
+  text-shadow:
+    0 0 10px rgba(0,0,0,0.45),
+    0 0 24px rgba(0,0,0,0.25);
+  animation: pointFloat 1s ease forwards;
+}
 
+.pointFx.plus{
+  color: #ffe066;
+}
+
+.pointFx.minus{
+  color: #ff6b6b;
+}
+
+@keyframes pointFloat{
+  0%{
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.85);
+  }
+  15%{
+    opacity: 1;
+    transform: translate(-50%, -4px) scale(1.08);
+  }
+  100%{
+    opacity: 0;
+    transform: translate(-50%, -52px) scale(1);
+  }
+}
 /* ===== TURN INDICATOR THEME GLOW ===== */
 
 body.theme-oransj #turnIndicator{
@@ -1676,14 +1713,15 @@ function openShopPopup(){
 function closeShopPopup(){
   document.getElementById("shopPopup").classList.remove("show");
 }
-
 function buyReward(cost){
   const p = players[current];
   if (p.points < cost) return;
 
   p.points -= cost;
   updateScores();
+  showPointFx(-cost);
   closeShopPopup();
+
 
   if (cost === 2) {
     showCard("💆 Massasje", `${p.name} kjøpte massasje i 1 minutt`, "points", false);
@@ -1733,7 +1771,7 @@ function showBuyChoiceCard() {
 
 function buyChooseCard(e, type) {
   e.stopPropagation();
-
+  cardEndsTurn = false;
   card.classList.remove(
     "choice",
     "lust",
@@ -1785,7 +1823,16 @@ function updateScores() {
   score1.textContent = `${players[0].name}: ${players[0].points} ⭐`;
   score2.textContent = `${players[1].name}: ${players[1].points} ⭐`;
 }
+function showPointFx(amount){
+  const fx = document.createElement("div");
+  fx.className = `pointFx ${amount >= 0 ? "plus" : "minus"}`;
+  fx.textContent = `${amount >= 0 ? "+" : ""}${amount} ⭐`;
+  document.body.appendChild(fx);
 
+  setTimeout(() => {
+    fx.remove();
+  }, 1000);
+}
 function updateTurnIndicator() {
   turnIndicator.textContent = winner
     ? `🏆 Vinner: ${winner.name}`
@@ -2003,6 +2050,7 @@ case "lust_or_dare":
 case "2points":
   p.points += 2;
   updateScores();
+  showPointFx(+2);
   showCard("⭐ 2 poeng", "Du får 2 poeng!", "points");
   break;
 
@@ -2040,18 +2088,33 @@ case "bestem":
   showCard("🧑‍⚖️ Bestem", "Bestem et utfordringskort til partner", "bestem");
   break;
     
-case "give2":
-  const giver = players[current];
-  const partner = players[(current+1)%players.length];
-  if (giver.points >= 2) {
-    giver.points -= 2;
-    partner.points += 2;
-    updateScores();
-    showCard("💜 Gi 2 poeng", `${giver.name} gir 2 poeng til ${partner.name}`, "give2");
-  } else {
-    showCard("💜 Gi 2 poeng", `${giver.name} har ikke nok poeng til å gi`, "give2");
-  }
-  break;
+  case "give2":
+      const giver = players[current];
+      const partner = players[(current + 1) % players.length];
+
+      if (giver.points >= 2) {
+        giver.points -= 2;
+        partner.points += 2;
+
+        updateScores();
+
+        showPointFx(-2);
+        setTimeout(() => showPointFx(+2), 180);
+
+        showCard(
+          "💜 Gi 2 poeng",
+          `${giver.name} gir 2 poeng til ${partner.name}`,
+          "give2"
+        );
+      } else {
+        showCard(
+          "💜 Gi 2 poeng",
+          `${giver.name} har ikke nok poeng til å gi`,
+          "give2"
+        );
+      }
+
+      break;
 
     default:
       endTurn();
