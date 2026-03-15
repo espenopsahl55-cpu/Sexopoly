@@ -256,7 +256,6 @@ button {
 #menuPopupContent h2{
   margin: 0 0 6px;
 }
-
 #menuPopupContent button{
   min-height: 54px;
   border-radius: 14px;
@@ -278,32 +277,38 @@ button:active { transform: scale(0.97); }
 #shopPopup.show{
   display: flex;
 }
-
 #shopPopupContent{
-  width: min(88vw, 460px);
+  width: min(84vw, 390px);
+  max-height: 82dvh;
+  overflow-y: auto;
   background: linear-gradient(180deg, rgba(25,25,28,0.96), rgba(10,10,12,0.96));
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 18px;
-  padding: 22px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.6);
   text-align: center;
+}
+
+#shopPopupContent h2{
+  margin: 0 0 4px;
+  font-size: 24px;
 }
 
 #shopItems{
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .shopRow{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  padding: 14px;
+  gap: 10px;
+  padding: 12px;
   border-radius: 14px;
   background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.30));
   border: 1px solid rgba(255,255,255,0.08);
@@ -316,20 +321,23 @@ button:active { transform: scale(0.97); }
 
 .shopPrice{
   font-weight: 800;
-  font-size: 18px;
+  font-size: 16px;
+  line-height: 1.1;
 }
 
 .shopDesc{
-  font-size: 15px;
+  font-size: 14px;
   opacity: 0.9;
-  margin-top: 4px;
+  margin-top: 3px;
+  line-height: 1.25;
 }
 
 .shopBuyBtn{
-  min-width: 96px;
-  min-height: 46px;
+  min-width: 82px;
+  min-height: 42px;
+  padding: 0 12px;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   background: linear-gradient(135deg,#ffe066,#ffb300);
   color:#1a1a1a;
