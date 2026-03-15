@@ -320,7 +320,7 @@
   flex: 0 0 auto;
   aspect-ratio: 1500 / 1400;
   height: var(--preview-h);
-  min-width: 420px;
+  min-width: 0;
 
   scroll-snap-align: center;
   border-radius: 22px;
@@ -420,17 +420,25 @@
     transform:scale(.97);
   }
 
-  @media (max-width: 900px){
-    .boardSlide{
-      flex: 0 0 88vw;
-      min-width: 420px;
-    }
+@media (max-width: 900px){
+  .boardSlide{
+    min-width: 0;
+  }
+}
+
+
+@media (max-width: 600px){
+  :root{
+    --preview-h: 34dvh;
   }
 
-  @media (max-width: 600px){
-    :root{
-      --preview-h: 34dvh;
-    }
+  .boardSlide{
+    min-width: 0;
+  }
+  .boardSlide{
+    flex: 0 0 94vw;
+    min-width: 280px;
+  }
 
     .boardSlide{
       flex: 0 0 94vw;
