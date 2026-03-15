@@ -152,7 +152,15 @@ body.theme-blahvit #sideUI::before{
 }
 #p1 { background: #ff4d4d; }
 #p2 { background: #4da6ff; }
+.player.jump{
+  animation: playerJump .28s ease;
+}
 
+@keyframes playerJump{
+  0%{ transform: translate(-50%, -50%) scale(1); }
+  40%{ transform: translate(-50%, -58%) scale(1.1); }
+  100%{ transform: translate(-50%, -50%) scale(1); }
+}
 /* ===== UI STYLE ===== */
 input, button {
   padding: 12px;
@@ -1805,6 +1813,7 @@ function place(p) {
   p.el.style.left = (board.clientWidth * t.x / 100) + "px";
   p.el.style.top = (board.clientHeight * t.y / 100) + "px";
 }
+
 function showWildCard() {
   locked = true;
   cardEndsTurn = true;
@@ -2014,6 +2023,10 @@ function move(steps) {
     }
 
     place(p);
+
+    p.el.classList.remove("jump");
+    void p.el.offsetWidth;
+    p.el.classList.add("jump");
 
     moved++;
     if (moved >= steps) {
